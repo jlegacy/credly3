@@ -1,0 +1,664 @@
+<apex:page controller="viewBadgeRulesController">
+  
+  <head>
+    	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <apex:includeScript value="{!$Resource.messijs}"/>
+        <link rel="stylesheet" type="text/css" href="{!$Resource.messicss}" />
+         <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
+    <script>
+      var $j = jQuery.noConflict();
+      $j(document).ready(function() {
+       bindRuleSelects();
+      if ("{!loadEditRuleDetails}" === 'Y')
+      {
+       // have to manually reload the fields at this point //
+         $j("input[type='radio']").each(function()
+        {
+          if ($j(this).val() == '{!xBadgeId}')
+        {
+        $j(this).attr('checked',true);
+        }
+        });
+       manuallyReloadFields();
+      }
+      
+      $j("#contentWrapper").delegate("input[type='radio']","click",function()
+		{
+		//alert($j(this).val());
+		var urlString = $j(this).closest('td').next().find('img').attr('src');
+		//setBadgeID($j(this).val(),urlString);
+		var x = $j(this).val();
+		setBadgeID(x);
+		}); 
+		
+		 //set radio button selected for badge
+        $j("input[type='radio']").each(function()
+        {
+          if ($j(this).val() == '{!setBadgeSelect}')
+        {
+        $j(this).attr('checked',true);
+        }
+        });
+      });
+      
+      function isNumberKey(evt){
+        var charCode = (evt.which) ? evt.which : event.keyCode
+            return !(charCode > 31 && (charCode < 48 || charCode > 57));
+        
+      }
+      
+      function manuallyDisplayFields()
+      {
+      loadDetailRules("{!ruleParm}");
+    //  bindRuleSelects();
+      }
+      
+      function refreshScreen() {
+        var error = false; 
+        
+        if($j('#errorMessages').find('.exceptionText').length != 0)
+        {
+          error = true;
+        }
+        
+        if (error != true) {
+        
+          setInterval(function() {
+            this.window.location.href = window.location.href}
+                      ,3000);
+        }
+      }
+      
+      function next()
+      {
+      
+      }
+      
+       function setUploadOption(){
+        
+			setUploadController();
+
+            }
+      
+     function insertDetail()
+      {
+        var count = 0;
+        //get block of html//
+        var y = $j("div[id*='rulesDetails']").find('.pbSubsection:first').html();
+       // var y = $j("div[id*='rulesDetails']").find('.pbSubsection:first').find('table:first').html();
+        
+    
+
+      // $j("div[id*='rulesDetails']").append(y);
+       $j("div[id*='rulesDetails']").find('.pbSubsection:first').append(y);
+       
+       //leave 1 open input
+         $j("div[id*='rulesDetails']").find('.detailList').each(function(index) {
+         if ($j(this).find("select[id*='ruleFields']").val() === "") {
+         count = count + 1;
+         if (count > 1)
+         	{
+         	$j(this).remove();
+         	}
+        }
+        });
+
+}
+      
+   
+      function addBadgeFunction()
+      {
+      addBadge();
+      }
+      
+   
+       function startUpload() {
+        
+        upload();
+        this.window.location.href = window.location.href
+      }
+      function setBadgeSelected() {
+        var x = $j("select[id*='selected_badge']").val();
+        setBadgeID(x);
+      }
+      
+       function setTypeSelected() {
+      
+        var x = $j("select[id*='selected_type']").val();
+        setType(x);
+      }
+      
+      function setTestimonial() {
+        var x = $j("textarea[id*='testimonial']").val();
+        setTestimonialText(x);
+      }
+      
+      $j( "table" ).delegate( "img.deleteIcon", "click", function() {
+        if ($j('.deleteIcon').length > 1)
+        {
+       $j(this).closest('table').first().remove();
+       addSelectChange();
+        }
+        });
+        
+    function bindRuleSelects()
+    {
+    var split;
+    $j("#contentWrapper").delegate("select[id*='ruleFields']","change",function(){
+   split = $j(this).val().split(":");
+   setDropOperand($j(this),split[1]); 
+   });
+   }
+   
+   function getVisualOperand(x)
+   {
+   var result;
+   
+    switch (x)
+    {
+     
+      case 'eq': 
+      result = 'equals to';
+      return result;
+      break;
+          
+      case 'lt':
+      result = 'less than';
+      return result;
+      break;
+          
+      case 'le':
+      result = 'less than or equal to';
+      return result;
+      break;
+          
+      case 'gt':
+      result = 'greater than';
+      return result;
+      break;
+          
+      case 'ge':
+      result = 'greater than or equal to';
+      return result;
+      break;
+          
+      case 'ne':
+      result = 'not equal to';
+      return result;
+      break;
+      
+      case 'ct':
+      result = 'contains';
+      return result;
+      break;
+      
+      default:
+      result = ' ';
+      return result;
+     
+   }
+   }
+   
+   function optionString(options)
+   {
+   var optionString;
+   var split;
+   var baseOptions = '<option value=xxx>yyy</option>';
+   var selectOptions = '<option selected value=xxx>yyy</option>';
+   var tempOptions;
+   var visualOperand;
+   var stringTest;
+   
+   split = options.split("|");
+     
+   for (var i=0;i<split.length;i++)
+    { 
+    if (split[i].length === 0)
+    {
+    tempOptions = selectOptions;
+    }
+    else
+    {
+    tempOptions = baseOptions;
+    }
+   
+    tempOptions = tempOptions.replace("xxx",split[i]);
+    
+    if (split[i])
+    {
+      stringTest = split[i];
+      
+      visualOperand = getVisualOperand(stringTest);
+     tempOptions = tempOptions.replace("yyy",visualOperand );
+    }
+    else
+    {
+    tempOptions = tempOptions.replace("yyy",split[i]);
+    }
+    
+    optionString = optionString + tempOptions;
+    }
+    
+    return optionString;
+   }
+   
+   function setDropOperand(selector, fieldType)
+   {
+  
+   var options, operands;
+   switch (fieldType.toLowerCase())
+    {
+      case 'string': 
+      case 'picklist':
+      case 'text':
+      case 'textarea':
+          operands = '|eq|ct';
+          options = optionString(operands);
+          break;
+      case 'long':
+      case 'date':
+      case 'datetime':
+      case 'decimal':
+      case 'double':    
+      case 'integer': 
+          operands = 'eq|lt|le|gt|ge|ne';
+          options = optionString(operands);
+          break;
+      case 'boolean': 
+         operands = '|eq|ne';
+          options = optionString(operands);
+          break; 
+      default: 
+          operands = '|eq|ne';
+          options = optionString(operands);
+          break;
+    }
+    
+    var optionPlacement = selector.closest('td').closest('table').find("select[id*='ruleOperands']").find('option').remove().end().append(options);
+  
+   }
+   
+   function addSelectChange()
+   {
+   
+   
+   //string the rules into a text field with delimiters//
+  
+   //capture all values 
+   var ruleFields = $j("select[id*='ruleFields']");
+   var ruleOperands = $j("select[id*='ruleOperands']");
+    var ruleInputs = $j("input[id*='ruleInputs']");
+    var ruleText = "";
+    
+   $j("select[id*='ruleFields']").each(function( index ) {
+   
+   //only count full full row//
+   if  ((($j(this).val().length) > 0)
+   &&  ($j(ruleOperands[index]).val().length > 0) 
+   &&  ($j(ruleInputs[index]).val().length > 0))
+  {
+   if (ruleText.length > 0)
+  {
+  ruleText = ruleText + '~' + $j(this).val() + '|' + $j(ruleOperands[index]).val() + '|' + $j(ruleInputs[index]).val();
+  }
+   else
+   {
+   ruleText = $j(this).val() + '|' + $j(ruleOperands[index]).val() + '|' + $j(ruleInputs[index]).val();
+   }
+   }
+ 
+ 
+});
+
+   setRuleText(ruleText);
+   
+   }
+   
+   function loadDetailRules(rule)
+   {
+        // bindRuleSelects();
+  //  console.log("{!name}");
+   //  console.log("{!xBadgeId}");
+    // console.log("{!testimonial}");
+   //   console.log("{!populateRecordType}");
+   //   console.log(rule);
+     
+    var rows, fields;
+     rows = rule.split("~");
+     for (var i=0;i<rows.length;i++)
+    { 
+   
+    fields = rows[i].split("|");
+    $j("select[id*='ruleFields']:last").val(fields[0]);
+    $j("select[id*='ruleFields']:last").trigger("change");
+    $j("select[id*='ruleOperands']:last").val(fields[1]);
+    $j("input[id*='ruleInputs']:last").val(fields[2]);
+  //  console.log(fields[0],fields[1],fields[2]);
+    insertDetail();
+   
+    addSelectChange();
+   }
+   }
+   
+   function deleteRule() {
+
+
+    new Messi('Are you sure you want to delete rule?', {
+        title: 'Warning',
+        modal: true,
+        titleClass: 'warning',
+        buttons: [{
+            id: 0,
+            label: 'Yes',
+            val: 'Y'
+        }, {
+            id: 1,
+            label: 'No',
+            val: 'N'
+        }],
+        callback: function (val) {
+            if (val === 'Y') {
+              deleteBadgeRule();
+            }
+        }
+
+    });
+
+}
+    </script>
+  </head>
+  
+   <div id="errorMessages">
+    <apex:messages id="messages" styleClass="exceptionText"/>
+  </div>
+  
+  <apex:sectionHeader title="Automatic Badge Issuing Rules"/>
+     <apex:pageBlock mode="edit" >
+      <apex:pageBlockSection collapsible="false" title="Create and manage rules that automatically issue Credly
+      badges when certain conditions are met based on your contacts, leads or accounts.">
+      </apex:pageBlockSection>
+      </apex:pageBlock>
+      
+ 
+
+  <apex:form id="addForm">
+  
+    <apex:pageBlock rendered="{!renderStep1}">
+   <h1>Step 1: To add a new Rule - Click Here</h1>
+      <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/>
+       <br></br><h2>To modify a Rule, click on a Rule Title below</h2> 
+   </apex:pageBlock>
+  
+   <apex:pageBlock rendered="{!renderStep2}">
+   <h1>Step 2: Select the badge you would like to issue</h1>
+    <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
+      <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
+   </apex:pageBlock>
+  
+  
+   <apex:outputPanel id="jspanel"> 
+  <script>  
+  function loadRule() {
+   
+//   refreshScreen();
+  }
+  </script>
+  </apex:outputPanel>
+    
+    <input id="hiddenRules" class="hidden" value="{!getRuleFields}"></input>
+    
+    <apex:pageBlock id="detailsBlock" rendered="{!renderStep1}">
+      <apex:outputPanel id="details">
+        <apex:pageBlockTable value="{!rules}" var="o">
+          <apex:column headerValue="Rule Title">
+          <apex:commandLink action="{!modify}" value="{!o.rule_name_r__c}" id="theCommandLink">
+                            <apex:param name="parm1" assignTo="{!xRuleId}" value="{!o.id}" />
+                            <apex:param name="parm2" assignTo="{!xBadgeId}" value="{!o.badge_lookup__r.id}" />
+          </apex:CommandLink>
+          </apex:column>
+           <apex:column headerValue="Badge Title">
+            <apex:outputField value="{!o.badge_lookup__r.title__c}" />
+          </apex:column>
+             <apex:column headerValue="Image">
+                          <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.badge_lookup__r.image__c}" /></apex:outputLink>
+                    </apex:column>
+          
+           <apex:column headerValue="Rule">
+            <apex:outputField value="{!o.badge_visual_rule_r__c}" />
+          </apex:column>
+          
+          <apex:column headerValue="Rule Type">
+            <apex:outputField value="{!o.account_type_r__c}" />
+          </apex:column>
+             <apex:column headerValue="testimonial">
+            <apex:outputField value="{!o.testimonial_r__c}" />
+          </apex:column>
+          
+         
+         
+          
+          <apex:column headerValue="Evidence">
+          <apex:outputLink value="{!o.evidence_url_r__c}">
+          {!o.evidence_url_r__c}
+          </apex:outputLink>
+          <apex:outputField value="{!o.evidence_r__c}" />
+          </apex:column>
+          
+           <apex:column headerValue="Badges Issued">
+          <apex:outputField value="{!o.number_of_badges_issued_r__c}" />
+          </apex:column>
+          
+           <apex:column headerValue="Date/Time of Last Issue">
+          <apex:outputField value="{!o.date_last_issued_r__c}" /> 
+          </apex:column>
+          
+          
+        </apex:pageBlockTable>
+      </apex:outputPanel>
+    
+    </apex:pageBlock>
+    
+    <apex:outputPanel id="dummy" rendered="false">
+    </apex:outputPanel>
+    
+    <apex:actionFunction name="upload" action="{!upload}" rerender="addForm">
+    </apex:actionFunction>
+    <apex:actionFunction name="addBadge" action="{!addBadge}" >
+    </apex:actionFunction>
+    
+     <apex:actionFunction name="deleteBadgeRule" action="{!deleteBadgeRuleController}" onComplete="window.location.href = window.location.href">
+    </apex:actionFunction> 
+    
+        <apex:actionFunction name="setUploadController" action="{!setUploadAction}">
+           </apex:actionFunction>
+      
+    
+    <apex:actionFunction name="setBadgeID"  rerender="dummy">
+      <apex:param name="firstParam"  assignTo="{!setBadgeSelect }" value="" />
+    </apex:actionFunction> 
+    
+     <apex:actionFunction name="setType"  rerender="dummy">
+      <apex:param name="firstParam"  assignTo="{!setTypeSelect }" value="" />
+    </apex:actionFunction>
+     
+       <apex:actionFunction name="setRuleText"  rerender="dummy">
+      <apex:param name="firstParam"  assignTo="{!setRuleText }" value="" />
+    </apex:actionFunction>
+    
+     <apex:actionFunction name="setTestimonialText"  rerender="dummy">
+      <apex:param name="firstParam" assignTo="{!setTestimonialSelect}" value=""/>
+    </apex:actionFunction>
+    
+     <apex:actionFunction action="{!reloadFields}" name="reloadFields"  rerender="rulesDetails">
+    </apex:actionFunction>
+    
+     <apex:actionFunction action="{!reloadFields}" name="manuallyReloadFields"  oncomplete="manuallyDisplayFields()" rerender="rulesDetails">
+    </apex:actionFunction>
+    
+    
+    
+       <apex:pageBlock rendered="{!renderStep2}">
+  <apex:pageBlockSection >
+   <apex:pageBlockSectionItem >
+    <apex:outputtext >Need a new Credly badge?</apex:outputtext>
+   <apex:outputLink value="/apex/ViewBadges?gotoAdd=Y" id="theLink">Create one now.</apex:outputLink>
+   </apex:pageBlockSectionItem>
+  <apex:pageBlockSectionItem >
+  <apex:inputText label="Name Contains" value="{!filterBadge}" /> 
+  <apex:commandButton value="Search for a Badge" action="{!searchBadge}" rerender="details" />
+  </apex:pageBlockSectionItem>
+  </apex:pageBlockSection>
+       
+                  <apex:outputPanel id="details">
+                  <apex:pageBlockTable value="{!badges}" var="o">
+                 <apex:column headerValue="Sel">
+                  <input class="badgeRadios" type="radio" value="{!o.id}" name="group1"></input>
+                  
+                  </apex:column>
+                  
+                    <apex:column headerValue="Badge">
+                       <apex:outputField value="{!o.image__c}" /> 
+                       
+                    </apex:column>
+                   <apex:column headerValue="Title">
+                       
+                    <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.title__c}" /> </apex:outputLink>
+                    </apex:column>
+                     <apex:column headerValue="Description">
+                        <apex:outputField value="{!o.description__c}" />
+                    </apex:column>
+                   
+                       <apex:column headerValue="Badge ID">
+                        <apex:outputField value="{!o.credlyBadgeId__c}" />
+                         
+                    </apex:column>
+                    
+                    </apex:pageBlockTable>
+            </apex:outputPanel> 
+            
+            
+
+      
+  </apex:pageBlock>
+    
+    <apex:pageBlock id="theAddBadge" rendered="{!renderStep3}" mode="edit"  title="Step 3: Enter Rule Information">
+     
+   
+      <apex:pageBlockButtons >
+       <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
+         <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
+        <apex:commandButton styleClass="deleteStep" value="Delete Rule" onClick="deleteRule();" rerender="addForm"/>
+      </apex:pageBlockButtons>
+      
+      
+      <apex:pageBlockSection showHeader="false" id="block1">
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Rule Name"/>
+          <apex:inputText value="{!name}" id="name"/>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+      
+       <apex:pageBlockSection >
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Send Email"/>
+          <apex:inputCheckBox value="{!emailChecked}" id="emailCheckbox"/>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+      
+      
+      <apex:pageBlockSection >
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel styleClass="ruleLabel" value="Record Type:  "/>
+          <apex:selectList id="selected_type" value="{!populateRecordType}" onchange="reloadFields();" multiselect="false" size="1">
+            <apex:selectOptions value="{!recordTypes}"/>
+          </apex:selectList>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+      
+     
+      
+       
+     <apex:pageBlockSection > 
+     <apex:pageBlockSectionItem >
+       <apex:outputLabel value="Custom Message (*Optional)"/> 
+      <apex:inputTextarea value="{!customMessage}" styleClass="longInputText"/>
+       </apex:pageBlockSectionItem>
+       </apex:pageBlockSection>
+      
+      
+      
+      
+      <apex:pageBlockSection collapsible="false" title="Rules" >
+       </apex:pageBlockSection>
+       
+        <apex:pageBlockSection >
+        <apex:commandButton value="Insert New Rule Line" onclick="insertDetail();" rerender="false"/>
+       </apex:pageBlockSection>
+      
+      <apex:pageBlockSection id="rulesDetails" columns="5">
+      <img border="0" class="icon deleteIcon" src="{!$Resource.delete_icon}" alt="HTML tutorial" width="15" height="15"></img>
+         <apex:selectList styleClass="ruleFieldsSelect" id="ruleFields" onchange="addSelectChange();"  multiselect="false" size="1"  >
+            <apex:selectOptions value="{!getRuleFields}"  />
+            </apex:selectList>
+             <apex:selectList styleClass="operandsSelect" id="ruleOperands" onchange="addSelectChange();" multiselect="false" size="1" >
+            <apex:selectOptions value="{!getOperandTypes}"  />
+            </apex:selectList>
+            <apex:inputText styleClass="inputsSelect" id="ruleInputs" onkeyup="addSelectChange();" ></apex:inputText>
+             <apex:outputLabel styleClass="andSelect">and</apex:outputLabel>
+             
+       </apex:pageBlockSection> 
+     
+       
+    </apex:pageBlock>
+    
+    <apex:pageBlock title="Step 4: Include Evidence and Testimonial" id="uploadEvidence" rendered="{!renderStep4}">
+      <apex:pageBlockButtons >
+          <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
+       <apex:commandButton styleClass="nextStep" value="Continue" action="{!upload}" />
+      </apex:pageBlockButtons>
+      
+  
+      
+     	 <apex:pageBlockSection columns="1">
+     	 
+  		 <apex:outputpanel >
+  		  <br></br><h2>Include Evidence (*Optional)</h2>
+  		   <br></br><apex:outputLabel styleClass="margin-top-10" value="Upload Options"/>
+         <apex:selectList onChange="setUploadOption();" value="{!upload_option}" multiselect="false" size="1">
+            <apex:selectOptions value="{!uploadTypes}"/> 
+            </apex:selectList>
+            </apex:outputpanel>
+  		 
+  		 <apex:outputpanel rendered="{!renderLink}">
+  		 
+  		 <br></br><h3>The link or file you attach will be included with every badge
+  		 issued as evidence of the recipient's achievement.
+        </h3>
+        
+        <br></br><h3>Enter a URL: http://</h3>
+        <apex:inputText styleClass="urlLinkLong" value="{!urlLink}"></apex:inputText> 
+        </apex:outputpanel>
+        
+        <apex:outputpanel rendered="{!renderFile}" >
+        <h3><br></br>
+        <apex:outputLabel for="file"/> 
+        </h3>
+      
+        <apex:inputFile value="{!document.body}" filename="{!document.name}" id="fileEvidence"/>
+       <apex:outputLabel styleClass="smallGreen bold ruleFileNamePos" value="{!uploadedFileName}" rendered="{!hasUploadedFile}"/> 
+      </apex:outputpanel>
+
+     <apex:outputpanel >
+           <br></br><h2>Testimonial (*Optional)</h2>
+          <br></br><apex:inputTextarea value="{!testimonial}" id="testimonial" styleClass="longInputText margin-top-10"/>
+      </apex:outputpanel>
+      
+  		 
+  		 </apex:pageBlockSection>
+       
+    </apex:pageBlock>
+ 
+  </apex:form>
+</apex:page>

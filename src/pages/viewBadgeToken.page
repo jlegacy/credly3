@@ -1,0 +1,158 @@
+<apex:page controller="BadgeTokenController"> 
+    
+    <head>
+           <link rel="stylesheet" type="text/css" href="{!$Resource.jquerylightnesscss}" />
+            <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
+          <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+          <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+           <apex:includeScript value="{!$Resource.encode64}"/>
+         
+        <script>
+              var $j = jQuery.noConflict();
+            
+              $j(document).ready(function() {
+              
+                 $j('.spinImage').hide();
+              
+             	$j("#contentWrapper").delegate("input[id*='name']","keyup",function(){
+             	
+                var authKey = encodePlain($j("input[id*='name']").val() + ':' + $j("input[id*='password']").val());
+             	
+             	$j("input[id*='authKey']").val(authKey);
+             	
+             	}); 
+             	
+             	$j("#contentWrapper").delegate("input[id*='password']","keyup",function(){
+             	
+             	var authKey = encodePlain($j("input[id*='name']").val() + ':' + $j("input[id*='password']").val());
+             	
+             	$j("input[id*='authKey']").val(authKey);
+             	
+             	}); 
+              
+          });
+          
+            function showSpinner()
+          {
+          $j('.spinImage').show();
+          }
+          
+           function hideSpinner()
+          {
+          $j('.spinImage').hide();
+          }
+          
+          
+      
+          function isNumberKey(evt){
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            return !(charCode > 31 && (charCode < 48 || charCode > 57));    
+            }
+            
+            function postCredly()
+            {
+            checkCredly();
+            }
+            
+          function refreshScreen() {
+              var error = false;
+              
+              if($j('#errorMessages').find('.exceptionText').length != 0)
+              {
+                  error = true;
+              }
+
+              if (error != true) {
+                  setInterval(function() {
+                  this.window.location.href = window.location.href}, 1000);
+              }
+          }
+
+          function startUpload() {
+                     upload();
+                     setInterval(function() {
+                  this.window.location.href = window.location.href}, 3000);
+                  }
+        </script>
+    </head>
+    
+ 
+ 
+ <apex:form id="addForm">
+ 
+ 
+  
+ 
+   <apex:actionFunction name="checkCredly" action="{!checkCredly}" rerender="addForm" onComplete="hideSpinner();">
+   </apex:actionFunction>
+ 
+   <apex:sectionHeader title="Maintain Security Settings"/>
+        <div id="errorMessages"> 
+            <apex:messages id="messages" styleClass="exceptionText"/>
+  </div>
+  <apex:outputPanel rendered="{!success}">
+            <ul>
+            <li class="successMessage">{!successMessage}</li>
+            </ul> 
+  </apex:outputPanel>
+  
+    <apex:pageBlock >
+         <apex:pageBlockSection columns="4" collapsible="false" title="Use this page to maintain your Credly Credentials." /> 
+         </apex:pageBlock>
+         
+     <apex:pageBlock >
+ 
+     
+       <apex:pageBlockSection showHeader="false"  columns="1" >
+        <h2 class="required">(* = Required)</h2>
+        <br><h2>API Key and Secret are Required Fields and Will Be Provided by Credly</h2></br>
+       </apex:pageBlockSection>
+     
+     
+     <apex:pageBlockSection showHeader="false"  id="block1"  columns="1" > 
+        <div class="required requiredPosition">*</div>
+         <apex:pageBlockSectionItem >
+          <apex:outputLabel value="API Key"/>
+         <apex:inputText styleClass="credlyToken" value="{!APIkey}" id="key"/>
+        </apex:pageBlockSectionItem>
+        
+           <div class="required requiredPosition">*</div>
+         <apex:pageBlockSectionItem >
+          <apex:outputLabel value="API Secret"/>
+          <apex:inputText styleClass="credlyToken" value="{!APIsecret}" id="secret"/>
+        </apex:pageBlockSectionItem>
+        
+          <apex:pageBlockSection showHeader="false"  columns="1" > 
+       <h2>You can either Enter Your Name and Password or Authorization Key.  Once authorized, your key is good for 3 months</h2>
+       </apex:pageBlockSection>
+        
+         <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Name"/>
+          <apex:inputText styleClass="credlyToken" value="{!name}" id="name"/>
+        </apex:pageBlockSectionItem>
+        
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Password"/>
+          <apex:inputSecret styleClass="credlyToken" value="{!password}" id="password"/>
+        </apex:pageBlockSectionItem> 
+        
+        <apex:pageBlockSectionItem >
+       <h2>or</h2>
+          <apex:outputLabel styleClass="required" value=" "/>
+        </apex:pageBlockSectionItem> 
+     
+         <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Authorization Key"/>
+          <apex:inputText styleClass="credlyToken" value="{!authKey}" id="authKey"/>
+        </apex:pageBlockSectionItem>
+       
+        </apex:pageBlockSection> 
+        
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveToken}" value="Save Settings" id="theUpdateButton" reRender="addForm" onClick="showSpinner();" onComplete="postCredly();"/>
+                  <div id="spinner" class="spinImage"><apex:image styleClass="spinImage" id="spinImage" value="{!$Resource.loading_gif}"/></div>
+            </apex:pageBlockButtons>
+            </apex:pageBlock>
+       
+    </apex:form>
+</apex:page>

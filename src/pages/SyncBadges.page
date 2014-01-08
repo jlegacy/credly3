@@ -1,0 +1,133 @@
+<apex:page controller="synchBadgesController"> 
+    
+    <head>
+     	   <link rel="stylesheet" type="text/css" href="{!$Resource.jquerylightnesscss}" />
+     	    <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
+          <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+          <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+         
+
+        <script>
+              var $j = jQuery.noConflict();
+              $j(document).ready(function() {
+              
+               $j('#spinner').hide();
+                 $j('#spinnerMessage').hide();
+
+         
+             $j('#my-badge').hide();
+          
+          });
+          
+          window.addEventListener("message", function(e) {
+    if (e.origin === "https://staging.credly.com" && typeof (data = e.data) === "object") {
+        var myBadge = document.getElementById("my-badge");
+
+        // Copy data from the badge builder iframe into a local object
+        myBadge.imageUrl        = data.image;
+        myBadge.iconInfo        = data.iconMetadata;
+        myBadge.extraParameters = data.packagedData;
+
+        // Remove the badge builder
+        passImageParms(data.image, data.packagedData.iconstub,data.packagedData.icon_id )
+        
+        $j('#my-badge').hide();
+    }
+});
+          
+          function testBadge()
+          {
+          $j('#my-badge').show();
+          }
+          
+          function isNumberKey(evt){
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            return !(charCode > 31 && (charCode < 48 || charCode > 57));    
+            }
+            
+            function setGiveableJS()
+            {
+          
+            setGiveable();
+            return false;
+          
+
+            }
+            
+          function startSpinner()
+          {
+          $j('#spinner').show();
+          $j('#spinnerMessage').hide();
+          }
+          
+           function hideSpinner()
+          {
+          $j('#spinner').hide();
+           $j('#spinnerMessage').show();
+          }
+
+          function refreshScreen() {
+              var error = false;
+              
+              if($j('#errorMessages').find('.exceptionText').length != 0)
+              {
+                  error = true;
+              }
+
+              if (error != true) {
+                  setInterval(function() {
+                  this.window.location.href = window.location.href}, 1000);
+              }
+          }
+
+          function startUpload() {
+                     upload();
+                     setInterval(function() {
+                  this.window.location.href = window.location.href}, 3000);
+              }
+           
+        </script>
+    </head>
+    
+    <style type="text/css">
+        .exceptionText
+        { 
+            font-style:italic;
+            font-size:16px; 
+            font-weight:normal; 
+            text-align:left;
+            color:red;
+        }
+        .shortDescription
+        {
+        height:2em;
+        }
+        .expirePeriod
+        {
+        width:50em !important;
+        }
+         .expireNumber
+        {
+         width:50em !important;
+        }
+          .expireLabel
+        {
+        margin-left:100px;
+        }
+    </style>
+    
+  <div id="errorMessages"> 
+            <apex:messages id="messages" styleClass="exceptionText"/>
+  </div>
+  
+ <apex:form id="addForm" enctype="multipart/form-data"> 
+ 
+   <apex:sectionHeader title="Synch Badges"/>
+     
+    <apex:commandButton action="{!synchBadges}" value="Synch Badges" rerender="addForm" onclick="startSpinner();" oncomplete="hideSpinner();"/>
+    <div id="spinner" class="spinImage"><apex:image styleClass="spinImage" id="spinImage" value="{!$Resource.loading_gif}"/></div>
+    <div id="spinnerMessage" class="spinMessage pbBody"><h2>Synch Jobs Submitted</h2></div>
+    <!--   <apex:commandButton action="{!synchMemberBadges}" value="Synch Member Badges" rerender="addForm"/> -->
+    <apex:outputLink value="https://na15.salesforce.com/a09" id="theLink">Number of Pages to Retrieve</apex:outputLink>
+    </apex:form>
+</apex:page>

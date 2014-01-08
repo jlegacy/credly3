@@ -1,0 +1,142 @@
+<apex:page renderAs="{!showAs}" setup="false" sidebar="false" cache="false" showHeader="true" applyHtmlTag="true"  controller="ViewMemberBadgeController" contenttype="{!showExcel}"> 
+     <head>
+    
+    	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <apex:includeScript value="{!$Resource.jqueryprint}"/>
+         <apex:includeScript value="{!$Resource.messijs}"/>
+        <link rel="stylesheet" type="text/css" href="{!$Resource.messicss}" />
+         <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
+      
+        <script>var $j = jQuery.noConflict();
+$j(document).ready(function () {});
+
+function isNumberKey(evt) {
+    var charCode = (evt.which) ? evt.which : event.keyCode
+    return !(charCode > 31 && (charCode < 48 || charCode > 57));
+}
+
+function printReport()
+{
+window.print();  
+}
+function refreshScreen() {
+    var error = false;
+
+    if ($j('#errorMessages').find('.exceptionText').length != 0) {
+        error = true;
+    }
+
+    if (error != true) {
+        setInterval(function () {
+            this.window.location.href = window.location.href
+        }, 1000);
+    }
+}
+        </script>
+    </head>
+    
+    <style type="text/css">
+    
+  
+    .messi-titlebox.warning{background-color:green}
+    
+        .exceptionText
+        { 
+            font-style:italic;
+            font-size:16px; 
+            font-weight:normal; 
+            text-align:left;
+            color:red;
+        }
+            .icon
+    {
+    cursor:pointer;
+    margin-left:15px;
+   
+    }
+    </style>
+      
+    <div id="errorMessages">
+            <apex:messages id="messages" styleClass="exceptionText"/>
+        </div>
+        
+      <apex:sectionHeader title="Create Member Badge Reports"/>
+      <apex:pageBlock mode="edit" >
+      <apex:pageBlockSection collapsible="false" title="Review and search Credly badges you have issued through Salesforce, and download reports
+       of your badge issuing activity"></apex:pageBlockSection>
+      </apex:pageBlock>
+
+  <apex:form id="addForm">
+   <apex:actionFunction name="refreshScreenController" action="{!refreshScreenController}"  rerender="addForm">
+    </apex:actionFunction> 
+  
+  
+   <apex:pageBlock title="Filters"  id="selectFilters" rendered="{!renderFilters}">
+    <apex:outputText value="Contains:"/>
+    <apex:inputText label="Contains" value="{!filterName}" />
+    <apex:outputText value="Filter By:  "/> 
+    
+         
+ <apex:selectList value="{!recordType}" multiselect="false" size="1">
+            <apex:selectOptions value="{!recordTypes}"/>
+        </apex:selectList>
+        
+        <apex:commandButton value="Apply Filter" action="{!renderPage}" />
+    <!-- <apex:commandButton value="Create PDF"  action="{!createPDF}" rendered="false"/> -->
+        <apex:commandButton value="Print"  onclick="printReport();" rendered="true"/> 
+        <apex:commandButton value="Create Excel" action="{!createExcel}"/>
+
+  </apex:pageBlock>
+ 
+        <apex:pageBlock id="detailsBlock" rendered="{!detailsBlock}">
+            <apex:outputPanel styleclass="print" id="details">
+             
+                  <apex:pageBlockTable value="{!badges}" var="o">
+         
+                    <apex:column styleclass="printDetails" headerValue="Badge Image">
+                        <apex:outputField value="{!o.image_m__c}" />
+                    </apex:column>
+                   <apex:column styleclass="printDetails" headerValue="Badge Title">
+                        <apex:outputLink value="/{!o.id}"> {!o.badge_lookup_m__r.title__c} </apex:outputLink>
+                        <!-- <apex:outputLink value="/{!o.badge_lookup_m__c}"> {!o.badge_lookup_m__r.title__c} </apex:outputLink> -->
+                    </apex:column>
+                     <apex:column styleclass="printDetails" headerValue="Badge Short Description">
+                        <apex:outputField value="{!o.short_description_m__c}" />
+                    </apex:column>
+                      <apex:column styleclass="printDetails" headerValue="Testimonial">
+                        <apex:outputField value="{!o.testimonial_m__c}" />
+                    </apex:column>
+                        <apex:column styleclass="printDetails" headerValue="Evidence">
+                        <apex:outputField value="{!o.evidence_m__c}" />
+                         <apex:outputField value="{!o.evidence_url_m__c}" />
+      					</apex:column>
+                       <apex:column styleclass="printDetails" headerValue="Email">
+                        <apex:outputField value="{!o.lead_lookup_m__r.email}" />
+                         <apex:outputField value="{!o.contact_lookup_m__r.email}" />
+                    </apex:column>
+                      <apex:column styleclass="printDetails" headerValue="Recipient">
+                       <apex:outputField value="{!o.account_lookup_m__c}" />
+                        <apex:outputField value="{!o.contact_lookup_m__c}" />
+                        <apex:outputField value="{!o.lead_lookup_m__c}" />
+                    </apex:column>
+                    
+                       <apex:column styleclass="printDetails" headerValue="Issue Date">
+                        <apex:outputField value="{!o.issue_date_m__c}" />
+                    </apex:column>
+                      <apex:column styleclass="printDetails" headerValue="Expire Date">
+                        <apex:outputField value="{!o.expire_date_m__c}" />
+                    </apex:column>
+                    
+                    
+        </apex:pageBlockTable>
+            </apex:outputPanel>
+            <apex:pageBlockButtons >
+                
+                
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+     
+    </apex:form>
+</apex:page>

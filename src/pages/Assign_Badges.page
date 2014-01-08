@@ -1,0 +1,522 @@
+<apex:page controller="BadgeContactController">
+
+ <head>
+ <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
+  
+      
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+         
+        <script>
+              var $j = jQuery.noConflict();
+        $j(document).ready(function() {
+        
+        //if using the back button then restore selected ids
+        if ('{!renderStep2}' && '{!xSelectedIDs}'.trim().length > 0)
+        {
+        var ids = '{!xSelectedIDs}';
+        var mySplitResult = ids.split(',');
+        
+		for(i = 0; i < mySplitResult.length; i++){
+		// set check boxes checked //
+		
+		$j('#' + mySplitResult[i]).attr('checked', true);
+		 
+		}
+        }
+        
+        //set radio button selected for badge
+        $j("input[type='radio']").each(function()
+        {
+          if ($j(this).val() == '{!setBadgeSelect}')
+       // if ($j(this).val() == $j('#hiddenBadge').val())
+        {
+        $j(this).attr('checked',true);
+        }
+        });
+        
+        
+       customMessageChecked = $j('#contentWrapper').find("input[id*='customMessageCheckBox']");
+        if ((customMessageChecked).attr('checked'))
+        {
+         $j('.customMessageInput').show();
+        }
+        else
+        {
+        $j('.customMessageInput').hide();
+        }
+        
+		
+		$j("#contentWrapper").delegate("input[type='radio']","click",function()
+		{
+		var urlString = $j(this).closest('td').next().find('img').attr('src');
+		setBadgeID($j(this).val(),urlString);
+		}); 
+		
+		$j("#contentWrapper").delegate("input[id*='emailCheckbox']","click",function(){
+		if (this.checked)
+		{
+		$j('.customMessageCheckBox').show();
+		}
+		else
+		{
+		$j('.customMessageCheckBox').hide();
+		}
+		});
+		
+		$j("#contentWrapper").delegate("input[id*='customMessageCheckBox']","click",function(){
+		if (this.checked)
+		{
+		$j('.customMessageInput').show();
+		}
+		else
+		{
+		$j('.customMessageInput').hide();
+		}
+	
+		});
+	
+		
+
+		});
+          
+       
+             function startUpload() {
+          
+                     upload();
+                     
+                     setInterval(function() {
+                  this.window.location.href = window.location.href}, 3000);
+              }
+              
+                
+
+          function refreshScreen() {
+              var error = false;
+              
+              if($j('#errorMessages').find('.exceptionText').length != 0)
+              {
+                  error = true;
+              }
+
+              if (error != true) {
+                  setInterval(function() {
+                  this.window.location.href = window.location.href}, 1000);
+              }
+          }
+          
+            function createMemberBadges(type) {
+             var ids = "";
+             var mySplitResult;
+              $j("tbody[id*='blockTableCheckboxes']").find('[type=checkbox]').each(function() {
+                  if ($j(this).is(':checked')) {
+                 ids = ids + $j(this).attr('id') + ',';
+                  }
+              });
+             	   
+                   createMemberBadgesApex(type, ids);
+            }
+            
+             function setBadgeSelected() { 
+                var x = $j("select[id*='selected_badge']").val();
+                 setBadgeID(x);
+            }
+            
+              function setTestimonial() {
+                var x = $j("textarea[id*='testimonial']").val();
+                  setTestimonialText(x);
+            }
+            
+
+        </script>
+    </head>
+    
+    <style type="text/css">
+        .exceptionText
+        { 
+            font-style:italic;
+            font-size:16px; 
+            font-weight:normal; 
+            text-align:left;
+            color:red;
+        }
+        .radioColumn
+        {
+        margin-left: 10px;
+        width:50px;
+        }
+        
+    </style>
+    
+      <div id="errorMessages">
+            <apex:messages id="messages" styleClass="exceptionText"/>
+        </div>
+        
+    
+         <apex:form id="imageForm" >
+         
+           <apex:sectionHeader title="Issue Badge"/>
+      
+         
+          <input class="hidden" id="hiddenBadge" value="{!setBadgeSelect }"></input>
+         
+        <apex:pageBlock mode="edit" rendered="{!renderStep1}" >
+         <apex:pageBlockSection columns="4" collapsible="false" title="Issuing a badge to one or more Salesforce contacts, leads or contacts is easy. You’ll choose a badge to issue, select your recipients, add optional evidence and testimonial, and choose your notification options. Don’t yet have a badge to issue? Create one now." /> 
+         
+         </apex:pageBlock>
+        
+             <apex:actionFunction name="createMemberBadgesApex" action="{!createMemberBadgesApex}" rerender="dummy">
+           <apex:param name="firstParam"  assignTo="{!xRecordType}" value="" /> 
+           <apex:param name="secondParam"  assignTo="{!xSelectedIDs}" value="" /> 
+              </apex:actionFunction>
+             <apex:actionFunction name="setBadgeID" action="{!setBadgeIdEmpty}" rerender="dummy">
+           <apex:param name="firstParam"  assignTo="{!setBadgeSelect }" value="" /> 
+           <apex:param name="secondParam"  assignTo="{!setBadgeSelectImage }" value="" />
+              </apex:actionFunction>
+           
+             <apex:actionFunction name="setTestimonialText" action="{!setTestimonialEmpty}" rerender="dummy">
+           <apex:param name="firstParamx" assignTo="{!setTestimonialSelect}"  value="" />
+        </apex:actionFunction>
+        
+        <apex:outputPanel id="dummy" rendered="false"></apex:outputPanel>
+        
+         <apex:pageBlock id="uploadEvidence" rendered="{!renderStep3}">   
+  		<h1>Step 3: Select Delivery Options:</h1>
+  		  <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
+            <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
+  		
+  		<apex:pageBlockSection >
+    <br><h2>Would you like to notify recipients by email?</h2></br>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection columns="2" >
+    <apex:pageBlockSectionItem >
+     <apex:inputCheckbox id="emailCheckbox" value="{!emailChecked}"/><apex:outputlabel > Yes, send email notification (recommended)</apex:outputlabel>
+     </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+      
+    <apex:outputpanel styleClass="customMessageCheckBox" >
+    <apex:pageBlockSection columns="2"  >
+    <apex:pageBlockSectionItem >
+     <apex:inputCheckbox id="customMessageCheckBox" value="{!customMessageChecked}"/><apex:outputlabel > Include custom message?  (This appears in the mail notification to badge recipients)</apex:outputlabel>
+     </apex:pageBlockSectionItem>
+     </apex:pageBlockSection>
+     </apex:outputpanel>
+     
+      <apex:outputpanel styleClass="customMessageInput" >
+     <apex:pageBlockSection columns="2"  >
+     <apex:pageBlockSectionItem >
+      <apex:outputlabel >&nbsp;</apex:outputlabel><apex:inputTextarea value="{!customMessage}" styleClass="longInputText"/>
+       </apex:pageBlockSectionItem>
+     </apex:pageBlockSection>
+     </apex:outputpanel>
+     
+      
+     
+     <apex:pageBlock >
+     
+  		 
+  		 <apex:pageBlockSection columns="2">
+  		 
+  		 
+  		 <apex:outputpanel >
+  		  <br><h2>Include Evidence (Optional)</h2></br>
+  		 <br><h3>The link or file you attach will be included with every badge
+  		 issued as evidence of the recipient's achievement.
+        </h3></br>
+        
+        <br><h3>Enter a URL: http://
+        <apex:inputText value="{!urlLink}"></apex:inputText> 
+        </h3></br>
+        <apex:outputLabel value="- or -" for="file"/> 
+       
+      
+        <apex:inputFile value="{!document.body}" filename="{!document.name}" id="fileEvidence"/>
+      
+      
+  		 </apex:outputpanel>
+  		 
+  		  <apex:outputpanel >
+  		   
+       <br><h2>Include Testimonial (Optional)</h2></br>
+       <br></br>
+        <br><h3>The testimonial you include here will be included
+        with every badge.  Tell the world why this person deserves this badge
+        (Tip: Avoid using names or pronouns, since you may not know in
+        advance specifically who will earn this badge.)
+        </h3></br>
+        <br></br>
+  		
+  		 <apex:inputTextarea id="testimonial" value="{!setTestimonialSelect}" styleClass="longInputText"/> 
+  		
+  	
+  		 
+  		 </apex:outputpanel>
+  		 </apex:pageBlockSection>
+  		 
+  		
+           
+    </apex:pageBlock> 
+    
+  </apex:pageBlock> 
+  
+  <apex:pageBlock rendered="{!renderStep4}">
+  <apex:pageBlockButtons >
+                <apex:commandButton styleClass="nextStep" action="{!upload}" value="Continue"/>
+                  <apex:commandButton styleClass="backStep" action="{!backStep}" value="Back Step"/>
+            </apex:pageBlockButtons>
+  <h1>Step 4: Review</h1>
+  <!-- **********************ROW1*************************** -->
+  <apex:pageBlockSection columns="2">
+  <apex:outputpanel >
+  <apex:outputlabel >
+  	You are about to send the badge:
+  	<br><h1 class="badgeText">{!setBadgeSelectTitle}</h1></br>
+  </apex:outputlabel>
+  </apex:outputpanel>
+  
+   <apex:outputpanel >
+ <apex:image value="{!setBadgeSelectImage}" width="100" height="100"> </apex:image>
+  </apex:outputpanel>
+  
+  </apex:pageBlockSection>
+   <!-- **********************ROW2*************************** -->
+  <apex:pageBlockSection columns="2">
+  <apex:outputpanel >
+  <apex:outputlabel >
+  	Number of Recipients:
+  </apex:outputlabel>
+  </apex:outputpanel>
+  
+   <apex:outputpanel >
+  <apex:outputlabel >
+   <apex:outputtext value="{!recipientNumber}" ></apex:outputtext>
+
+
+  </apex:outputlabel>
+  </apex:outputpanel>
+
+    </apex:pageBlockSection>
+  <!-- **********************ROW3*************************** -->
+  <apex:pageBlockSection columns="2">
+  <apex:outputpanel >
+  <apex:outputlabel >
+  	Evidence:
+  </apex:outputlabel>
+  </apex:outputpanel>
+  
+   <apex:outputpanel >
+  	 <apex:outputtext value="{!document.Name}" >
+  </apex:outputtext>
+  </apex:outputpanel>
+
+    </apex:pageBlockSection>
+  <!-- **********************ROW4*************************** -->
+  <apex:pageBlockSection columns="2">
+  <apex:outputpanel >
+  <apex:outputlabel >
+  	Testimonial:
+  </apex:outputlabel>
+  </apex:outputpanel>
+  
+   <apex:outputpanel >
+  <apex:outputtext value="{!setTestimonialSelect}" >
+  </apex:outputtext>
+  </apex:outputpanel>
+
+    </apex:pageBlockSection>
+  <!-- **********************ROW5*************************** -->
+  <apex:pageBlockSection columns="2">
+  <apex:outputpanel >
+  <apex:outputlabel >
+  	Include notification email:
+  </apex:outputlabel>
+  </apex:outputpanel>
+  
+   <apex:outputpanel >
+  
+  	<apex:outputtext value="{!emailChecked}" >
+  </apex:outputtext>
+  </apex:outputpanel>
+
+    </apex:pageBlockSection>
+  <!-- **********************ROW6*************************** -->
+  <apex:pageBlockSection columns="2">
+  <apex:outputpanel >
+  <apex:outputlabel >
+  	Email Template:
+  </apex:outputlabel>
+  </apex:outputpanel>
+  
+   <apex:outputpanel >
+  <apex:outputlabel >
+  	default
+  </apex:outputlabel>
+  </apex:outputpanel>
+  
+    </apex:pageBlockSection>
+ 
+  </apex:pageBlock>
+   
+     <apex:pageBlock rendered="{!renderStep5}">
+    <h1>Congratulations!</h1>
+    <br><h3>Your badge has been queued for delivery.  It may take up to a few minutes to reach recipients
+        </h3></br>
+  <!-- **********************ROW1*************************** -->
+  <apex:pageBlockSection >
+  
+  <div id="container">
+  <div class="leftColumn"><img src="{!setBadgeSelectImage}" width="100" height="100"> </img></div>
+  <div class="rightColumn"><h1 class="badgeText">{!setBadgeSelectTitle}</h1></div>
+ <div class="clear"></div>
+  </div>
+  </apex:pageBlockSection>
+ 
+  </apex:pageBlock>
+   
+  
+   <apex:pageBlock rendered="{!renderStep1}">
+   <h1>Step 1: Select the badge you would like to issue</h1>
+    <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
+           
+   </apex:pageBlock>
+  
+   <apex:pageBlock rendered="{!renderStep1}">
+  <apex:pageBlockSection >
+   <apex:pageBlockSectionItem >
+    <apex:outputtext >Need a new Credly badge?</apex:outputtext>
+   <apex:outputLink value="/apex/ViewBadges?gotoAdd=Y" id="theLink">Create one now.</apex:outputLink>
+   </apex:pageBlockSectionItem>
+  <apex:pageBlockSectionItem >
+  <apex:inputText label="Name Contains" value="{!filterBadge}" /> 
+  <apex:commandButton value="Search for a Badge" action="{!searchBadge}" rerender="details" />
+  </apex:pageBlockSectionItem>
+  </apex:pageBlockSection>
+       
+                 <apex:outputPanel id="details">
+                  <apex:pageBlockTable value="{!badges}" var="o">
+                   <apex:column headerValue="Sel">
+                  <input class="badgeRadios" type="radio" value="{!o.id}" name="group1"></input>
+                  
+                  </apex:column>
+                  
+                    <apex:column headerValue="Badge">
+                       <apex:outputField value="{!o.image__c}" /> 
+                       
+                    </apex:column>
+                   <apex:column headerValue="Title">
+                       
+                         <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.title__c}" /> </apex:outputLink>
+                    </apex:column>
+                     <apex:column headerValue="Description">
+                        <apex:outputField value="{!o.description__c}" />
+                    </apex:column>
+                   
+                       <apex:column headerValue="ID">
+                        <apex:outputField value="{!o.credlyBadgeId__c}" /> 
+                         
+                    </apex:column>
+                    </apex:pageBlockTable>
+            </apex:outputPanel>
+
+      
+  </apex:pageBlock>
+  
+   <apex:pageBlock rendered="{!renderStep2}">
+     <h1>Step 2: Select Recipient(s)</h1> 
+            <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
+     <br><h2>To whom would you like to issue this badge? Choose one or more contacts, leads or accounts below, and then click “Continue”.</h2></br>
+     
+   </apex:pageBlock>
+    
+   <apex:pageBlock title="Filters"  id="selectFilters" rendered="{!renderStep2}">
+    <apex:outputText value="Name Contains:"/>
+    <apex:inputText label="Name Contains" value="{!filterName}"/>
+    <apex:outputText value="Record Type:  "/>
+    
+         
+ <apex:selectList value="{!recordType}" multiselect="false" size="1">
+            <apex:selectOptions value="{!recordTypes}"/>
+        </apex:selectList>
+        
+        <apex:commandButton value="Apply Filter" action="{!renderPage}" rerender="imageForm"/>
+        
+  </apex:pageBlock>
+  
+   <apex:pageBlock id="showDetailsContacts" title="Contacts" rendered="{!renderContacts}">
+   
+     <apex:pageBlockButtons >
+        
+        <apex:commandButton action="{!showUploadOnly}"   styleClass="nextStep" value="Continue"/>
+     
+      </apex:pageBlockButtons>
+    
+   <apex:outputPanel id="contacts"> 
+                <apex:pageBlockTable id="blockTableCheckboxesContacts" value="{!contacts}"
+                var="con">
+                    <apex:column headerValue="Select">
+                           <input class="contactCheckbox" type="checkbox" id="{!con.Id}" onclick="createMemberBadges('contact');" />
+                    </apex:column>
+                    <apex:column headerValue="Name">
+                       <apex:outputLink value="/{!con.id}"> <apex:outputField value="{!con.Name}" /></apex:outputLink> 
+                    </apex:column>
+                     <apex:column headerValue="Email">
+                       <apex:outputField value="{!con.email}" /> 
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+  </apex:pageBlock>
+  
+  <apex:pageBlock id="showDetailsAccounts" title="Accounts" rendered="{!renderAccounts}">
+  
+                <apex:pageBlockButtons >
+               
+       
+        <apex:commandButton action="{!showUploadOnly}" styleClass="nextStep" value="Continue"/>
+        
+      
+      </apex:pageBlockButtons>
+
+        <apex:outputPanel id="accounts">
+                <apex:pageBlockTable id="blockTableCheckboxesAccounts" title="Accounts" value="{!accounts}"
+                var="account">
+                    <apex:column headerValue="Select">
+                        <input class="accountCheckbox" type="checkbox" id="{!account.Id}" onclick="createMemberBadges('account');" />
+                    </apex:column>
+                    <apex:column headerValue="Name">
+                        <apex:outputLink value="/{!account.id}"><apex:outputField value="{!account.Name}" /> </apex:outputLink>
+                    </apex:column>
+                    
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+ 
+  </apex:pageBlock>
+  
+   <apex:pageBlock id="showDetailsLeads" title="Leads" rendered="{!renderLeads}">
+   
+     <apex:pageBlockButtons >
+        
+        <apex:commandButton action="{!showUploadOnly}"  styleClass="nextStep" value="Continue"/>
+      </apex:pageBlockButtons>
+    
+   <apex:outputPanel id="leads">
+                <apex:pageBlockTable id="blockTableCheckboxesLeads" value="{!leads}"
+                var="con">
+                    <apex:column headerValue="Select">
+                           <input class="leadCheckbox" type="checkbox" id="{!con.Id}" onclick="createMemberBadges('lead');" />
+                    </apex:column>
+                    <apex:column headerValue="Name">
+                       <apex:outputLink value="/{!con.id}"><apex:outputField value="{!con.Name}" /> </apex:outputLink>
+                    </apex:column>
+                      <apex:column headerValue="Email">
+                       <apex:outputField value="{!con.email}" /> 
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+  </apex:pageBlock>
+  
+ 
+  
+   
+  </apex:form> 
+
+</apex:page>

@@ -13,6 +13,8 @@
 
               $j(document).ready(function() {
              $j('#my-badge').hide();
+             
+             $j.support.cors = true;
             
              
           });
@@ -73,22 +75,34 @@ function getAutoValues() {
     data.access_token = '8db553d783eae0f41a8f0db8a1cc0461981cca941e5ef44b4a8efb991afb08b32cce47c0cbd1c413b37336f91d0f1f20e68c0a588d75c0735397c0dcbfdbbc15';
     $j.ajax({
         type: 'GET',
-        url: 'https://api.credly.com/v1.1/me/badges/categories?query=' + search.trim() + '&page=1&per_page=5&order_direction=ASC',
-        data: data,
+        url: 'https://api.credly.com/v1.1/me/badges/categories?query=' + search.trim() + '&page=1&per_page=5&order_direction=ASC&access_token=8db553d783eae0f41a8f0db8a1cc0461981cca941e5ef44b4a8efb991afb08b32cce47c0cbd1c413b37336f91d0f1f20e68c0a588d75c0735397c0dcbfdbbc15',
+         contentType: 'application/json',
+         crossDomain: true,
+           statusCode: {
+    		200: function(data) {
+    		}
+  			},
+         Origin: 'https://c.na15.visual.force.com',
          headers: {
-         "Authorization":"Basic amxlZ2FjeUBzdWRkZW5saW5rLm5ldDpicjU0OWJyNTQ5", 
-        "X-Api-Key": "7250f9bf9c785dfba205787562e3cd38",
-        "X-Api-Secret": "v4+6/iFAL56YLjP7gEmapVzP4dkpWUzHBiwdOU2nxJZe63PndtMjGYzPPSf13k3yZtD79ycIJ58aLivRbG4vujvcT2yzooWE5KApQZM5BNNiXBCvHEInHmI891La3h5rEyg+zjEFLSxcf7y/zmXfI9HU7EwGtuCk8sosRjJ4I1s="
+        "X-Api-Secret": "v4+6/iFAL56YLjP7gEmapVzP4dkpWUzHBiwdOU2nxJZe63PndtMjGYzPPSf13k3yZtD79ycIJ58aLivRbG4vujvcT2yzooWE5KApQZM5BNNiXBCvHEInHmI891La3h5rEyg+zjEFLSxcf7y/zmXfI9HU7EwGtuCk8sosRjJ4I1s=",
+         "X-Api-Key": "7250f9bf9c785dfba205787562e3cd38",
     },
         
-      //  beforeSend: function (xhr) {
-       //     xhr.setRequestHeader("Authorization", "Basic amxlZ2FjeUBzdWRkZW5saW5rLm5ldDpicjU0OWJyNTQ5");
-       //     xhr.setRequestHeader("X-Api-Key", "7250f9bf9c785dfba205787562e3cd38");
-      //      xhr.setRequestHeader("X-Api-Secret", "v4+6/iFAL56YLjP7gEmapVzP4dkpWUzHBiwdOU2nxJZe63PndtMjGYzPPSf13k3yZtD79ycIJ58aLivRbG4vujvcT2yzooWE5KApQZM5BNNiXBCvHEInHmI891La3h5rEyg+zjEFLSxcf7y/zmXfI9HU7EwGtuCk8sosRjJ4I1s=");
-      //  },
-        success: (function (data) {
+        success: function (data) {
             alert(data);
-        })
+        },
+        
+         done: function (data) {
+            alert(data);
+        },
+        
+        error: function (data) {
+            alert(data);
+        },
+        
+         complete: function (data) {
+            alert(data);
+        }
     });
 
 

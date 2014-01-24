@@ -140,7 +140,6 @@ public with sharing class CredlyJSONCalls {
 
 // Send the request, and return a response
     HttpResponse res = h.send(req);
-    system.debug(res.getBody());
     return res.getBody(); 
    }
  

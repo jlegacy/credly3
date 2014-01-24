@@ -128,6 +128,6 @@
     <div id="spinner" class="spinImage"><apex:image styleClass="spinImage" id="spinImage" value="{!$Resource.loading_gif}"/></div>
     <div id="spinnerMessage" class="spinMessage pbBody"><h2>Synch Jobs Submitted</h2></div>
     <!--   <apex:commandButton action="{!synchMemberBadges}" value="Synch Member Badges" rerender="addForm"/> -->
-    <apex:outputLink value="https://na15.salesforce.com/a09" id="theLink">Number of Pages to Retrieve</apex:outputLink>
+   <!--  <apex:outputLink value="https://na15.salesforce.com/a09" id="theLink">Number of Pages to Retrieve</apex:outputLink> -->
     </apex:form>
 </apex:page>

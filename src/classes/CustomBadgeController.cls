@@ -165,7 +165,7 @@ public with sharing class CustomBadgeController {
 
   
   public String test { get; set; }
-
+ 
     public String title { get; set; }
     
       public String short_description { get; set; }

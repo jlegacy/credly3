@@ -9,6 +9,8 @@
         <script>
               var $j = jQuery.noConflict();
         $j(document).ready(function() {
+        hideContainer();
+        
         
         //if using the back button then restore selected ids
         if ('{!renderStep2}' && '{!xSelectedIDs}'.trim().length > 0)
@@ -48,6 +50,7 @@
 		
 		$j("#contentWrapper").delegate("input[type='radio']","click",function()
 		{
+		showContainer();
 		var urlString = $j(this).closest('td').next().find('img').attr('src');
 		setBadgeID($j(this).val(),urlString);
 		}); 
@@ -88,6 +91,18 @@
                   this.window.location.href = window.location.href}, 3000);
               }
               
+          function hideContainer()
+          {
+          $j('#loading-container').hide();
+           $j('#content-container').hide();
+       
+          }
+          
+           function showContainer()
+          {
+          $j('#loading-container').show();
+            $j('#content-container').show();
+          }
                 
 
           function refreshScreen() {
@@ -105,6 +120,7 @@
           }
           
             function createMemberBadges(type) {
+           containerShow();
              var ids = "";
              var mySplitResult;
               $j("tbody[id*='blockTableCheckboxes']").find('[type=checkbox]').each(function() {
@@ -144,15 +160,65 @@
         margin-left: 10px;
         width:50px;
         }
+   .content-container {
+ 	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: 61px;
+	margin-left: -43px;
+	font-size: 25px;
+	display:none;
+  }
+    .loading-container {
+    z-index:100;
+	position:absolute;
+	top:0;
+ 	right:0;
+	bottom:0;
+	left:0;
+	display:none;
+	background-image:url({!$Resource.ajaxloader});
+	background-repeat:no-repeat;
+	background-attachment:fixed;
+	background-position:center; 
+}
+.loading-container:before {
+	z-index:100;
+	position:absolute;
+	width:100%;
+	height:100%;
+	line-height:480px;
+	text-align: center;
+	vertical-align: middle;
+	font-size:25px;
+	font-weight:bold;
+	color:black;
+	text-align:center;
+	background:rgba(70, 70, 70, 0.9);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	content: ' ';
+	opacity:0.4;
+	filter:alpha(opacity=40);
+	padding-top: 89px;
+}
         
     </style>
+    
+  
     
       <div id="errorMessages">
             <apex:messages id="messages" styleClass="exceptionText"/>
         </div>
         
+             
+           <div id="loading-container" class="loading-container"></div>
+	<div id="content-container" class="content-container">Loading</div>
+        
     
          <apex:form id="imageForm" >
+    
          
            <apex:sectionHeader title="Issue Badge"/>
       
@@ -164,11 +230,11 @@
          
          </apex:pageBlock>
         
-             <apex:actionFunction name="createMemberBadgesApex" action="{!createMemberBadgesApex}" rerender="dummy">
+             <apex:actionFunction name="createMemberBadgesApex" action="{!createMemberBadgesApex}" rerender="dummy" oncomplete="hideContainer();">
            <apex:param name="firstParam"  assignTo="{!xRecordType}" value="" /> 
            <apex:param name="secondParam"  assignTo="{!xSelectedIDs}" value="" /> 
               </apex:actionFunction>
-             <apex:actionFunction name="setBadgeID" action="{!setBadgeIdEmpty}" rerender="dummy">
+             <apex:actionFunction name="setBadgeID" action="{!setBadgeIdEmpty}" rerender="showNext" oncomplete="hideContainer();">
            <apex:param name="firstParam"  assignTo="{!setBadgeSelect }" value="" /> 
            <apex:param name="secondParam"  assignTo="{!setBadgeSelectImage }" value="" />
               </apex:actionFunction>
@@ -374,7 +440,7 @@
   </apex:pageBlock>
    
   
-   <apex:pageBlock rendered="{!renderStep1}">
+   <apex:pageBlock rendered="{!renderStep1}" id="showNext">
    <h1>Step 1: Select the badge you would like to issue</h1>
     <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
            
@@ -388,7 +454,7 @@
    </apex:pageBlockSectionItem>
   <apex:pageBlockSectionItem >
   <apex:inputText label="Name Contains" value="{!filterBadge}" /> 
-  <apex:commandButton value="Search for a Badge" action="{!searchBadge}" rerender="details" />
+  <apex:commandButton value="Search for a Badge" onclick="showContainer()" action="{!searchBadge}" rerender="details" oncomplete="hideContainer();" />
   </apex:pageBlockSectionItem>
   </apex:pageBlockSection>
        
@@ -438,7 +504,7 @@
             <apex:selectOptions value="{!recordTypes}"/>
         </apex:selectList>
         
-        <apex:commandButton value="Apply Filter" action="{!renderPage}" rerender="imageForm"/>
+        <apex:commandButton value="Apply Filter" action="{!renderPage}" rerender="imageForm" oncomplete="hideContainer();"/>
         
   </apex:pageBlock>
   

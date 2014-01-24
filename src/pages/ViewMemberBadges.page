@@ -21,6 +21,17 @@ function printReport()
 {
 window.print();  
 }
+  function hideContainer()
+          {
+          $j('#loading-container').hide();
+           $j('#content-container').hide();
+          }
+          
+           function showContainer()
+          {
+          $j('#loading-container').show();
+           $j('#content-container').show();
+          }
 function refreshScreen() {
     var error = false;
 
@@ -56,11 +67,58 @@ function refreshScreen() {
     margin-left:15px;
    
     }
+    
+     .content-container {
+ 	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: 61px;
+	margin-left: -43px;
+	font-size: 25px;
+	display:none;
+  }
+      .loading-container {
+    z-index:100;
+	position:absolute;
+	top:0;
+ 	right:0;
+	bottom:0;
+	left:0;
+	display:none;
+	background-image:url({!$Resource.ajaxloader});
+	background-repeat:no-repeat;
+	background-attachment:fixed;
+	background-position:center; 
+}
+.loading-container:before {
+	z-index:100;
+	position:absolute;
+	width:100%;
+	height:100%;
+	line-height:480px;
+	text-align: center;
+	vertical-align: middle;
+	font-size:25px;
+	font-weight:bold;
+	color:black;
+	text-align:center;
+	background:rgba(70, 70, 70, 0.9);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	content: ' ';
+	opacity:0.4;
+	filter:alpha(opacity=40);
+	padding-top: 89px;
+}
     </style>
       
     <div id="errorMessages">
             <apex:messages id="messages" styleClass="exceptionText"/>
         </div>
+        
+    <div id="loading-container" class="loading-container"></div>
+	<div id="content-container" class="content-container">Loading</div>
         
       <apex:sectionHeader title="Create Member Badge Reports"/>
       <apex:pageBlock mode="edit" >
@@ -83,7 +141,7 @@ function refreshScreen() {
             <apex:selectOptions value="{!recordTypes}"/>
         </apex:selectList>
         
-        <apex:commandButton value="Apply Filter" action="{!renderPage}" />
+        <apex:commandButton value="Apply Filter" onclick="showContainer();" action="{!renderPage}" rerender="addForm" oncomplete="hideContainer();"/>
     <!-- <apex:commandButton value="Create PDF"  action="{!createPDF}" rendered="false"/> -->
         <apex:commandButton value="Print"  onclick="printReport();" rendered="true"/> 
         <apex:commandButton value="Create Excel" action="{!createExcel}"/>

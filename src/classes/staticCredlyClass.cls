@@ -76,6 +76,9 @@ public with sharing class staticCredlyClass {
 	static public Token getToken()
 	{
 		Token token = new Token(); 
+		token.authKey = ' ';
+		token.APIsecret = ' ';
+		token.APIkey = ' ';
 	
 		token_data__c[] myToken = [SELECT user_name_t__c, authKey_data_t__c, apiKey_data_t__c, apiSecret_data_t__c FROM token_data__c WHERE user_name_t__c = :UserInfo.getUserId()];
 	    for (token_data__c a : myToken)
@@ -91,7 +94,6 @@ public with sharing class staticCredlyClass {
 	   }
 	static public void setToken(Token passedToken)
 	{
-	    system.debug(passedToken);
 	    //delete token
 	    token_data__c[] myToken = [SELECT user_name_t__c, authKey_data_t__c FROM token_data__c WHERE user_name_t__c = :UserInfo.getUserId()];
 	    try{

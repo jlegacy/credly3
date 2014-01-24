@@ -1,7 +1,7 @@
 public with sharing class BadgeContactController {
     
       public BadgeContactController() { 
-
+		
 		getOnce = true;
         renderStep1 = true;
         renderStep2 = false;
@@ -53,6 +53,7 @@ public with sharing class BadgeContactController {
     
       public PageReference nextStep() { 
         step = step + 1;
+        system.debug(step);
         
             if (step == 1)
         {
@@ -115,7 +116,9 @@ public with sharing class BadgeContactController {
         {
         setBadgeSelectTitle = y.title__c;
         }
+        
         return null;
+        
     }
     
     
@@ -714,8 +717,7 @@ public with sharing class BadgeContactController {
 
     public ApexPages.StandardSetController getBadge {
         get {
-            //  system.debug(filterBadge);
-            
+        
                if (((filterBadge != null) || (filterBadge.trim().length() != 0))) 
                {
                filterBadgeSearch = filterBadge;
@@ -737,10 +739,7 @@ public with sharing class BadgeContactController {
     // Initialize getBadge and return a list of records
     
     public List < badge__c > getBadges() {
-    	if (badgeList == null)
-    	{
     		badgeList = getBadge.getRecords();
-    	}
     	return badgeList;
     }
 

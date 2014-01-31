@@ -1,5 +1,6 @@
 @isTest(seeAllData=true)
 public with sharing class testBadgeRules {
+
 static testMethod void testController() 
 	{
         viewBadgeRulesController controller = new viewBadgeRulesController(); 

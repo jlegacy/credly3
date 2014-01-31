@@ -5,6 +5,7 @@ public with sharing class BadgeTokenController {
         public String name{get;set;}
         public String password{get;set;}
          public String authKey{get;set;}
+         public String APItoken{get;set;}
          public Boolean checkCredly{get;set;}
             public String successMessage{get;set;}
              public Boolean success{get;set;}
@@ -14,20 +15,17 @@ public with sharing class BadgeTokenController {
        authKey = ' ';
        APIsecret = ' ';
        APIkey = ' ';
+       APItoken = ' ';
        success = false;
-       String authName;
-       List<String> temp;
+     
       
        staticCredlyClass.Token j = staticCredlyClass.getToken(); 
        
        authKey = j.authKey; 
        APIsecret = j.APIsecret;
        APIkey = j.APIkey; 
-       
-       authName = EncodingUtil.base64Decode(j.authKey).toString();
-       temp = authName.split(':');
-       
-       name = temp[0]; 
+        APItoken = j.APItoken; 
+       name = j.UserName;
        
        }
        public PageReference checkCredly()
@@ -42,8 +40,11 @@ public with sharing class BadgeTokenController {
          }
          else
          {
+            APItoken = securityToken;
+            saveToken();
             success = true;
             successMessage = 'Credly account successfully linked';
+            
          }
          
          return null;
@@ -56,6 +57,7 @@ public with sharing class BadgeTokenController {
          j.authKey = authKey;
          j.APIkey = APIkey;
          j.APISecret = APISecret;
+         j.APItoken = APItoken;
          staticCredlyClass.setToken(j); 
          
          checkCredly = true;

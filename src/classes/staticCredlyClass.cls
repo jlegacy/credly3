@@ -71,23 +71,37 @@ public with sharing class staticCredlyClass {
 		public String authKey;
 		public String APIkey;
 		public String APIsecret;
+		public String APItoken;
+		public String UserName;
 	}
 	
 	static public Token getToken()
 	{
+		 
+       
+       String name; 
+       List<String> temp;
+       String authName;
+		
+		
 		Token token = new Token(); 
 		token.authKey = ' ';
 		token.APIsecret = ' ';
 		token.APIkey = ' ';
+		token.APItoken = ' ';
+		token.UserName= ' ';
 	
-		token_data__c[] myToken = [SELECT user_name_t__c, authKey_data_t__c, apiKey_data_t__c, apiSecret_data_t__c FROM token_data__c WHERE user_name_t__c = :UserInfo.getUserId()];
+		token_data__c[] myToken = [SELECT user_name_t__c, apiToken_data_t__c, authKey_data_t__c, apiKey_data_t__c, apiSecret_data_t__c FROM token_data__c WHERE user_name_t__c = :UserInfo.getUserId()];
 	    for (token_data__c a : myToken)
 	    {
 	
 		token.authKey = a.authKey_data_t__c;
 		token.APIsecret = a.apiSecret_data_t__c;
 		token.APIkey = a.apiKey_data_t__c;
-	
+		token.APItoken = a.apiToken_data_t__c;
+		authName = EncodingUtil.base64Decode(a.authKey_data_t__c).toString();
+        temp = authName.split(':');
+        token.UserName = temp[0];
 	    }
 	     
 	    return token;
@@ -103,7 +117,7 @@ public with sharing class staticCredlyClass {
 			}
 	    
 	    //create new one
-	    token_data__c newToken = new token_data__c(user_name_t__c = UserInfo.getUserId(), authKey_data_t__c = passedToken.authKey, apiKey_data_t__c = passedToken.APIkey, APIsecret_data_t__c = passedToken.APIsecret);
+	    token_data__c newToken = new token_data__c(user_name_t__c = UserInfo.getUserId(), authKey_data_t__c = passedToken.authKey, apiKey_data_t__c = passedToken.APIkey, APIsecret_data_t__c = passedToken.APIsecret,apiToken_data_t__c = passedToken.APItoken);
 		try {
     		insert newToken;
 			} catch (DmlException e) {
@@ -115,6 +129,13 @@ public with sharing class staticCredlyClass {
 		static public PageReference tokenPage()
 	{
 		return Page.ViewBadgeToken;
+	}
+	
+	
+	public static void synchBadgesToCredly()
+	{
+	 batchSyncBadges a = new batchSyncBadges();
+       Database.executeBatch(a, 8);
 	}
 	   
 }

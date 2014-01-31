@@ -142,8 +142,8 @@
         </apex:pageBlockSectionItem> 
      
          <apex:pageBlockSectionItem >
-          <apex:outputLabel value="Authorization Key"/>
-          <apex:inputText styleClass="credlyToken" value="{!authKey}" id="authKey"/>
+          <apex:outputLabel value="Credly Token"/>
+          <apex:inputText styleClass="credlyToken" value="{!APItoken}" id="apiToken"/>
         </apex:pageBlockSectionItem>
        
         </apex:pageBlockSection> 

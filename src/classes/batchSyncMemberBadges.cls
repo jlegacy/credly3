@@ -61,7 +61,9 @@ global class batchSyncMemberBadges implements
      }
      		else
      		{
-     			 securityToken = CredlyJSONCalls.authenticate(CredlyJSONCalls.getURL() + 'authenticate');
+     			 staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+ 	     		securityToken = j.APItoken;
+     			 
      }
    
     

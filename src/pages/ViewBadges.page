@@ -1,5 +1,5 @@
-<apex:page controller="CustomBadgeController"> 
-    
+<apex:page controller="CustomBadgeController"  action="{!dmlOperation}"> 
+
     <head>
            <link rel="stylesheet" type="text/css" href="{!$Resource.jquerylightnesscss}" />
             <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
@@ -14,9 +14,8 @@
               $j(document).ready(function() {
              $j('#my-badge').hide();
              
-             $j.support.cors = true;
-            
-             
+            // $j.support.cors = true;
+        
           });
           
        
@@ -303,6 +302,13 @@ function getAutoValues() {
     </apex:pageBlock>
 
         <apex:pageBlock id="detailsBlock" rendered="{!detailsBlock}">
+        <apex:outputLabel styleClass="smallGreen" >Page {!currentPage} of {!numberOfPages} </apex:outputLabel>
+        <br></br>
+         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofRecords} Total Records</apex:outputLabel>
+         
+        <apex:commandButton action="{!prev}" value="Prev" id="PrevButton" rerender="detailsBlock"/> 
+        <apex:commandButton action="{!next}" value="Next" id="nextButton" rerender="detailsBlock"/>
+      
             <apex:outputPanel id="details">
                   <apex:pageBlockTable value="{!badges}" var="o">
                     <apex:column headerValue="Image">

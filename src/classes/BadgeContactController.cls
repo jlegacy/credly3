@@ -22,7 +22,9 @@ public with sharing class BadgeContactController {
         filterBadge = '';
           String returnData;
           
-         securityToken = CredlyJSONCalls.authenticate(CredlyJSONCalls.getURL() + 'authenticate');   
+           staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+ 	     securityToken = j.APItoken;
+           
     }
     
     public List < badge__c > badgeList {get;set;}

@@ -142,5 +142,140 @@ public with sharing class CredlyJSONCalls {
     HttpResponse res = h.send(req);
     return res.getBody(); 
    }
- 
-}
+   
+   public static Integer getCredlyId()
+   {
+   	
+    String returnData;
+  	String createURL;
+  	String errMessage;
+  	String stsMessage;
+  	String xbadgeURL;
+  	String securityToken;
+   	Integer credlyId;
+   	String userName;
+   	String temp;
+   	String name;
+   	
+   
+   	//get User Id//
+   
+   	   staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+      
+ 	     //userName 
+ 	   
+      name = j.UserName;
+ 	     
+   	
+   	   // Retrieve Credly Id //
+       Map<String, String> mBadge = new Map<String, String>();
+       mBadge.put('email', name); 
+   	
+   	 createURL = CredlyJSONCalls.createURLString(mBadge);
+      
+     returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL() + 'members?' + createURL);  
+        //parseResults
+         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+     	if (obj.meta.status.compareTo('OK') == 0)
+     	  	{
+     	     CredlyJSON2ApexMemberInfo obj2 = CredlyJSON2ApexMemberInfo.parse(returnData);
+      	  	CredlyId = (obj2.data[0].id);
+     	  	} 
+     	  	else
+     	  	{
+     	  		CredlyId = 0;
+     	  	}
+         
+   	return credlyId;
+   }
+  
+   
+   public static List<CredlyJSON2ApexMyBadges.Data> getMyBadges()
+   {
+   	String returnData;
+  	String createURL;
+  	String errMessage;
+  	String stsMessage;
+  	String xbadgeURL;
+  	String securityToken;
+   	Integer credlyId;
+   	String userName;
+   	String temp;
+   	String name;
+   	
+   	List<CredlyJSON2ApexMyBadges.Data> myBadges = new List<CredlyJSON2ApexMyBadges.Data>();
+   	
+   	 staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+     securityToken = j.APItoken;
+   	
+   	   Map<String, String> mBadge = new Map<String, String>();
+      mBadge.put('access_token',securityToken);  
+      mBadge.put('page','1');
+      mBadge.put('per_page','9999');  
+        
+      createURL = CredlyJSONCalls.createURLString(mBadge);
+        
+           //post badge to credly
+           
+         
+         returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'me/badges/created?' + createURL);  
+        
+          //parseResults
+         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+     	if (obj.meta.status.compareTo('OK') == 0)
+     	  	{
+     	     CredlyJSON2ApexMyBadges obj2 = CredlyJSON2ApexMyBadges.parse(returnData);
+      	  	myBadges = obj2.Data;
+      	  //	for (CredlyJSON2ApexMyBadges.Data i : myBadges) {
+    	//	System.debug(i.id); 
+     	  //	}
+     	  	} 
+   
+     	  	System.debug(myBadges);
+     	  	return myBadges;
+        }
+        
+   public static List<CredlyJSON2ApexMyIssuedBadges.Data> getMyIssuedBadges()
+   {
+   	String returnData;
+  	String createURL;
+  	String errMessage;
+  	String stsMessage;
+  	String xbadgeURL;
+  	String securityToken;
+   	Integer credlyId;
+   	String userName;
+   	String temp;
+   	String name; 
+   	
+   	List<CredlyJSON2ApexMyIssuedBadges.Data> myIssuedBadges = new List<CredlyJSON2ApexMyIssuedBadges.Data>();
+   	
+   	 staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+     securityToken = j.APItoken;
+   	
+   	   Map<String, String> mBadge = new Map<String, String>();
+      mBadge.put('access_token',securityToken);  
+      mBadge.put('page','1');
+      mBadge.put('per_page','9999');  
+        
+      createURL = CredlyJSONCalls.createURLString(mBadge);
+        
+           //post badge to credly
+           
+         returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'me/badges/given?' + createURL);  
+        
+          //parseResults
+         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+     	if (obj.meta.status.compareTo('OK') == 0)
+     	  	{
+     	     CredlyJSON2ApexMyIssuedBadges obj2 = CredlyJSON2ApexMyIssuedBadges.parse(returnData);
+      	  	myIssuedBadges = obj2.Data;
+     	  	} 
+     	  	return myIssuedBadges;
+        }
+        
+        public static void CreateMyBadgesinSalesforce(CredlyJSON2ApexMyBadges Data)
+        {
+        	
+        }
+        }

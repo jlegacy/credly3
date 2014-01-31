@@ -3,14 +3,29 @@ public with sharing class CustomBadgeController {
     
     public String securityToken {get; set;}
     
+    public Integer totalNumberofRecords{get;set;}
+    public Integer pageLimit{get;set;}
+    public Integer pageOffset{get;set;}
+    public Integer numberOfPages{get; set;}
+    public Integer currentPage{get; set;}
+    public ID myID {get;set;}
+    public List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges {get;set;}
+    public set<String> myCredlyBadgeIDs {get;set;}
+     public set<String> mySalesForceBadgeIDs {get;set;}
+    
     public CustomBadgeController () {
+    	
+    Double j; 
+    	
+     myId = UserInfo.getUserId();
      String returnData;
    
      renderBadgeBuilder = true;
      renderUpload = false;
      
      //get security token//
-     securityToken = CredlyJSONCalls.authenticate(CredlyJSONCalls.getURL() + 'authenticate');
+      staticCredlyClass.Token tk = staticCredlyClass.getToken(); 
+ 	  securityToken = tk.APItoken;
   
        addBlock = false;
        showIframe = false;
@@ -19,16 +34,18 @@ public with sharing class CustomBadgeController {
         giveableType = 'false';
         xbadgeURL = '';
         counter = 0;
+        pageLimit = 20;
+        pageOffset = 0;
+        currentPage = 1;
         
         String c = ApexPages.currentPage().getParameters().get('gotoAdd');
+     
         
         if (c == 'Y')
         {
             addBadge();
         }
-        
-      
-       
+     
     }
    public String giveableType {
         get;
@@ -57,6 +74,28 @@ public with sharing class CustomBadgeController {
      public Boolean showIframe {
         get;
         set;
+    }
+    
+    public pageReference dmlOperation()
+    {
+    		//Call Credly API to get your badges//
+        	getMyBadgesFromCredly();
+        	getCredlyIDsFromSalesforce();
+        	synchBadgesFromCredly();
+       
+         totalNumberofRecords = myCredlyBadgeIDs.size();
+         
+         numberOfPages  = totalNumberofRecords / pageLimit;
+         
+   
+         if (numberOfPages < 1)
+         {
+         numberOfPages = 1;
+         }
+         
+         
+     
+        return null;
     }
     
     public pageReference setImageAction()
@@ -207,8 +246,9 @@ public with sharing class CustomBadgeController {
   String stsMessage;
   String encodedImage; 
   
+  badge__c insertUser = new badge__c();
   
-
+ 
   if (xbadgeURL.trim().length() == 0)
   {
      ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Badge Missing - Use Badge Builder to create.'));
@@ -231,7 +271,7 @@ public with sharing class CustomBadgeController {
   
    try {
         
-        badge__c insertUser = new badge__c();
+        
         insertUser.criteria__c = criteria;
         insertUser.description__c = description;
          insertUser.expire_number__c = integer.valueof(is_expireNumber);
@@ -259,6 +299,10 @@ public with sharing class CustomBadgeController {
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating new badge.'));
             return null;
         }
+        
+    //Submit Job to Send Badges//
+    staticCredlyClass.synchBadgesToCredly();
+ 
  
     addBlock = false; 
     showIframe = false;
@@ -270,20 +314,19 @@ public with sharing class CustomBadgeController {
   
    // ApexPages.StandardgetBadgetroller must be instantiated
     // for standard list controllers
-    public ApexPages.StandardSetController getBadge {
+    public List<badge__c> getBadge {
         get {
-            if(getBadge == null) {
-                getBadge = new ApexPages.StandardSetController(Database.getQueryLocator(
-                    [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c from badge__c]));
-            }
-            return getBadge;
+         
+         //   List<badge__c> badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where credlyBadgeId__c IN :myBadgeIDs  order by title__c LIMIT :pageLimit OFFSET :pageOffset];
+          List<badge__c> badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where (credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId) order by title__c];   
+            return badges;
         }
-        set;
-    }
+        set; 
+    } 
 
     // Initialize getBadge and return a list of records
     public List<badge__c> getBadges() {
-        return (List<badge__c>) getBadge.getRecords();
+        return (List<badge__c>) getBadge;
     }
     
     public pageReference addBadge() {
@@ -292,5 +335,181 @@ public with sharing class CustomBadgeController {
         detailsBlock = false;
         return null;
     }
+     public pageReference next() {
+  
+       pageOffset = pageOffset + pageLimit;
+       currentPage = currentPage + 1;
+       if (currentPage > numberOfPages)
+       {
+       	currentPage = 1;
+       	pageOffset = 0;
+       }
+       
+       
+       getBadges();
+        return null;
+    }
+     public pageReference prev() {
+  
+       pageOffset = pageOffset - pageLimit;
+       currentPage = currentPage - 1;
+       
+       if (currentPage <= 0)
+       {
+       	pageOffset = 0;
+       	currentPage = 1;
+       }
+       
+       getBadges();
+       
+        return null;
+    }
+   
+   public void getMyBadgesFromCredly()
+   { 
+   	myCredlyBadgeIDs = new set<String>();
+   	myCredlyBadges = CredlyJSONCalls.getMyBadges();
+   	
+    for (CredlyJSON2ApexMyBadges.Data i : myCredlyBadges) 
+    	{
+    		myCredlyBadgeIDs.add(String.valueOf(i.id));
+     	}
+}
 
+  public void getCredlyIDsFromSalesforce()
+   { 
+    List<badge__c> myIds = [select credlyBadgeId__c from badge__c where credlyBadgeId__c <> null];
+   	mySalesForceBadgeIDs = new set<String>();
+   	
+   	for (badge__c i: myIds)
+   	{
+   			mySalesForceBadgeIDs.add(String.valueOf(i.credlyBadgeId__c));
+   	}
+   	
+   }
+
+public void synchBadgesFromCredly()
+{
+	boolean check = false;
+	
+	List<badge__c> newBadges = new List<badge__c>();
+	
+	//loop through credlyList and compare to Salesforce list 
+	
+	   	  	for ( CredlyJSON2ApexMyBadges.Data item : myCredlyBadges) {
+	   	  		check = false;
+	   	  		if (mySalesForceBadgeIDs.contains(String.valueOf(item.id)))
+	   	  		{
+	   	  		check=true;
+	   	  		} 
+	   	  		
+	   	  		if (check == false)
+	   	  		{
+
+      	badge__c insertBadges = new badge__c();
+
+        insertBadges.document_id__c = string.valueof(item.image_url);
+        
+         insertBadges.criteria__c = ''; 
+         insertBadges.description__c = ''; 
+         insertBadges.expires_in__c = 319999999;  
+         insertBadges.is_giveable__c = string.valueof(item.is_giveable); 
+         
+         if (item.short_description  == null)
+         {
+         	insertBadges.short_description__c = 'none';	
+         }
+         else
+         {
+         	insertBadges.short_description__c = string.valueof(item.short_description);	
+         }
+         
+         insertBadges.title__c = string.valueof(item.title);
+         insertBadges.credlyBadgeId__c = string.valueof(item.id);
+         
+        
+         newBadges.add(insertBadges);
+         
+    }
+	   	  			
+	   	  		}
+	   	  if (newBadges <> null)
+	   	  {	
+	   	    insert newBadges;
+	   	  }
+	   	  		
+    		
+     	  	}
+	
+
+/*public void synchBadgeToCredly(badge__c badge)
+{
+    String returnData;
+  	String createURL;
+  	String badgeID;
+  	String errMessage;
+  	String stsMessage;
+  	String encodedImage; 
+  	String xbadgeURL;
+  	String securityToken;
+    
+    staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+      
+ 	securityToken = j.APItoken;
+ 
+  	    
+    List<badge__c> badgeList = new List<badge__c>();
+   // for (badge__c badge : myBadge) {
+    // get the image data
+     	
+     	if (badge.upload_file_id__c == null)
+     	{
+     		
+     		encodedImage = CredlyJSONCalls.getCredlyImage(badge.document_id__c);
+     		 	
+     	}
+     	else
+     	{
+     	encodedImage = CredlyJSONCalls.getDocumentBlob(badge.upload_file_id__c);	
+     	}
+     
+        if (encodedImage != null && securityToken != null)
+        {
+        // Build Credly Badge //
+       Map<String, String> mBadge = new Map<String, String>();
+       mBadge.put('attachment', encodedImage); 
+       mBadge.put('title', badge.title__c);
+       mBadge.put('short_description', badge.short_description__c = (badge.short_description__c == null) ? ' ' : badge.short_description__c); 
+       mBadge.put('description', badge.description__c = (badge.description__c == null) ? ' ' : badge.description__c); 
+       mBadge.put('categories',   badge.categories__c = (badge.categories__c == null) ? ' ' : badge.categories__c); 
+       mBadge.put('criteria', badge.criteria__c = (badge.criteria__c == null) ? ' ' : badge.criteria__c); 
+       mBadge.put('is_giveable', badge.is_giveable__c = (badge.is_giveable__c == null) ? ' ' : badge.is_giveable__c); 
+       mBadge.put('expires_in', String.valueOf(badge.expires_in__c)); 
+        mBadge.put('access_token',securityToken);  
+        
+        createURL = CredlyJSONCalls.createURLString(mBadge);
+        
+           //post badge to credly
+           
+       
+         returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'badges', createURL);  
+         system.debug(returnData);
+          
+        
+          //parseResults
+         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+     	if (obj.meta.status.compareTo('OK') == 0)
+     	  	{
+     	     CredlyJSON2ApexBadge obj2 = CredlyJSON2ApexBadge.parse(returnData);
+      	  	 badge.credlyBadgeId__c = String.valueOf(obj2.data);
+      	  	 badgeList.add(badge);
+     	  	} 
+        }
+   //}
+   
+    update badgeList;
+ 
+   } */
+
+	
 }

@@ -81,11 +81,13 @@ global class batchSyncMemberBadges implements
         
         if (memberBadge.evidence_url_m__c != null)
         {
-        evidenceImage = CredlyJSONCalls.getCredlyImage(memberBadge.evidence_url_m__c );
-       if (evidenceImage == null)   
-        {   
+     //   evidenceImage = CredlyJSONCalls.getCredlyImage(memberBadge.evidence_url_m__c );
+     //  if (evidenceImage == null)   
+     //   {   
+     	//	evidenceImage = memberBadge.evidence_url_m__c;
+     		
             evidenceImage = EncodingUtil.Base64Encode( Blob.valueOf( memberBadge.evidence_url_m__c ) );
-        }
+     //   }
         }
         
         if (securityToken != null)
@@ -114,6 +116,7 @@ global class batchSyncMemberBadges implements
             }
             
             CredlyId = 0;
+            email = '';
             
             if (memberBadge.account_lookup_m__c != null)
             {
@@ -126,16 +129,18 @@ global class batchSyncMemberBadges implements
             {
                 email = (sendEmail.getEmailAddress(memberBadge.contact_lookup_m__c, 'Contact') != null) ? sendEmail.getEmailAddress(memberBadge.contact_lookup_m__c, 'Contact') : ' ';  
                //Check for Credly ID on SalesForce
-                CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.account_lookup_m__c, 'Contact');
+                CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.contact_lookup_m__c, 'Contact');
             }
             
                 if (memberBadge.lead_lookup_m__c != null)
             {
                 email = (sendEmail.getEmailAddress(memberBadge.lead_lookup_m__c, 'Lead') != null) ? sendEmail.getEmailAddress(memberBadge.Lead_lookup_m__c, 'Lead') : ' ';  
               //Check for Credly ID on SalesForce
-                CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.account_lookup_m__c, 'Lead');
+                CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.lead_lookup_m__c, 'Lead');
             }
             
+            system.debug(email);
+            system.debug(CredlyId);
             storeCredly = false;
            //Check for Credly ID if not found above in Salesforce
             if (CredlyId == 0) 
@@ -186,6 +191,7 @@ global class batchSyncMemberBadges implements
            else
            {
              returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'member_badges', createURL);
+             system.debug(returnData);
            }
         
       //   

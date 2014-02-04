@@ -54,6 +54,11 @@
             checkCredly();
             }
             
+            function postCredlyToken() 
+            {
+            checkCredlyToken();
+            }
+            
           function refreshScreen() {
               var error = false;
               
@@ -84,6 +89,9 @@
   
  
    <apex:actionFunction name="checkCredly" action="{!checkCredly}" rerender="addForm" onComplete="hideSpinner();">
+   </apex:actionFunction>
+   
+    <apex:actionFunction name="checkCredlyToken" action="{!checkCredlyToken}" rerender="addForm" onComplete="hideSpinner();">
    </apex:actionFunction>
  
    <apex:sectionHeader title="Maintain Security Settings"/>
@@ -123,13 +131,13 @@
         </apex:pageBlockSectionItem>
         
           <apex:pageBlockSection showHeader="false"  columns="1" > 
-       <h2>You can either Enter Your Name and Password or Authorization Key.  Once authorized, your key is good for 3 months</h2>
+       <h2>You can either Enter Your Name and Password or API Key.  Your API key is good for 3 months</h2>
        </apex:pageBlockSection>
         
          <apex:pageBlockSectionItem >
           <apex:outputLabel value="Name"/>
           <apex:inputText styleClass="credlyToken" value="{!name}" id="name"/>
-        </apex:pageBlockSectionItem>
+        </apex:pageBlockSectionItem> 
         
         <apex:pageBlockSectionItem >
           <apex:outputLabel value="Password"/>
@@ -143,14 +151,17 @@
      
          <apex:pageBlockSectionItem >
           <apex:outputLabel value="Credly Token"/>
-          <apex:inputText styleClass="credlyToken" value="{!APItoken}" id="apiToken"/>
+          <apex:inputText styleClass="credlyToken" value="{!APItoken}" id="apiToken"/> 
         </apex:pageBlockSectionItem>
        
         </apex:pageBlockSection> 
         
             <apex:pageBlockButtons >
-                <apex:commandButton action="{!saveToken}" value="Save Settings" id="theUpdateButton" reRender="addForm" onClick="showSpinner();" onComplete="postCredly();"/>
+                <apex:commandButton action="{!saveToken}" value="New Token" id="theUpdateButton" reRender="addForm" onClick="showSpinner();" onComplete="postCredly();"/>
                   <div id="spinner" class="spinImage"><apex:image styleClass="spinImage" id="spinImage" value="{!$Resource.loading_gif}"/></div>
+                 
+             <apex:commandButton action="{!updateToken}" value="Update Token" id="theUpdateTokenButton" reRender="addForm" onClick="showSpinner();" onComplete="postCredlyToken();"/>
+                  <div id="spinner" class="spinImage"><apex:image styleClass="spinImage" id="spinImage2" value="{!$Resource.loading_gif}"/></div>
             </apex:pageBlockButtons>
             </apex:pageBlock>
        

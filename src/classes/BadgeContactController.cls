@@ -21,10 +21,20 @@ public with sharing class BadgeContactController {
         filterName = '';
         filterBadge = '';
           String returnData;
+          counter = 0;
+        pageLimit = 20;
+        pageOffset = 0;
+        currentPage = 1;
+        myId = UserInfo.getUserId();
           
            staticCredlyClass.Token j = staticCredlyClass.getToken(); 
  	     securityToken = j.APItoken;
+ 	     
            
+    }
+      public Integer counter {
+        get;
+        set;
     }
     
     public List < badge__c > badgeList {get;set;}
@@ -36,6 +46,15 @@ public with sharing class BadgeContactController {
        public String customMessage {get; set;}
        public String urlLink {get; set;}
        public Integer recipientNumber {get; set;}
+        public List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges {get;set;}
+    public set<String> myCredlyBadgeIDs {get;set;}
+     public set<String> mySalesForceCredlyBadgeIDs {get;set;}
+       public Integer totalNumberofRecords{get;set;}
+    public Integer pageLimit{get;set;}
+    public Integer pageOffset{get;set;}
+    public Integer numberOfPages{get; set;}
+    public Integer currentPage{get; set;}
+     public ID myID {get;set;}
     
 
  
@@ -43,6 +62,29 @@ public with sharing class BadgeContactController {
    
     public void setTestimonialEmpty() {
      
+    }
+    
+    public pageReference dmlOperation() 
+    {
+    		//Call Credly API to get your badges//
+        	myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
+        	myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
+        	mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
+        	staticCredlyClass.synchBadgesFromCredly(myCredlyBadges, mySalesForceCredlyBadgeIDs);
+       
+            totalNumberofRecords = myCredlyBadgeIDs.size();
+         
+            numberOfPages  = totalNumberofRecords / pageLimit;
+         
+   
+         if (numberOfPages < 1)
+         {
+         numberOfPages = 1;
+         }
+         
+         
+     
+        return null;
     }
     
       public void backStep() { 
@@ -450,7 +492,6 @@ public with sharing class BadgeContactController {
 
 
     public List < SelectOption > getDropBadges() {
-		system.debug('drop badges');
         List < badge__c > newBadges = getBadges();
 
 
@@ -610,16 +651,20 @@ public with sharing class BadgeContactController {
                
              }
                }
-               
+              
+              
+            //submit badges to Credly with batch job//
+		    staticCredlyClass.synchMemberBadgesToCredly(); 
         
             //  system.debug(xRecordType);
             //   system.debug(emailChecked);
            if (emailChecked)
             {
-          	for(member_badge__c a : memberBadgeList){
-          	sendEmail.sendEmail(a.lookup_id_m__c, a.Id, xRecordType);
-			}
-          
+         	//for(member_badge__c a : memberBadgeList)
+         //	{
+          //	sendEmail.sendEmail(a.lookup_id_m__c, a.Id, xRecordType);
+		//	}
+		
             }
           
         } catch (DMLException e) {
@@ -717,33 +762,35 @@ public with sharing class BadgeContactController {
         return (List < Account > ) getAccount.getRecords();
     }
 
-    public ApexPages.StandardSetController getBadge {
+   public List<badge__c> getBadge  {
         get {
-        
+              List<badge__c> badges = new List<badge__c>();
+              
                if (((filterBadge != null) || (filterBadge.trim().length() != 0))) 
                {
                filterBadgeSearch = filterBadge;
-                getBadge = new ApexPages.StandardSetController(Database.getQueryLocator(
-                    [select id,criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c,credlyBadgeId__c  from badge__c where title__c like :filterBadgeSearch]));
+               
+                    badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by title__c];   
             }
             
             if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
             {
-              getBadge = new ApexPages.StandardSetController(Database.getQueryLocator(
-                    [select id,criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c,credlyBadgeId__c  from badge__c]));
+           
+                     badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by title__c];   
             }
                
-            return getBadge;
+            return badges;
         }
         set;
     }
 
     // Initialize getBadge and return a list of records
     
-    public List < badge__c > getBadges() {
-    		badgeList = getBadge.getRecords();
-    	return badgeList;
+     // Initialize getBadge and return a list of records
+    public List<badge__c> getBadges() {
+        return (List<badge__c>) getBadge;
     }
+    
 
 
 

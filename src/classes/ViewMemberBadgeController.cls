@@ -3,10 +3,53 @@ public with sharing class ViewMemberBadgeController {
     public PageReference refreshScreenController() {
         return null;
     }
+    
+          public List<CredlyJSON2ApexMyMemberBadges.Data> myCredlyMemberBadges {get;set;}
+    public set<Integer> myCredlyMemberBadgeIDs {get;set;}
+     public set<String> mySalesForceCredlyMemberBadgeIDs {get;set;}
+       public Integer totalNumberofRecords{get;set;}
+    public Integer pageLimit{get;set;}
+    public Integer pageOffset{get;set;}
+    public Integer numberOfPages{get; set;}
+    public Integer currentPage{get; set;}
+     public ID myID {get;set;} 
+    
+     public pageReference dmlOperation()
+    {
+    		//Call Credly API to get your badges//
+        	myCredlyMemberBadges = staticCredlyClass.getMyMemberBadgesFromCredly();  
+        	myCredlyMemberBadgeIDs = staticCredlyClass.getCredlyMemberBadgeIdsFromData(myCredlyMemberBadges);
+        	mySalesForceCredlyMemberBadgeIDs = staticCredlyClass.getCredlyMemberIDsFromSalesforce();
+        	staticCredlyClass.synchMemberBadgesFromCredly(myCredlyMemberBadges, mySalesForceCredlyMemberBadgeIDs);
+       
+   
+         totalNumberofRecords = myCredlyMemberBadgeIDs.size();
+         
+         numberOfPages  = totalNumberofRecords / pageLimit;
+         Integer remainder = Math.mod(totalNumberofRecords,pageLimit); 
+         if (remainder > 0)
+         {
+         	++numberOfPages;
+         }
+         
+   
+         if (numberOfPages < 1)
+         {
+         numberOfPages = 1;
+         }
+         
+         
+     
+        return null;
+    }
 
     public ViewMemberBadgeController() {
     recordType = 'All';
     filterName = '';
+       pageLimit = 20;
+        pageOffset = 0;
+        currentPage = 1;
+        myId = UserInfo.getUserId();
     }
 
     
@@ -97,7 +140,7 @@ public with sharing class ViewMemberBadgeController {
                     evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,
                     document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c, badge_lookup_m__r.title__c, 
                     issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c
-                    from member_badge__c where badge_lookup_m__r.title__c like :filterNameSearch order by issue_date_m__c ]));
+                    from member_badge__c where badge_lookup_m__r.title__c like :filterNameSearch and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId)) order by issue_date_m__c ]));
                      return getBadge;
                     }
                     
@@ -110,9 +153,10 @@ public with sharing class ViewMemberBadgeController {
                     document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c, badge_lookup_m__r.title__c, 
                     issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c
                     from member_badge__c 
-                    where account_lookup_m__r.name like :filterNameSearch 
+                    where (account_lookup_m__r.name like :filterNameSearch 
                     or lead_lookup_m__r.name like :filterNameSearch 
-                     or contact_lookup_m__r.name like :filterNameSearch 
+                     or contact_lookup_m__r.name like :filterNameSearch)
+                     and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))
                     order by issue_date_m__c ]));
                      return getBadge;
                     }
@@ -125,9 +169,10 @@ public with sharing class ViewMemberBadgeController {
                     document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c, badge_lookup_m__r.title__c, 
                     issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c
                     from member_badge__c 
-                    where account_lookup_m__r.name like :filterNameSearch 
+                    where (account_lookup_m__r.name like :filterNameSearch 
                     or lead_lookup_m__r.name like :filterNameSearch 
-                     or contact_lookup_m__r.name like :filterNameSearch 
+                     or contact_lookup_m__r.name like :filterNameSearch)
+                     and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId)) 
                     order by issue_date_m__c ]));
                      return getBadge;
                     }

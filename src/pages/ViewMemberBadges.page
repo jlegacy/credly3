@@ -1,4 +1,4 @@
-<apex:page renderAs="{!showAs}" setup="false" sidebar="false" cache="false" showHeader="true" applyHtmlTag="true"  controller="ViewMemberBadgeController" contenttype="{!showExcel}"> 
+<apex:page renderAs="{!showAs}" setup="false" sidebar="false" cache="false" showHeader="true" applyHtmlTag="true"  controller="ViewMemberBadgeController" contenttype="{!showExcel}" action="{!dmlOperation}"> 
      <head>
     
     	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />

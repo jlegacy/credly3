@@ -1,4 +1,4 @@
-<apex:page controller="BadgeContactController">
+<apex:page controller="BadgeContactController" action="{!dmlOperation}"> 
 
  <head>
  <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
@@ -120,7 +120,7 @@
           }
           
             function createMemberBadges(type) {
-           containerShow();
+            showContainer();
              var ids = "";
              var mySplitResult;
               $j("tbody[id*='blockTableCheckboxes']").find('[type=checkbox]').each(function() {

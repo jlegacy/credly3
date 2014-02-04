@@ -251,7 +251,7 @@ margin-top: -3px;
     .spinImage{
     position: absolute;
     margin-top: -10px;
-    margin-left: 50px;
+    margin-left: 86px;
     }
      .spinMessage{
     position: absolute;

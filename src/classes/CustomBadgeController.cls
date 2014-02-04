@@ -11,7 +11,7 @@ public with sharing class CustomBadgeController {
     public ID myID {get;set;}
     public List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges {get;set;}
     public set<String> myCredlyBadgeIDs {get;set;}
-     public set<String> mySalesForceBadgeIDs {get;set;}
+     public set<String> mySalesForceCredlyBadgeIDs {get;set;}
     
     public CustomBadgeController () {
     	
@@ -79,13 +79,19 @@ public with sharing class CustomBadgeController {
     public pageReference dmlOperation()
     {
     		//Call Credly API to get your badges//
-        	getMyBadgesFromCredly();
-        	getCredlyIDsFromSalesforce();
-        	synchBadgesFromCredly();
+        	myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
+        	myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
+        	mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
+        	staticCredlyClass.synchBadgesFromCredly(myCredlyBadges, mySalesForceCredlyBadgeIDs);
        
          totalNumberofRecords = myCredlyBadgeIDs.size();
          
          numberOfPages  = totalNumberofRecords / pageLimit;
+         Integer remainder = Math.mod(totalNumberofRecords,pageLimit); 
+         if (remainder > 0)
+         {
+         	++numberOfPages;
+         }
          
    
          if (numberOfPages < 1)
@@ -318,7 +324,7 @@ public with sharing class CustomBadgeController {
         get {
          
          //   List<badge__c> badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where credlyBadgeId__c IN :myBadgeIDs  order by title__c LIMIT :pageLimit OFFSET :pageOffset];
-          List<badge__c> badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where (credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId) order by title__c];   
+          List<badge__c> badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where (credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId) order by title__c LIMIT :pageLimit OFFSET :pageOffset];   
             return badges;
         }
         set; 
@@ -365,30 +371,8 @@ public with sharing class CustomBadgeController {
         return null;
     }
    
-   public void getMyBadgesFromCredly()
-   { 
-   	myCredlyBadgeIDs = new set<String>();
-   	myCredlyBadges = CredlyJSONCalls.getMyBadges();
-   	
-    for (CredlyJSON2ApexMyBadges.Data i : myCredlyBadges) 
-    	{
-    		myCredlyBadgeIDs.add(String.valueOf(i.id));
-     	}
-}
-
-  public void getCredlyIDsFromSalesforce()
-   { 
-    List<badge__c> myIds = [select credlyBadgeId__c from badge__c where credlyBadgeId__c <> null];
-   	mySalesForceBadgeIDs = new set<String>();
-   	
-   	for (badge__c i: myIds)
-   	{
-   			mySalesForceBadgeIDs.add(String.valueOf(i.credlyBadgeId__c));
-   	}
-   	
-   }
-
-public void synchBadgesFromCredly()
+ 
+/*public void synchBadgesFromCredly()
 {
 	boolean check = false;
 	
@@ -398,7 +382,7 @@ public void synchBadgesFromCredly()
 	
 	   	  	for ( CredlyJSON2ApexMyBadges.Data item : myCredlyBadges) {
 	   	  		check = false;
-	   	  		if (mySalesForceBadgeIDs.contains(String.valueOf(item.id)))
+	   	  		if (mySalesForceCredlyBadgeIDs.contains(String.valueOf(item.id)))
 	   	  		{
 	   	  		check=true;
 	   	  		} 
@@ -439,7 +423,7 @@ public void synchBadgesFromCredly()
 	   	  }
 	   	  		
     		
-     	  	}
+     	  	}*/
 	
 
 /*public void synchBadgeToCredly(badge__c badge)

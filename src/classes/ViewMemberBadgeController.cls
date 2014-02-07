@@ -16,14 +16,14 @@ public with sharing class ViewMemberBadgeController {
     
      public pageReference dmlOperation()
     {
+    
     		//Call Credly API to get your badges//
         	myCredlyMemberBadges = staticCredlyClass.getMyMemberBadgesFromCredly();  
         	myCredlyMemberBadgeIDs = staticCredlyClass.getCredlyMemberBadgeIdsFromData(myCredlyMemberBadges);
         	mySalesForceCredlyMemberBadgeIDs = staticCredlyClass.getCredlyMemberIDsFromSalesforce();
         	staticCredlyClass.synchMemberBadgesFromCredly(myCredlyMemberBadges, mySalesForceCredlyMemberBadgeIDs);
-       
-   
-         totalNumberofRecords = myCredlyMemberBadgeIDs.size();
+      
+            totalNumberofRecords = myCredlyMemberBadgeIDs.size();
          
          numberOfPages  = totalNumberofRecords / pageLimit;
          Integer remainder = Math.mod(totalNumberofRecords,pageLimit); 

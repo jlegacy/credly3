@@ -24,7 +24,7 @@ public with sharing class staticCredlyClass {
 		if (dateString[2].CompareTo('May') == 0)
 		{
 			dateString[2] = '5';
-		}
+		} 
 		if (dateString[2].CompareTo('Jun') == 0)
 		{
 			dateString[2] = '6';
@@ -135,7 +135,6 @@ public with sharing class staticCredlyClass {
 			}
 	    
 	    //create new one
-	    system.debug(passedToken);
 	    token_data__c newToken = new token_data__c(user_name_t__c = UserInfo.getUserId(), authKey_data_t__c = passedToken.authKey, apiKey_data_t__c = passedToken.APIkey, APIsecret_data_t__c = passedToken.APIsecret,apiToken_data_t__c = passedToken.APItoken);
 		try {
     		insert newToken;
@@ -165,20 +164,18 @@ public with sharing class staticCredlyClass {
 	}
 	
 	 public static List<CredlyJSON2ApexMyBadges.Data> getMyBadgesFromCredly()
-   {
-
+   { 
+  
    	List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges = new List<CredlyJSON2ApexMyBadges.Data>();
    	myCredlyBadges = CredlyJSONCalls.getMyBadges();
    	
-  return myCredlyBadges;
+  return myCredlyBadges; 
 }
 
  public static List<CredlyJSON2ApexMyMemberBadges.Data> getMyMemberBadgesFromCredly()
    {
-
    	List<CredlyJSON2ApexMyMemberBadges.Data> myCredlyMemberBadges = new List<CredlyJSON2ApexMyMemberBadges.Data>();
    	myCredlyMemberBadges = CredlyJSONCalls.getMyMemberBadges(); 
-   	
   return myCredlyMemberBadges;
 }
 
@@ -335,11 +332,11 @@ public static set<String> getCredlyMemberIDsFromSalesforce()
       	}
       	
       	leadId = null;
-      	contactId = null;
+      	contactId = null; 
       	
       	leadId = staticCredlyClass.GetLeadID(item.member_orphan.email);
       	if (leadId == null)
-      	{
+       	{
       		contactId = staticCredlyClass.GetContactID(item.member_orphan.email);
       	}
       	
@@ -367,7 +364,7 @@ public static set<String> getCredlyMemberIDsFromSalesforce()
       	memberBadge.is_visible_m__c = String.valueOf(item.is_visible);
       	memberBadge.description_m__c = item.description;
       	memberBadge.criteria_m__c = item.criteria;
-      	memberBadge.categories_m__c = String.valueOf(item.categories);
+      	memberBadge.categories_m__c = String.valueOf(item.categories); 
       	memberBadge.evidence_url_m__c = (item.badge_evidence.Size() == 0) ? ' ' : item.badge_evidence[0].resource; 
       	memberBadge.testimonial_m__c = (item.badge_testimonial.Size() == 0) ? ' ' :  item.badge_testimonial[0].body;
         memberBadge.issue_date_m__c = date.valueOf(staticCredlyClass.convCRDateTime(item.created_at));
@@ -375,7 +372,7 @@ public static set<String> getCredlyMemberIDsFromSalesforce()
         memberBadge.expires_in_m__c = (memberBadge.expires_in_m__c == 0) ? 999999 : memberBadge.expires_in_m__c;
          newMemberBadges.add(memberBadge);
          
-    }
+    } 
 	   	  			
 	   	  		}
 	   	  if (newMemberBadges.Size() > 0)
@@ -486,8 +483,9 @@ public static set<String> getCredlyMemberIDsFromSalesforce()
 	}
 	return CredlyId;
 }
-return 0;
+return 0; 
 
 }
-     	  	
+
+
 }

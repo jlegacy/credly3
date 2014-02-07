@@ -247,9 +247,9 @@
         
          <apex:pageBlock id="uploadEvidence" rendered="{!renderStep3}">   
   		<h1>Step 3: Select Delivery Options:</h1>
+  		  <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
   		  <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
-            <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
-  		
+          
   		<apex:pageBlockSection >
     <br><h2>Would you like to notify recipients by email?</h2></br>
     </apex:pageBlockSection>
@@ -271,7 +271,7 @@
       <apex:outputpanel styleClass="customMessageInput" >
      <apex:pageBlockSection columns="2"  >
      <apex:pageBlockSectionItem >
-      <apex:outputlabel >&nbsp;</apex:outputlabel><apex:inputTextarea value="{!customMessage}" styleClass="longInputText"/>
+      <apex:outputlabel >&nbsp;</apex:outputlabel><apex:inputTextarea value="{!customMessage}" styleClass="longInputText"></apex:inputTextarea>
        </apex:pageBlockSectionItem>
      </apex:pageBlockSection>
      </apex:outputpanel>

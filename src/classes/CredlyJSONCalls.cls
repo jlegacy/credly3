@@ -1,4 +1,4 @@
-public with sharing class CredlyJSONCalls { 
+public with sharing class CredlyJSONCalls {  
     
     // Pass in the endpoint to be used using the string url  
     
@@ -189,6 +189,7 @@ public with sharing class CredlyJSONCalls {
         
     public static List<CredlyJSON2ApexMyMemberBadges.Data> getMyMemberBadges()
    {
+   
     String returnData;
     String createURL;
     String errMessage;
@@ -214,19 +215,19 @@ public with sharing class CredlyJSONCalls {
         
            //post badge to credly
            
-         
          returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'me/badges/given?' + createURL);  
-        
+
           //parseResults
-         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
-        if (obj.meta.status.compareTo('OK') == 0)
-            {
-             CredlyJSON2ApexMyMemberBadges obj2 = CredlyJSON2ApexMyMemberBadges.parse(returnData);
+       //  CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+       //  system.debug(returnData);
+       // if (obj.meta.status.compareTo('OK') == 0)
+       //     {
+            CredlyJSON2ApexMyMemberBadges obj2 = CredlyJSON2ApexMyMemberBadges.parse(returnData);
             myMemberBadges = obj2.Data;
           //    for (CredlyJSON2ApexMyBadges.Data i : myBadges) {
         //  System.debug(i.id); 
           //    }
-            } 
+     //       } 
             return myMemberBadges;
         }
         
@@ -264,7 +265,7 @@ public with sharing class CredlyJSONCalls {
         if (obj.meta.status.compareTo('OK') == 0)
             {
              CredlyJSON2ApexMyIssuedBadges obj2 = CredlyJSON2ApexMyIssuedBadges.parse(returnData);
-            myIssuedBadges = obj2.Data;
+            myIssuedBadges = obj2.Data; 
             } 
             return myIssuedBadges;
         }

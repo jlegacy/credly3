@@ -102,7 +102,7 @@ public with sharing class BadgeTokenController {
         
       createURL = CredlyJSONCalls.createURLString(mBadge);
          returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'me?' + createURL);  
-         system.debug(returnData);
+
           CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
         if (obj.meta.status.compareTo('OK') == 0)
             {

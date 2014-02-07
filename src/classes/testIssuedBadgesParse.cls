@@ -303,7 +303,6 @@ public with sharing class testIssuedBadgesParse {
 		'  }'+
 		'}';
 		 CredlyJSON2ApexMyIssuedBadges obj = CredlyJSON2ApexMyIssuedBadges.parse(json);
-		 system.debug(obj);
 		System.assert(obj != null);
 }
 

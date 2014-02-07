@@ -97,7 +97,6 @@ public with sharing class BadgeContactController {
     
       public PageReference nextStep() { 
         step = step + 1;
-        system.debug(step);
         
             if (step == 1)
         {
@@ -609,6 +608,7 @@ public with sharing class BadgeContactController {
            memberBadge.expires_in_m__c = badge.expires_in__c;
            memberBadge.badge_lookup_m__c = setBadgeSelect;
            memberBadge.categories_m__c = badge.categories__c;
+           memberBadge.custom_message_m__c = customMessage;
            memberBadge.is_visible_m__c = 'true';
            
              memberBadge.is_giveable_m__c = badge.is_giveable__c;

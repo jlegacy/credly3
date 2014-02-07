@@ -2,6 +2,19 @@
         font-size: medium;
         }
         
+       input.width30{
+    		width:300px !important;
+    		}
+    		
+    		textarea.width30{
+    		width:300px !important;
+    		}
+    		
+    		 .height50{
+    		height:50px; !important;
+    		}
+    
+    
         .required
         {
         color: red;
@@ -113,6 +126,7 @@
   
   input.btn.nextStep{ 
      background: green;
+     color:white;
      font-weight: bold;
     }
     input.btn.backStep{
@@ -291,7 +305,7 @@ margin-top: -3px;
     width:150px !important;
     }
     
-    
+  
 
     
  

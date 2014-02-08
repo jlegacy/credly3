@@ -95,11 +95,11 @@ global class batchSyncBadges implements
        mBadge.put('categories',   badge.categories__c = (badge.categories__c == null) ? ' ' : badge.categories__c); 
        mBadge.put('criteria', badge.criteria__c = (badge.criteria__c == null) ? ' ' : badge.criteria__c); 
        mBadge.put('is_giveable', badge.is_giveable__c = (badge.is_giveable__c == null) ? ' ' : badge.is_giveable__c); 
-       mBadge.put('expires_in', String.valueOf(badge.expires_in__c)); 
-        mBadge.put('access_token',securityToken);  
+       mBadge.put('expires_in', staticCredlyClass.ToString(badge.expires_in__c, false)); 
+        mBadge.put('access_token',securityToken);   
         
         createURL = CredlyJSONCalls.createURLString(mBadge);
-        
+       
            //post badge to credly
            
              if (test.isRunningTest()) {

@@ -20,6 +20,7 @@ public with sharing class CredlyJSONCalls {
       encodedString = encodedString + '&' + key + '=' + EncodingUtil.urlEncode(data.get(key), 'UTF-8');
       } 
       }
+      system.debug(encodedString);
      return encodedString;
      }
      

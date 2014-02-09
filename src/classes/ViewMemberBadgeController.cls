@@ -138,6 +138,12 @@ public with sharing class ViewMemberBadgeController {
        
         return null;
     }
+    
+    public void resetPageLimitController()
+    {
+     badgeOffset = 0;
+     currentBadgePage = 1;
+    }
 
      // ApexPages.StandardgetBadgetroller must be instantiated
     // for standard list controllers
@@ -146,28 +152,18 @@ public with sharing class ViewMemberBadgeController {
                
                if (((filterName == null) || (filterName.trim().length() == 0)) && (recordType.equals('All')))  
                {
+               
+                memberBadges = [select credlyMemberBadge_id_m__c
+                    from member_badge__c  where ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))];
+               
+                  setPagingInfo(memberBadges);
+                  
                 memberBadges = [select criteria_m__c, description_m__c, expires_in_m__c, 
                     short_description_m__c,title_m__c, image_m__c, 
                     evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,
                     document_ID_m__c, account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c,  badge_lookup_m__r.title__c, badge_lookup_m__r.credlyBadgeId__c, 
                     issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c, credlyMemberBadge_id_m__c
-                    from member_badge__c  where (credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) and (badge_lookup_m__r.credlyBadgeId__c IN :myCredlyBadgeIDs) order by issue_date_m__c LIMIT :pageLimit OFFSET :badgeOffset];
-                  
-                     totalNumberofBadges = memberBadges.size();
-       
-                      numberOfBadgePages  = totalNumberofBadges / pageLimit;
-         			Integer remainder = Math.mod(totalNumberofBadges,pageLimit); 
-         			if (remainder > 0)
-         			{
-         			++numberOfBadgePages;
-         			}
-         
-   
-         			if (numberOfBadgePages < 1)
-         			{
-         			numberOfBadgePages = 1;
-        			 }
-        			 
+                    from member_badge__c  where ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId)) order by issue_date_m__c LIMIT :pageLimit OFFSET :badgeOffset];
                   
                    return memberBadges;
                     }
@@ -179,17 +175,32 @@ public with sharing class ViewMemberBadgeController {
                filterNameSearch = filterName.trim();
                if (recordType.equals('title'))
                {
+               	
+               	   memberBadges = [select badge_lookup_m__r.title__c, credlyMemberBadge_id_m__c
+                    from member_badge__c where badge_lookup_m__r.title__c like :filterNameSearch and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))];
+                  
+                setPagingInfo(memberBadges); 
+          
                 memberBadges = [select criteria_m__c, description_m__c, expires_in_m__c, 
                     short_description_m__c,title_m__c, image_m__c, 
                     evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,
                     document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c, badge_lookup_m__r.title__c, badge_lookup_m__r.credlyBadgeId__c,
                     issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c
-                    from member_badge__c where badge_lookup_m__r.title__c like :filterNameSearch and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) and (badge_lookup_m__r.credlyBadgeId__c IN :myCredlyBadgeIDs)) order by issue_date_m__c LIMIT :pageLimit OFFSET :badgeOffset ];
+                    from member_badge__c where badge_lookup_m__r.title__c like :filterNameSearch and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId)) order by issue_date_m__c LIMIT :pageLimit OFFSET :badgeOffset ];
                     return memberBadges;
                     }
                     
                if (recordType.equals('recipient'))
                {
+               	 memberBadges = [select credlyMemberBadge_id_m__c,account_lookup_m__r.name,contact_lookup_m__r.name,lead_lookup_m__r.name 
+                    from member_badge__c 
+                    where (account_lookup_m__r.name like :filterNameSearch 
+                    or lead_lookup_m__r.name like :filterNameSearch 
+                     or contact_lookup_m__r.name like :filterNameSearch)
+                     and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))];
+                 
+                 setPagingInfo(memberBadges);
+               	
                 memberBadges = [select criteria_m__c, description_m__c, expires_in_m__c, 
                     short_description_m__c,title_m__c, image_m__c, 
                     evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,
@@ -199,22 +210,27 @@ public with sharing class ViewMemberBadgeController {
                     where (account_lookup_m__r.name like :filterNameSearch 
                     or lead_lookup_m__r.name like :filterNameSearch 
                      or contact_lookup_m__r.name like :filterNameSearch)
-                     and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) and (badge_lookup_m__r.credlyBadgeId__c IN :myCredlyBadgeIDs))
+                     and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))
                     order by issue_date_m__c LIMIT :pageLimit OFFSET :badgeOffset];
                      return memberBadges;
                     }
                if (recordType.equals('category'))
                {
-                memberBadges = [select criteria_m__c, description_m__c, expires_in_m__c, 
+               	
+               	 memberBadges = [select credlyMemberBadge_id_m__c, categories_m__c from member_badge__c 
+                    where (categories_m__c like :filterNameSearch)
+                     and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))];
+                     
+                 setPagingInfo(memberBadges); 
+                  
+                memberBadges = [select criteria_m__c, description_m__c, expires_in_m__c, categories_m__c,
                     short_description_m__c,title_m__c, image_m__c, 
                     evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,
                     document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c, badge_lookup_m__r.title__c, badge_lookup_m__r.credlyBadgeId__c,
                     issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c
                     from member_badge__c 
-                    where (account_lookup_m__r.name like :filterNameSearch 
-                    or lead_lookup_m__r.name like :filterNameSearch 
-                     or contact_lookup_m__r.name like :filterNameSearch)
-                     and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs)  and (badge_lookup_m__r.credlyBadgeId__c IN :myCredlyBadgeIDs)) 
+                    where (categories_m__c like :filterNameSearch) 
+                     and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId)) 
                     order by issue_date_m__c LIMIT :pageLimit OFFSET :badgeOffset];
                      return memberBadges;
                     }
@@ -229,6 +245,26 @@ public with sharing class ViewMemberBadgeController {
     return (List<member_badge__c>) getBadge(); 
     }
     
-
+    public void setPagingInfo(List<member_badge__c> memberBadges)
+    {
+    	 totalNumberofBadges = memberBadges.size();
+       
+                    numberOfBadgePages  = totalNumberofBadges / pageLimit;
+         			Integer remainder = Math.mod(totalNumberofBadges,pageLimit); 
+         			if (remainder > 0)
+         			{
+         			++numberOfBadgePages;
+         			}
+         
+   
+         			if (numberOfBadgePages < 1)
+         			{
+         			numberOfBadgePages = 1;
+        			 }
+        			 
+    	
+    }
+    
+    
     public String detailsBlock { get; set; }
 }

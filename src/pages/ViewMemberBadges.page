@@ -21,6 +21,10 @@ function printReport()
 {
 window.print();  
 }
+function resetPageLimit()
+{
+resetPageLimitController();
+}
   function hideContainer()
           {
           $j('#loading-container').hide();
@@ -123,11 +127,14 @@ function refreshScreen() {
       <apex:sectionHeader title="Create Member Badge Reports"/>
       <apex:pageBlock mode="edit" >
       <apex:pageBlockSection collapsible="false" title="Review and search Credly badges you have issued through Salesforce, and download reports
-       of your badge issuing activity"></apex:pageBlockSection>
+       of your badge issuing activity"></apex:pageBlockSection> 
       </apex:pageBlock>
 
   <apex:form id="addForm">
    <apex:actionFunction name="refreshScreenController" action="{!refreshScreenController}"  rerender="addForm">
+    </apex:actionFunction> 
+    
+     <apex:actionFunction name="resetPageLimitController" action="{!resetPageLimitController}"  rerender="dummy">
     </apex:actionFunction> 
   
   
@@ -137,7 +144,7 @@ function refreshScreen() {
     <apex:outputText value="Filter By:  "/> 
     
          
- <apex:selectList value="{!recordType}" multiselect="false" size="1">
+ <apex:selectList value="{!recordType}" multiselect="false" size="1" onchange="resetPageLimit();">
             <apex:selectOptions value="{!recordTypes}"/>
         </apex:selectList>
         

@@ -11,7 +11,14 @@ public with sharing class viewBadgeRulesController {
 		   renderStep2 = false;
 		    renderStep3 = false;
 		     renderStep4 = false;
-		renderStep5 = false;
+			renderStep5 = false;
+		
+		  counter = 0;
+        pageLimit = staticCredlyClass.PageLimit();
+        badgeOffset = 0;
+        ruleOffset = 0; 
+        currentRulePage = 1;
+        currentBadgePage = 1;
 
          xSelectedIDs = '';
         renderUpload = false;
@@ -29,12 +36,73 @@ public with sharing class viewBadgeRulesController {
          
        setTypeSelect  = (populateRecordType != null) ? populateRecordType : 'Account';
         
+          myId = UserInfo.getUserId();
         getRuleFields = getFields(setTypeSelect);
        
         getOperandTypes = getOperandTypes();
+        
+        myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
+        myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
+        mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
+         mySalesForceRuleIDs = staticCredlyClass.getRuleIDsFromSalesforce();
+        
+         //Rules//
+            totalNumberofRules = mySalesForceRuleIDs.size();
+            
+                      numberOfRulePages  = totalNumberofRules / pageLimit;
+         			Integer remainder = Math.mod(totalNumberofRules,pageLimit); 
+         			if (remainder > 0)
+         			{
+         			++numberOfRulePages;
+         			}
+         
+   
+         			if (numberOfRulePages < 1)
+         			{
+         			numberOfRulePages = 1;
+        			 }
+        			 
+         //Badges//
+          totalNumberofBadges = myCredlyBadgeIDs.size();
+       
+                      numberOfBadgePages  = totalNumberofBadges / pageLimit;
+         			remainder = Math.mod(totalNumberofBadges,pageLimit); 
+         			if (remainder > 0)
+         			{
+         			++numberOfBadgePages;
+         			}
+         
+   
+         			if (numberOfBadgePages < 1)
+         			{
+         			numberOfBadgePages = 1;
+        			 }
+        			 
+              			 
                
     }
+       public Integer totalNumberofBadges{get;set;}
+        public Integer totalNumberofRules{get;set;}
+       
+      public List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges {get;set;}
+         public Integer pageLimit{get;set;}
+    public Integer pageOffset{get;set;}
+   
+ public Integer badgeOffset{get;set;}
+  public Integer ruleOffset{get;set;}
+    public Integer numberOfRulePages{get; set;}
+     public Integer numberOfBadgePages{get; set;}
+    public Integer currentRulePage{get; set;}
+     public Integer currentBadgePage{get; set;}
+    public set<String> myCredlyBadgeIDs {get;set;}
+     public set<String> mySalesForceRuleIDs {get;set;}
+     public set<String> mySalesForceCredlyBadgeIDs {get;set;}
       public Boolean emailChecked {get; set;}
+       public ID myID {get;set;}
+         public Integer counter {
+        get;
+        set;
+    }
     
         public Boolean renderStep1 {
         get;
@@ -308,8 +376,8 @@ public with sharing class viewBadgeRulesController {
     
       // Initialize getBadge and return a list of records
     public List < badge__c > getBadges() {
-        return (List < badge__c > ) getBadge.getRecords();
-    }
+            return (List<badge__c>) getBadge;
+    } 
 
     public PageReference setTestimonialEmpty() {
         return null;
@@ -318,25 +386,91 @@ public with sharing class viewBadgeRulesController {
     public PageReference setBadgeIdEmpty() {
         return null;
     }
+    
+      public pageReference nextRule() {
+  
+       ruleOffset = ruleOffset + pageLimit;
+       currentRulePage = currentRulePage + 1;
+       if (currentRulePage > numberOfRulePages)
+       {
+       	currentRulePage = 1;
+       	ruleOffset = 0;
+       }
+       
+       
+       getRules();
+        return null;
+    }
+     public pageReference prevRule() { 
+  
+       ruleOffset = ruleOffset - pageLimit;
+       currentRulePage = currentRulePage - 1;
+       
+       if (currentRulePage <= 0)
+       {
+       	ruleOffset = 0;
+       	currentRulePage = 1;
+       }
+       
+       getRules();
+       
+        return null;
+    }
+    
+      public pageReference nextBadge() {
+  
+       badgeOffset = badgeOffset + pageLimit;
+       currentBadgePage = currentBadgePage + 1;
+       if (currentBadgePage > numberOfBadgePages)
+       {
+       	currentBadgePage = 1;
+       	badgeOffset = 0;
+       }
+       
+       
+       getBadges();
+        return null;
+    }
+     public pageReference prevBadge() { 
+  
+       badgeOffset = BadgeOffset - pageLimit;
+       currentBadgePage = currentBadgePage - 1;
+       
+       if (currentBadgePage <= 0)
+       {
+       	BadgeOffset = 0;
+       	currentBadgePage = 1;
+       }
+       
+       getBadges();
+       
+        return null;
+    }
 
-       public ApexPages.StandardSetController getBadge {
+       public List<badge__c> getBadge {
        get {
+       	
+       	List<badge__c> badges;
         	//	system.debug(filterBadge);
         	
+        	 // ApexPages.StandardgetBadgetroller must be instantiated
+    // for standard list controllers
+
+        
+          badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where (credlyBadgeId__c IN :myCredlyBadgeIDs) order by title__c LIMIT :pageLimit OFFSET :badgeOffset];   
+            
         	   if (((filterBadge != null) || (filterBadge.trim().length() != 0))) 
                {
                filterBadgeSearch = filterBadge;
-                getBadge = new ApexPages.StandardSetController(Database.getQueryLocator(
-                    [select id,criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c  from badge__c where title__c like :filterBadgeSearch]));
+          badges = [select id,criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c  from badge__c where (credlyBadgeId__c IN :myCredlyBadgeIDs) and title__c like :filterBadgeSearch LIMIT :pageLimit OFFSET :badgeOffset];
             }
             
             if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
             {
-              getBadge = new ApexPages.StandardSetController(Database.getQueryLocator(
-                    [select id,criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c  from badge__c]));
+            badges =[select id,criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c  from badge__c where (credlyBadgeId__c IN :myCredlyBadgeIDs) LIMIT :pageLimit OFFSET :badgeOffset];
             }
                
-            return getBadge;
+           return badges;
         }
         set;
     }
@@ -444,30 +578,29 @@ public Document document {
 
  // ApexPages.StandardgetBadgetroller must be instantiated
     // for standard list controllers
-    public ApexPages.StandardSetController getRule {
+    public List<badge_rules__c> getRule {
+   
         get {
-            if(getRule == null) {
-                getRule = new ApexPages.StandardSetController(Database.getQueryLocator(
-                    [select id, badge_lookup__r.title__c ,account_type_r__c, evidence_id_r__c, 
+        		List<badge_rules__c> rules; 
+          
+                rules = [select id, badge_lookup__r.title__c ,account_type_r__c, evidence_id_r__c, 
                     evidence_name_r__c, evidence_r__c, lookup_id_r__c, 
                     rule_name_r__c, testimonial_r__c, badge_rule_r__c, 
                     badge_visual_rule_r__c,
                     badge_lookup__r.image__c,
                     number_of_badges_issued_r__c,
                     date_last_issued_r__c,
-                    evidence_url_r__c
-                    
-                    from badge_rules__c])); 
-            }
-            return getRule;
+                    evidence_url_r__c, createdByid
+                    from badge_rules__c  where createdById = :myId LIMIT :pageLimit OFFSET :ruleOffset]; 
+           
+            return rules; 
         }
         set;
     }
 
     // Initialize getBadge and return a list of records
     public List<badge_rules__c> getRules() {
-      
-      return (List<badge_rules__c>) getRule.getRecords();
+      return (List<badge_rules__c>) getRule;
     }
  
 

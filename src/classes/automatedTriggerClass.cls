@@ -200,21 +200,21 @@ public static void addMemberBadge(id accountID, id ruleID, id badgeID, String ac
                  {
                  if (rule.send_email_r__c)
                  	{
-                 	sendEmail.sendEmail(memberBadge.contact_lookup_m__c, memberBadge.Id, accountType);
+                 //	sendEmail.sendEmail(memberBadge.contact_lookup_m__c, memberBadge.Id, accountType);
                  	}
                  }
                    if (accountType.equals('lead'))
                  {
                  if (rule.send_email_r__c)
                  	{
-                 	sendEmail.sendEmail(memberBadge.lead_lookup_m__c, memberBadge.Id, accountType);
+                // 	sendEmail.sendEmail(memberBadge.lead_lookup_m__c, memberBadge.Id, accountType);
                  	}
                  }
                    if (accountType.equals('account'))
                  {
                  if (rule.send_email_r__c)
                  	{
-                 	sendEmail.sendEmail(memberBadge.account_lookup_m__c, memberBadge.Id, accountType);
+                 //	sendEmail.sendEmail(memberBadge.account_lookup_m__c, memberBadge.Id, accountType);
                  	}
                  }
             

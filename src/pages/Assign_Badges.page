@@ -446,7 +446,13 @@
            
    </apex:pageBlock>
   
-   <apex:pageBlock rendered="{!renderStep1}">
+   <apex:pageBlock id="badgeDetailsBlock" rendered="{!renderStep1}">
+       <apex:outputLabel styleClass="smallGreen" >Page {!currentBadgePage} of {!numberOfBadgePages} </apex:outputLabel>
+        <br></br>
+         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
+          
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton" rerender="badgeDetailsBlock"/> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton" rerender="badgeDetailsBlock"/>
   <apex:pageBlockSection >
    <apex:pageBlockSectionItem >
     <apex:outputtext >Need a new Credly badge?</apex:outputtext>

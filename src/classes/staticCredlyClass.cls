@@ -283,6 +283,23 @@ public static set<String> getCredlyMemberIDsFromSalesforce()
    	
    }
    
+   public static set<String> getRuleIDsFromSalesforce()
+   { 
+   	
+   		List<badge_rules__c> rules; 
+   		set<String> mySalesForceRuleIDs = new set<String>();
+   		 String myId = UserInfo.getUserId();
+          
+    rules = [select id from badge_rules__c where createdById = :myId ]; 
+
+   	for (badge_rules__c i: rules)
+   	{
+   			mySalesForceRuleIDs.add(String.valueOf(i.id));
+   	}
+   	return mySalesForceRuleIDs;
+   	
+   }
+   
    public static ID getBadgeID(String id)
    {
    	badge__c[] badgeRec = [select id from badge__c where credlyBadgeId__c = :id limit 1];
@@ -603,5 +620,10 @@ return 0;
   {
      return CurrencyChar + ToString(Value);
   }
- 
+  
+  public static Integer PageLimit()
+  {
+  	return 5;
+  }
+  
 }

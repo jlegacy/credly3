@@ -22,16 +22,43 @@ public with sharing class BadgeContactController {
         filterBadge = '';
           String returnData;
           counter = 0;
-        pageLimit = 20;
-        pageOffset = 0;
-        currentPage = 1;
+        pageLimit = staticCredlyClass.PageLimit();
+        badgeOffset = 0;
+        currentBadgePage = 1;
         myId = UserInfo.getUserId();
           
            staticCredlyClass.Token j = staticCredlyClass.getToken(); 
  	     securityToken = j.APItoken;
  	     
+ 	        myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
+        myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
+        mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
+        
+           //Badges//
+          totalNumberofBadges = myCredlyBadgeIDs.size();
+       
+                      numberOfBadgePages  = totalNumberofBadges / pageLimit;
+         			Integer remainder = Math.mod(totalNumberofBadges,pageLimit); 
+         			if (remainder > 0)
+         			{
+         			++numberOfBadgePages;
+         			}
+         
+   
+         			if (numberOfBadgePages < 1)
+         			{
+         			numberOfBadgePages = 1;
+        			 }
+ 	     
            
     }
+      public Integer totalNumberofBadges{get;set;}
+       public Integer badgeOffset{get;set;}
+         public Integer currentBadgePage{get; set;}
+            public set<String> myCredlyBadgeIDs {get;set;}
+     public set<String> mySalesForceRuleIDs {get;set;}
+     public set<String> mySalesForceCredlyBadgeIDs {get;set;}
+      
       public Integer counter {
         get;
         set;
@@ -47,13 +74,12 @@ public with sharing class BadgeContactController {
        public String urlLink {get; set;}
        public Integer recipientNumber {get; set;}
         public List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges {get;set;}
-    public set<String> myCredlyBadgeIDs {get;set;}
-     public set<String> mySalesForceCredlyBadgeIDs {get;set;}
        public Integer totalNumberofRecords{get;set;}
     public Integer pageLimit{get;set;}
     public Integer pageOffset{get;set;}
     public Integer numberOfPages{get; set;}
     public Integer currentPage{get; set;}
+    public Integer numberOfBadgePages{get; set;}
      public ID myID {get;set;}
     
 
@@ -654,7 +680,7 @@ public with sharing class BadgeContactController {
               
               
             //submit badges to Credly with batch job//
-		    staticCredlyClass.synchMemberBadgesToCredly(); 
+		//    staticCredlyClass.synchMemberBadgesToCredly(); 
         
             //  system.debug(xRecordType);
             //   system.debug(emailChecked);
@@ -756,6 +782,36 @@ public with sharing class BadgeContactController {
         }
         set;
     }
+    
+        public pageReference nextBadge() {
+  
+       badgeOffset = badgeOffset + pageLimit;
+       currentBadgePage = currentBadgePage + 1;
+       if (currentBadgePage > numberOfBadgePages)
+       {
+       	currentBadgePage = 1;
+       	badgeOffset = 0;
+       }
+       
+       
+       getBadges();
+        return null;
+    }
+     public pageReference prevBadge() { 
+  
+       badgeOffset = BadgeOffset - pageLimit;
+       currentBadgePage = currentBadgePage - 1;
+       
+       if (currentBadgePage <= 0)
+       {
+       	BadgeOffset = 0;
+       	currentBadgePage = 1;
+       }
+       
+       getBadges();
+       
+        return null;
+    }
 
     // Initialize setCon and return a list of records
     public List < Account > getAccounts() {
@@ -770,13 +826,13 @@ public with sharing class BadgeContactController {
                {
                filterBadgeSearch = filterBadge;
                
-                    badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by title__c];   
+                    badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by title__c LIMIT :pageLimit OFFSET :badgeOffset];   
             }
             
             if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
             {
            
-                     badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by title__c];   
+                     badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by title__c LIMIT :pageLimit OFFSET :badgeOffset];   
             }
                
             return badges;

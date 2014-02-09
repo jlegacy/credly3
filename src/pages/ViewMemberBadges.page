@@ -149,9 +149,15 @@ function refreshScreen() {
   </apex:pageBlock>
  
         <apex:pageBlock id="detailsBlock" rendered="{!detailsBlock}">
+           <apex:outputLabel styleClass="smallGreen" >Page {!currentBadgePage} of {!numberOfBadgePages} </apex:outputLabel>
+        <br></br>
+         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
+          
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton" rerender="detailsBlock"/> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton" rerender="detailsBlock"/>
             <apex:outputPanel styleclass="print" id="details">
              
-                  <apex:pageBlockTable value="{!badges}" var="o">
+                 <apex:pageBlockTable value="{!badges}" var="o">  
          
                     <apex:column styleclass="printDetails" headerValue="Badge Image">
                         <apex:outputField value="{!o.image_m__c}" />
@@ -188,7 +194,8 @@ function refreshScreen() {
                     </apex:column>
                     
                     
-        </apex:pageBlockTable>
+                    
+        </apex:pageBlockTable> 
             </apex:outputPanel>
             <apex:pageBlockButtons >
                 

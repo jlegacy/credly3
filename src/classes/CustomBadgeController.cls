@@ -34,7 +34,7 @@ public with sharing class CustomBadgeController {
         giveableType = 'false';
         xbadgeURL = '';
         counter = 0;
-        pageLimit = 20;
+        pageLimit = staticCredlyClass.PageLimit();
         pageOffset = 0;
         currentPage = 1;
         
@@ -323,7 +323,6 @@ public with sharing class CustomBadgeController {
     public List<badge__c> getBadge {
         get {
          
-         //   List<badge__c> badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where credlyBadgeId__c IN :myBadgeIDs  order by title__c LIMIT :pageLimit OFFSET :pageOffset];
           List<badge__c> badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where (credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId) order by title__c LIMIT :pageLimit OFFSET :pageOffset];   
             return badges;
         }

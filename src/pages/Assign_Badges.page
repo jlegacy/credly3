@@ -11,6 +11,15 @@
         $j(document).ready(function() {
         hideContainer();
         
+           if ("{!customMessageChecked}" == 'false')
+        {
+       $j('.customMessageInput').hide();
+       }
+       else
+       {
+        $j('.customMessageInput').show();
+       }
+        
         
         //if using the back button then restore selected ids
         if ('{!renderStep2}' && '{!xSelectedIDs}'.trim().length > 0)
@@ -59,10 +68,12 @@
 		if (this.checked)
 		{
 		$j('.customMessageCheckBox').show();
+		$j('.customMessageInput').show();
 		}
 		else
 		{
 		$j('.customMessageCheckBox').hide();
+		$j('.customMessageInput').hide();
 		}
 		});
 		
@@ -460,7 +471,7 @@
    </apex:pageBlockSectionItem>
   <apex:pageBlockSectionItem >
   <apex:inputText label="Name Contains" value="{!filterBadge}" /> 
-  <apex:commandButton value="Search for a Badge" onclick="showContainer()" action="{!searchBadge}" rerender="details" oncomplete="hideContainer();" />
+  <apex:commandButton value="Search for a Badge" onclick="showContainer()" action="{!searchBadge}" rerender="badgeDetailsBlock" oncomplete="hideContainer();" />
   </apex:pageBlockSectionItem>
   </apex:pageBlockSection>
        
@@ -490,7 +501,12 @@
                     </apex:pageBlockTable>
             </apex:outputPanel>
 
-      
+       <apex:outputLabel styleClass="smallGreen" >Page {!currentBadgePage} of {!numberOfBadgePages} </apex:outputLabel>
+        <br></br>
+         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
+          
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton2" rerender="badgeDetailsBlock"/> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton2" rerender="badgeDetailsBlock"/>
   </apex:pageBlock>
   
    <apex:pageBlock rendered="{!renderStep2}">

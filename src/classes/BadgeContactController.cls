@@ -391,7 +391,9 @@ public with sharing class BadgeContactController {
 
   
      public PageReference searchBadge() {
-          getBadges();
+     	 badgeOffset = 0;
+         currentBadgePage = 1;
+         getBadges();
         return null;
      }
      
@@ -826,11 +828,19 @@ public with sharing class BadgeContactController {
                {
                filterBadgeSearch = filterBadge;
                
+                 badges = [select title__c, credlyBadgeId__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch];   
+               
+               setPagingInfo(badges);
+               
                     badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by title__c LIMIT :pageLimit OFFSET :badgeOffset];   
             }
             
             if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
             {
+            	
+            	badges = [select credlyBadgeId__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs))];   
+          
+           setPagingInfo(badges);
            
                      badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by title__c LIMIT :pageLimit OFFSET :badgeOffset];   
             }
@@ -845,6 +855,26 @@ public with sharing class BadgeContactController {
      // Initialize getBadge and return a list of records
     public List<badge__c> getBadges() {
         return (List<badge__c>) getBadge;
+    }
+    
+        public void setPagingInfo(List<badge__c> badges)
+    {
+    	 totalNumberofBadges = badges.size();
+       
+                    numberOfBadgePages  = totalNumberofBadges / pageLimit;
+         			Integer remainder = Math.mod(totalNumberofBadges,pageLimit); 
+         			if (remainder > 0)
+         			{
+         			++numberOfBadgePages;
+         			}
+         
+   
+         			if (numberOfBadgePages < 1)
+         			{
+         			numberOfBadgePages = 1;
+        			 }
+        			 
+    	
     }
     
 

@@ -173,7 +173,7 @@ public with sharing class CredlyJSONCalls {
            
          
          returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'me/badges/created?' + createURL);  
-        
+        system.debug(returnData);
           //parseResults
          CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
         if (obj.meta.status.compareTo('OK') == 0)

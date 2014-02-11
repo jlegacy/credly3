@@ -60,6 +60,20 @@
     }
 });
           
+             function hideContainer()
+          {
+          $j('#loading-container').hide();
+           $j('#content-container').hide();
+       
+          }
+          
+           function showContainer()
+          {
+          $j('#loading-container').show();
+            $j('#content-container').show();
+          }
+                
+          
           function showBadge()
           {
           $j('#my-badge').show();
@@ -135,12 +149,74 @@ function getAutoValues() {
                  
         </script>
     </head>
-    
+        <style type="text/css">
+        .exceptionText
+        { 
+            font-style:italic;
+            font-size:16px; 
+            font-weight:normal; 
+            text-align:left;
+            color:red;
+        }
+        .radioColumn
+        {
+        margin-left: 10px;
+        width:50px;
+        }
+   .content-container {
+ 	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: 61px;
+	margin-left: -43px;
+	font-size: 25px;
+	display:none;
+  }
+    .loading-container {
+    z-index:100;
+	position:absolute;
+	top:0;
+ 	right:0;
+	bottom:0;
+	left:0;
+	display:none;
+	background-image:url({!$Resource.ajaxloader});
+	background-repeat:no-repeat;
+	background-attachment:fixed;
+	background-position:center; 
+}
+.loading-container:before {
+	z-index:100;
+	position:absolute;
+	width:100%;
+	height:100%;
+	line-height:480px;
+	text-align: center;
+	vertical-align: middle; 
+	font-size:25px;
+	font-weight:bold;
+	color:black;
+	text-align:center;
+	background:rgba(70, 70, 70, 0.9);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;  
+	content: ' ';
+	opacity:0.4;
+	filter:alpha(opacity=40);
+	padding-top: 89px;
+}
+        
+    </style>
   
     
   <div id="errorMessages"> 
             <apex:messages id="messages" styleClass="exceptionText"/>
   </div>
+  
+              
+           <div id="loading-container" class="loading-container"></div>
+	<div id="content-container" class="content-container">Loading</div>
         
  <apex:iframe id="my-badge" frameborder="0" scrolling="no" width="960" height="540" src="https://staging.credly.com/badge-builder/embed/11"/>      
  <apex:form id="addForm" enctype="multipart/form-data">
@@ -155,7 +231,7 @@ function getAutoValues() {
          
           <apex:pageBlock mode="edit" rendered="{!addBlock}">
          <apex:pageBlockSection columns="4" collapsible="false" title="Add or edit a badge. When you save your badge it will be ready for issuing from within Salesforce, Credly, or other apps that display your created Credly badges." /> 
-         </apex:pageBlock>
+         </apex:pageBlock> 
          
           <apex:actionFunction name="setUploadController" action="{!setUploadAction}">
            </apex:actionFunction>
@@ -295,6 +371,13 @@ function getAutoValues() {
         <apex:commandButton action="{!prev}" value="Prev" id="PrevButton" rerender="detailsBlock"/> 
         <apex:commandButton action="{!next}" value="Next" id="nextButton" rerender="detailsBlock"/>
       
+       <apex:pageBlockSection >
+  <apex:pageBlockSectionItem >
+  <apex:inputText label="Name Contains" value="{!filterBadge}" /> 
+  <apex:commandButton value="Search for a Badge" onclick="showContainer()" action="{!searchBadge}" rerender="detailsBlock" oncomplete="hideContainer();" />
+  </apex:pageBlockSectionItem>
+  </apex:pageBlockSection>
+  
             <apex:outputPanel id="details">
                   <apex:pageBlockTable value="{!badges}" var="o">
                     <apex:column headerValue="Image">
@@ -318,6 +401,12 @@ function getAutoValues() {
                 <apex:commandButton action="{!addBadge}" value="Add" id="theAddButton" reRender="addForm"/>
                 
             </apex:pageBlockButtons>
+              <apex:outputLabel styleClass="smallGreen" >Page {!currentPage} of {!numberOfPages} </apex:outputLabel>
+        <br></br>
+         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofRecords} Total Records</apex:outputLabel>
+         
+        <apex:commandButton action="{!prev}" value="Prev" id="PrevButton2" rerender="detailsBlock"/> 
+        <apex:commandButton action="{!next}" value="Next" id="nextButton2" rerender="detailsBlock"/>
         </apex:pageBlock>
      
     </apex:form>

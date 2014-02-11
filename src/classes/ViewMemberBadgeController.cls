@@ -34,11 +34,6 @@ public with sharing class ViewMemberBadgeController {
         	staticCredlyClass.synchMemberBadgesFromCredly(myCredlyMemberBadges, mySalesForceCredlyMemberBadgeIDs);
         	myCredlyMemberBadgeIDs = staticCredlyClass.getCredlyMemberBadgeIdsFromData(myCredlyMemberBadges);
         	
-    
-     
-         
-         
-     
         return null;
     }
 

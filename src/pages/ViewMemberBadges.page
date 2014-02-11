@@ -208,6 +208,12 @@ function refreshScreen() {
                 
                 
             </apex:pageBlockButtons>
+              <apex:outputLabel styleClass="smallGreen" >Page {!currentBadgePage} of {!numberOfBadgePages} </apex:outputLabel>
+        <br></br>
+         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
+          
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton2" rerender="detailsBlock"/> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton2" rerender="detailsBlock"/>
         </apex:pageBlock>
      
     </apex:form>

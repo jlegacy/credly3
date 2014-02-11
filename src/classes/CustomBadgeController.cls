@@ -3,7 +3,7 @@ public with sharing class CustomBadgeController {
     
     public String securityToken {get; set;}
     
-    public Integer totalNumberofRecords{get;set;}
+    public Integer totalNumberofRecords{get;set;} 
     public Integer pageLimit{get;set;}
     public Integer pageOffset{get;set;}
     public Integer numberOfPages{get; set;}
@@ -11,7 +11,29 @@ public with sharing class CustomBadgeController {
     public ID myID {get;set;}
     public List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges {get;set;}
     public set<String> myCredlyBadgeIDs {get;set;}
-     public set<String> mySalesForceCredlyBadgeIDs {get;set;}
+     public set<String> mySalesForceCredlyBadgeIDs {get;set;} 
+     
+       public String filterBadge {
+        get;
+        set;
+    }
+
+    public String filterBadgeSearch {
+        get {
+            return '%' + filterBadgeSearch + '%';
+        }
+
+        set {
+            filterBadgeSearch = filterBadge;
+        }
+
+    }
+      public PageReference searchBadge() {
+     	 pageOffset = 0;
+         currentPage = 1;
+         getBadges();
+        return null;
+     }
     
     public CustomBadgeController () {
     	
@@ -37,6 +59,8 @@ public with sharing class CustomBadgeController {
         pageLimit = staticCredlyClass.PageLimit();
         pageOffset = 0;
         currentPage = 1;
+        
+           filterBadge = '';
         
         String c = ApexPages.currentPage().getParameters().get('gotoAdd');
      
@@ -320,15 +344,31 @@ public with sharing class CustomBadgeController {
   
    // ApexPages.StandardgetBadgetroller must be instantiated
     // for standard list controllers
-    public List<badge__c> getBadge {
+   public List<badge__c> getBadge {
         get {
-         
-          List<badge__c> badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where (credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId) order by title__c LIMIT :pageLimit OFFSET :pageOffset];   
+        	 List<badge__c> badges;
+        	 
+        	   if (((filterBadge != null) || (filterBadge.trim().length() != 0))) 
+               {
+               filterBadgeSearch = filterBadge;
+               
+                badges = [select title__c, credlyBadgeId__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch];   
+          		
+          		setPagingInfo(badges);
+          		
+           		badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)   order by title__c LIMIT :pageLimit OFFSET :pageOffset];   
+               }
+                 if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
+            {
+            	badges = [select credlyBadgeId__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs))];
+            	setPagingInfo(badges);
+            	 badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by title__c LIMIT :pageLimit OFFSET :pageOffset];
+            }
+               
             return badges;
         }
         set; 
     } 
-
     // Initialize getBadge and return a list of records
     public List<badge__c> getBadges() {
         return (List<badge__c>) getBadge;
@@ -371,128 +411,25 @@ public with sharing class CustomBadgeController {
     }
    
  
-/*public void synchBadgesFromCredly()
-{
-	boolean check = false;
-	
-	List<badge__c> newBadges = new List<badge__c>();
-	
-	//loop through credlyList and compare to Salesforce list 
-	
-	   	  	for ( CredlyJSON2ApexMyBadges.Data item : myCredlyBadges) {
-	   	  		check = false;
-	   	  		if (mySalesForceCredlyBadgeIDs.contains(String.valueOf(item.id)))
-	   	  		{
-	   	  		check=true;
-	   	  		} 
-	   	  		
-	   	  		if (check == false)
-	   	  		{
-
-      	badge__c insertBadges = new badge__c();
-
-        insertBadges.document_id__c = string.valueof(item.image_url);
-        
-         insertBadges.criteria__c = ''; 
-         insertBadges.description__c = ''; 
-         insertBadges.expires_in__c = 319999999;  
-         insertBadges.is_giveable__c = string.valueof(item.is_giveable); 
-         
-         if (item.short_description  == null)
-         {
-         	insertBadges.short_description__c = 'none';	
-         }
-         else
-         {
-         	insertBadges.short_description__c = string.valueof(item.short_description);	
-         }
-         
-         insertBadges.title__c = string.valueof(item.title);
-         insertBadges.credlyBadgeId__c = string.valueof(item.id);
-         
-        
-         newBadges.add(insertBadges);
-         
-    }
-	   	  			
-	   	  		}
-	   	  if (newBadges <> null)
-	   	  {	
-	   	    insert newBadges;
-	   	  }
-	   	  		
-    		
-     	  	}*/
-	
-
-/*public void synchBadgeToCredly(badge__c badge)
-{
-    String returnData;
-  	String createURL;
-  	String badgeID;
-  	String errMessage;
-  	String stsMessage;
-  	String encodedImage; 
-  	String xbadgeURL;
-  	String securityToken;
-    
-    staticCredlyClass.Token j = staticCredlyClass.getToken(); 
-      
- 	securityToken = j.APItoken;
- 
-  	    
-    List<badge__c> badgeList = new List<badge__c>();
-   // for (badge__c badge : myBadge) {
-    // get the image data
-     	
-     	if (badge.upload_file_id__c == null)
-     	{
-     		
-     		encodedImage = CredlyJSONCalls.getCredlyImage(badge.document_id__c);
-     		 	
-     	}
-     	else
-     	{
-     	encodedImage = CredlyJSONCalls.getDocumentBlob(badge.upload_file_id__c);	
-     	}
-     
-        if (encodedImage != null && securityToken != null)
-        {
-        // Build Credly Badge //
-       Map<String, String> mBadge = new Map<String, String>();
-       mBadge.put('attachment', encodedImage); 
-       mBadge.put('title', badge.title__c);
-       mBadge.put('short_description', badge.short_description__c = (badge.short_description__c == null) ? ' ' : badge.short_description__c); 
-       mBadge.put('description', badge.description__c = (badge.description__c == null) ? ' ' : badge.description__c); 
-       mBadge.put('categories',   badge.categories__c = (badge.categories__c == null) ? ' ' : badge.categories__c); 
-       mBadge.put('criteria', badge.criteria__c = (badge.criteria__c == null) ? ' ' : badge.criteria__c); 
-       mBadge.put('is_giveable', badge.is_giveable__c = (badge.is_giveable__c == null) ? ' ' : badge.is_giveable__c); 
-       mBadge.put('expires_in', String.valueOf(badge.expires_in__c)); 
-        mBadge.put('access_token',securityToken);  
-        
-        createURL = CredlyJSONCalls.createURLString(mBadge);
-        
-           //post badge to credly
-           
+  public void setPagingInfo(List<badge__c> badges)
+    {
+    	 totalNumberofRecords = badges.size();
        
-         returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'badges', createURL);  
-         system.debug(returnData);
-          
-        
-          //parseResults
-         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
-     	if (obj.meta.status.compareTo('OK') == 0)
-     	  	{
-     	     CredlyJSON2ApexBadge obj2 = CredlyJSON2ApexBadge.parse(returnData);
-      	  	 badge.credlyBadgeId__c = String.valueOf(obj2.data);
-      	  	 badgeList.add(badge);
-     	  	} 
-        }
-   //}
+                    numberOfPages  = totalNumberofRecords / pageLimit;
+         			Integer remainder = Math.mod(totalNumberofRecords,pageLimit); 
+         			if (remainder > 0)
+         			{
+         			++numberOfPages;
+         			}
+         
    
-    update badgeList;
- 
-   } */
+         			if (numberOfPages < 1)
+         			{
+         			numberOfPages = 1;
+        			 }
+        			 
+    	
+    }
 
 	
 }

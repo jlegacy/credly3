@@ -1,6 +1,7 @@
 public with sharing class viewBadgeRulesController {
 	
 	 public badge__c badge{get;set;}
+	  public Boolean customMessageChecked {get; set;}
 	public viewBadgeRulesController () {
 		step = 1;
 		urlLink = ' ';
@@ -255,7 +256,7 @@ public with sharing class viewBadgeRulesController {
     	
     	setBadgeSelect = xBadgeId;
     	
-        List < badge_rules__c > rule = [select id, account_type_r__c, evidence_id_r__c, evidence_name_r__c, evidence_r__c, lookup_id_r__c, rule_name_r__c, testimonial_r__c, badge_rule_r__c, badge_visual_rule_r__c,send_email_r__c,evidence_url_r__c   from badge_rules__c where ID = :xRuleId LIMIT 1];
+        List < badge_rules__c > rule = [select id, account_type_r__c, evidence_id_r__c, evidence_name_r__c, evidence_r__c, lookup_id_r__c, rule_name_r__c, testimonial_r__c, badge_rule_r__c, badge_visual_rule_r__c,send_email_r__c,evidence_url_r__c,custom_message_r__c   from badge_rules__c where ID = :xRuleId LIMIT 1];
         
          List < badge__c > badge = [select id, title__c, credlyBadgeId__c from badge__c where ID = :xBadgeId LIMIT 1];
        
@@ -265,13 +266,15 @@ public with sharing class viewBadgeRulesController {
         {
         name = x.rule_name_r__c;
         populateRecordType = x.account_type_r__c;
-        testimonial = x.testimonial_r__c;
+        setTestimonialSelect = x.testimonial_r__c;
         ruleParm = x.badge_rule_r__c;
         emailChecked = x.send_email_r__c;
         uploadedFileName = x.evidence_name_r__c; 
         
-        hasUploadedFile = uploadedFileName.trim().length() == 0 ? false : true;
+        hasUploadedFile = uploadedFileName == null ? false : true;
         
+        customMessage = x.custom_message_r__c;
+      
         urlLink = x.evidence_url_r__c;
         
         if (urlLink != null)
@@ -674,7 +677,7 @@ public Document document {
          ruleBadge.rule_name_r__c = name;
          ruleBadge.badge_visual_rule_r__c = automatedTriggerClass.displayRule(setRuleText);
          ruleBadge.badge_rule_r__c = setRuleText;
-         ruleBadge.testimonial_r__c =  testimonial;
+         ruleBadge.testimonial_r__c =  setTestimonialSelect;
          ruleBadge.send_email_r__c = emailChecked;
          ruleBadge.account_type_r__c = populateRecordType ;
          ruleBadge.custom_message_r__c = customMessage;
@@ -713,7 +716,7 @@ public Document document {
          i.badge_visual_rule_r__c = automatedTriggerClass.displayRule(setRuleText);
          i.badge_rule_r__c = setRuleText;
         
-         i.testimonial_r__c =  testimonial;
+         i.testimonial_r__c =  setTestimonialSelect; 
         i.account_type_r__c = populateRecordType;
          i.send_email_r__c = emailChecked;
          i.custom_message_r__c = customMessage;

@@ -85,8 +85,17 @@ global class batchSyncMemberBadges implements
      //  if (evidenceImage == null)   
      //   {   
      		//evidenceImage = memberBadge.evidence_url_m__c;
+     		Boolean result =   memberBadge.evidence_url_m__c.contains('http');
+     		if (result == false)
+     		{
+     			evidenceImage = 'http://' + memberBadge.evidence_url_m__c;
+     		}
+     		else
+     		{
+     			evidenceImage = memberBadge.evidence_url_m__c;
+     		}
      		
-            evidenceImage = EncodingUtil.Base64Encode( Blob.valueOf( memberBadge.evidence_url_m__c ) );
+        //    evidenceImage = EncodingUtil.Base64Encode( Blob.valueOf( memberBadge.evidence_url_m__c ) );
      //   }
         }
         

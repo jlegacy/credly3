@@ -352,16 +352,20 @@ public with sharing class CustomBadgeController {
                {
                filterBadgeSearch = filterBadge;
                
-                badges = [select title__c, credlyBadgeId__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch];   
+                AggregateResult[] groupedResults = [select  count(id) recCnt from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch];   
+          		 Object recordCount = groupedResults[0].get('recCnt');
           		
-          		setPagingInfo(badges);
+               setPagingInfo(Integer.valueOf(recordCount));
           		
            		badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)   order by title__c LIMIT :pageLimit OFFSET :pageOffset];   
                }
                  if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
             {
-            	badges = [select credlyBadgeId__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs))];
-            	setPagingInfo(badges);
+            	AggregateResult[] groupedResults  = [select count(id) recCnt from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs))];
+            	 Object recordCount = groupedResults[0].get('recCnt');
+            	 
+               setPagingInfo(Integer.valueOf(recordCount));
+               
             	 badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by title__c LIMIT :pageLimit OFFSET :pageOffset];
             }
                
@@ -411,9 +415,10 @@ public with sharing class CustomBadgeController {
     }
    
  
-  public void setPagingInfo(List<badge__c> badges)
+        public void setPagingInfo(Integer records)
     {
-    	 totalNumberofRecords = badges.size();
+    	
+    	 totalNumberofRecords = records;
        
                     numberOfPages  = totalNumberofRecords / pageLimit;
          			Integer remainder = Math.mod(totalNumberofRecords,pageLimit); 

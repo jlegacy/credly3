@@ -15,7 +15,7 @@ public with sharing class ViewMemberBadgeController {
     public Integer numberOfPages{get; set;}
     public Integer currentPage{get; set;}
      public ID myID {get;set;} 
-    
+   
      public pageReference dmlOperation()
     {
         myId = UserInfo.getUserId();
@@ -148,10 +148,11 @@ public with sharing class ViewMemberBadgeController {
                if (((filterName == null) || (filterName.trim().length() == 0)) && (recordType.equals('All')))  
                {
                
-                memberBadges = [select credlyMemberBadge_id_m__c
+                AggregateResult[] groupedResults = [select count(id) recCnt
                     from member_badge__c  where ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))];
                
-                  setPagingInfo(memberBadges);
+                  Object recordCount = groupedResults[0].get('recCnt');
+           		setPagingInfo(Integer.valueOf(recordCount));
                   
                 memberBadges = [select criteria_m__c, description_m__c, expires_in_m__c, 
                     short_description_m__c,title_m__c, image_m__c, 
@@ -171,10 +172,11 @@ public with sharing class ViewMemberBadgeController {
                if (recordType.equals('title'))
                {
                	
-               	   memberBadges = [select badge_lookup_m__r.title__c, credlyMemberBadge_id_m__c
+               	   AggregateResult[] groupedResults = [select count(id) recCnt
                     from member_badge__c where badge_lookup_m__r.title__c like :filterNameSearch and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))];
                   
-                setPagingInfo(memberBadges); 
+                Object recordCount = groupedResults[0].get('recCnt');
+           		setPagingInfo(Integer.valueOf(recordCount));
           
                 memberBadges = [select criteria_m__c, description_m__c, expires_in_m__c, 
                     short_description_m__c,title_m__c, image_m__c, 
@@ -187,14 +189,15 @@ public with sharing class ViewMemberBadgeController {
                     
                if (recordType.equals('recipient'))
                {
-               	 memberBadges = [select credlyMemberBadge_id_m__c,account_lookup_m__r.name,contact_lookup_m__r.name,lead_lookup_m__r.name 
+               	 AggregateResult[] groupedResults = [select count(id) recCnt
                     from member_badge__c 
                     where (account_lookup_m__r.name like :filterNameSearch 
                     or lead_lookup_m__r.name like :filterNameSearch 
                      or contact_lookup_m__r.name like :filterNameSearch)
                      and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))];
                  
-                 setPagingInfo(memberBadges);
+                 Object recordCount = groupedResults[0].get('recCnt');
+           		setPagingInfo(Integer.valueOf(recordCount));
                	
                 memberBadges = [select criteria_m__c, description_m__c, expires_in_m__c, 
                     short_description_m__c,title_m__c, image_m__c, 
@@ -212,11 +215,12 @@ public with sharing class ViewMemberBadgeController {
                if (recordType.equals('category'))
                {
                	
-               	 memberBadges = [select credlyMemberBadge_id_m__c, categories_m__c from member_badge__c 
+               	 AggregateResult[] groupedResults = [select count(id) recCnt from member_badge__c 
                     where (categories_m__c like :filterNameSearch)
                      and ((credlyMemberBadge_id_m__c IN :myCredlyMemberBadgeIDs) or (credlyMemberBadge_id_m__c = null and createdById = :myId))];
                      
-                 setPagingInfo(memberBadges); 
+                 Object recordCount = groupedResults[0].get('recCnt');
+           		setPagingInfo(Integer.valueOf(recordCount));
                   
                 memberBadges = [select criteria_m__c, description_m__c, expires_in_m__c, categories_m__c,
                     short_description_m__c,title_m__c, image_m__c, 
@@ -240,10 +244,10 @@ public with sharing class ViewMemberBadgeController {
     return (List<member_badge__c>) getBadge(); 
     }
     
-    public void setPagingInfo(List<member_badge__c> memberBadges)
+      public void setPagingInfo(Integer records)
     {
-    	 totalNumberofBadges = memberBadges.size();
-       
+    	
+    	 totalNumberofBadges = records;
                     numberOfBadgePages  = totalNumberofBadges / pageLimit;
          			Integer remainder = Math.mod(totalNumberofBadges,pageLimit); 
          			if (remainder > 0)

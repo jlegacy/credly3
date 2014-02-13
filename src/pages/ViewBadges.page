@@ -24,7 +24,7 @@
 				if (n > 0)
 				{
 				n = n + 7;
-				var size = classString.substring(n, n+3);
+				size = classString.substring(n, n+3);
 				}
 				
 				if ($j(this).val().length >= size) {
@@ -33,6 +33,19 @@
   				}
 
 				});
+				
+				$j("#contentWrapper").delegate("div[class*='sorting']","click",function(){
+				setSort($j(this).attr('id'), $j(this).closest("div[id*='sortDiv']").text());
+			//	alert($j(this).attr('id'));
+			//	alert($j(this).closest("div[id*='sortDiv']").text());
+
+				});
+				
+				attachSorts();
+				
+				
+				
+	
       
           });
           
@@ -59,6 +72,13 @@
         $j('#my-badge').hide();
     }
 });
+          
+          function attachSorts()
+          {
+          $j("div[id*='sortDiv']").append('<div id="sortUp" class="sorting"><img src="images/html-basic-tutor-5050.gif" width="50" height="50" alt="HTML Basic Tutor" /></div>');
+		  $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><img src="images/html-basic-tutor-5050.gif" width="50" height="50" alt="HTML Basic Tutor" /></div>');
+          }
+          
           
              function hideContainer()
           {
@@ -239,6 +259,10 @@ function getAutoValues() {
               <apex:actionFunction name="setImageController" action="{!setImageAction}">
            </apex:actionFunction>
           
+            <apex:actionFunction name="setSort" action="{!setSortController}" rerender="detailsBlock" onComplete="attachSorts();">
+           <apex:param name="firstParam"  assignTo="{!xSortDirection}" value="" /> 
+           <apex:param name="secondParam"  assignTo="{!xSortField}" value="" />  
+           </apex:actionFunction> 
         
            <apex:actionFunction name="passImageParms" action="{!passBadgeImageParms}" rerender="addForm">
            <apex:param name="firstParam"  assignTo="{!xbadgeURL}" value="" /> 

@@ -11,7 +11,12 @@ public with sharing class CustomBadgeController {
     public ID myID {get;set;}
     public List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges {get;set;}
     public set<String> myCredlyBadgeIDs {get;set;}
-     public set<String> mySalesForceCredlyBadgeIDs {get;set;} 
+    public String xSortDirection {get;set;}
+    public String xSortField {get;set;}
+      public String pSortDirection {get;set;}
+    public String pSortField {get;set;} 
+   
+     public set<String> mySalesForceCredlyBadgeIDs {get;set;}
      
        public String filterBadge {
         get;
@@ -34,8 +39,25 @@ public with sharing class CustomBadgeController {
          getBadges();
         return null;
      }
+     
+     public PageReference setSortController() {
+     	 pageOffset = 0;
+         currentPage = 1;
+         getBadges();
+         
+         setSortProperties();
+         
+         system.debug(xSortDirection);
+         system.debug(xSortField);
+        return null; 
+     }
+     
+    
     
     public CustomBadgeController () {
+    	
+    	pSortDirection = 'ASC';
+    	pSortField = 'title__c';
     	
     Double j; 
     	
@@ -71,6 +93,36 @@ public with sharing class CustomBadgeController {
         }
      
     }
+    
+   public void setSortProperties()
+   {
+   	
+   	pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC';
+   	
+   	if (xSortField == 'Image')
+   	{
+   		pSortField = 'image__c';
+   		
+   	}
+   	
+   		if (xSortField == 'Title')
+   	{
+   		pSortField = 'title__c';
+   	}
+   	
+   		if (xSortField == 'Description')
+   	{
+   		pSortField = 'description__c';
+   	}
+   	
+   	if (xSortField == 'ID')
+   	{
+   		pSortField = 'credlyBadgeId__c';
+   	}
+    
+   	
+   }
+   
    public String giveableType {
         get;
         set;
@@ -357,7 +409,7 @@ public with sharing class CustomBadgeController {
           		
                setPagingInfo(Integer.valueOf(recordCount));
           		
-           		badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)   order by title__c LIMIT :pageLimit OFFSET :pageOffset];   
+           		badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)  order by ' +  pSortField + ' LIMIT :pageLimit OFFSET :pageOffset');   
                }
                  if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
             {
@@ -365,8 +417,9 @@ public with sharing class CustomBadgeController {
             	 Object recordCount = groupedResults[0].get('recCnt');
             	 
                setPagingInfo(Integer.valueOf(recordCount));
+               system.debug(pSortField);
                
-            	 badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by title__c LIMIT :pageLimit OFFSET :pageOffset];
+            	 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' +  pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
             }
                
             return badges;

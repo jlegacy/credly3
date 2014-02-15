@@ -10,7 +10,45 @@
          <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
       
         <script>var $j = jQuery.noConflict();
-$j(document).ready(function () {});
+$j(document).ready(function () {
+
+   $j("#contentWrapper").delegate("div[class*='sorting']", "click", function () {
+         setSort($j(this).attr('id'), $j(this).closest("div[id*='sortDiv']").text());
+     });
+
+
+     attachSorts(); 
+
+
+});
+
+ function attachSorts() {
+       $j("div[id*='sortDiv']").append('<div id="sortUp" class="sorting"><div class="upImage"></div></div>');
+       $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><div class="downImage"></div></div>');
+       
+       //remove unneeded  sorts//
+       
+        $j("div[id*='sortDiv']").each(function() {
+        if ($j(this).text() == 'Description')
+        	{
+        		$j(this).children().remove();
+        	}
+        
+          if ($j(this).text() == 'Email')
+        	{
+        		$j(this).children().remove();
+        	}
+        	if ($j(this).text() == 'Recipient')
+        	{
+        		$j(this).children().remove();
+        	}
+        		if ($j(this).text() == 'Testimonial')
+        	{
+        		$j(this).children().remove();
+        	}
+        });  
+   }
+
 
 function isNumberKey(evt) {
     var charCode = (evt.which) ? evt.which : event.keyCode
@@ -29,6 +67,7 @@ resetPageLimitController();
           {
           $j('#loading-container').hide();
            $j('#content-container').hide();
+           attachSorts();
           }
           
            function showContainer()
@@ -133,6 +172,11 @@ function refreshScreen() {
   <apex:form id="addForm">
    <apex:actionFunction name="refreshScreenController" action="{!refreshScreenController}"  rerender="addForm">
     </apex:actionFunction> 
+    
+       <apex:actionFunction name="setSort" action="{!setSortController}" rerender="detailsBlock" onComplete="attachSorts();">
+           <apex:param name="firstParam"  assignTo="{!xSortDirection}" value="" /> 
+           <apex:param name="secondParam"  assignTo="{!xSortField}" value="" />  
+           </apex:actionFunction> 
     
      <apex:actionFunction name="resetPageLimitController" action="{!resetPageLimitController}"  rerender="dummy">
     </apex:actionFunction> 

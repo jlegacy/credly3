@@ -1,6 +1,9 @@
 public with sharing class BadgeContactController {
     
       public BadgeContactController() { 
+      	
+        pSortDirection = 'ASC';
+    	pSortField = 'title__c';
 		
 		getOnce = true;
         renderStep1 = true;
@@ -52,6 +55,11 @@ public with sharing class BadgeContactController {
  	     
            
     }
+      public String xSortDirection {get;set;}
+    public String xSortField {get;set;}
+      public String pSortDirection {get;set;}
+    public String pSortField {get;set;} 
+    
       public Integer totalNumberofBadges{get;set;}
        public Integer badgeOffset{get;set;}
          public Integer currentBadgePage{get; set;}
@@ -63,6 +71,8 @@ public with sharing class BadgeContactController {
         get;
         set;
     }
+    
+    
     
     public List < badge__c > badgeList {get;set;}
      public String securityToken {get; set;}
@@ -85,6 +95,50 @@ public with sharing class BadgeContactController {
 
  
    public String setBadgeSelectTitle {get; set;}
+   
+       public PageReference setSortController() {
+     	 pageOffset = 0;
+         currentPage = 1;
+         getBadges();
+         
+         setSortProperties(); 
+
+        return null; 
+     }
+   
+    public void setSortProperties()
+   {
+   	
+   	pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC';
+   	
+   	if (xSortField == 'Image')
+   	{
+   		pSortField = 'image__c';
+   		
+   	}
+   	
+   		if (xSortField == 'Title')
+   	{
+   		pSortField = 'title__c';
+   	}
+   	
+   		if (xSortField == 'Description')
+   	{
+   		pSortField = 'description__c';
+   	}
+   	
+   	if (xSortField == 'ID')
+   	{
+   		pSortField = 'credlyBadgeId__c';
+   	}
+   	
+   	 	if (xSortField == 'Created Date')
+   	{
+   		pSortField = 'CreatedDate';
+   	}
+   
+   	
+   }
    
     public void setTestimonialEmpty() {
      
@@ -832,7 +886,7 @@ public with sharing class BadgeContactController {
                Object recordCount = groupedResults[0].get('recCnt');
                setPagingInfo(Integer.valueOf(recordCount));
                
-                    badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by title__c LIMIT :pageLimit OFFSET :badgeOffset];   
+                    badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by ' +  pSortField + ' ' + pSortDirection +  ' LIMIT :pageLimit OFFSET :badgeOffset');   
             }
             
             if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
@@ -842,7 +896,7 @@ public with sharing class BadgeContactController {
            		setPagingInfo(Integer.valueOf(recordCount));
       
            
-                     badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by title__c LIMIT :pageLimit OFFSET :badgeOffset];   
+                     badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' +  pSortField + ' ' + pSortDirection +  ' LIMIT :pageLimit OFFSET :badgeOffset');   
             }
                
             return badges;

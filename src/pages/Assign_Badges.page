@@ -8,151 +8,159 @@
          
         <script>
               var $j = jQuery.noConflict();
-        $j(document).ready(function() {
-        hideContainer();
-        
-           if ("{!customMessageChecked}" == 'false')
-        {
-       $j('.customMessageInput').hide();
-       }
-       else
-       {
-        $j('.customMessageInput').show();
-       }
-        
-        
-        //if using the back button then restore selected ids
-        if ('{!renderStep2}' && '{!xSelectedIDs}'.trim().length > 0)
-        {
-        var ids = '{!xSelectedIDs}';
-        var mySplitResult = ids.split(',');
-        
-		for(i = 0; i < mySplitResult.length; i++){
-		// set check boxes checked //
-		
-		$j('#' + mySplitResult[i]).attr('checked', true);
-		 
-		}
-        }
-        
-        //set radio button selected for badge
-        $j("input[type='radio']").each(function()
-        {
-          if ($j(this).val() == '{!setBadgeSelect}')
-       // if ($j(this).val() == $j('#hiddenBadge').val())
-        {
-        $j(this).attr('checked',true);
-        }
-        });
-        
-        
-       customMessageChecked = $j('#contentWrapper').find("input[id*='customMessageCheckBox']");
-        if ((customMessageChecked).attr('checked'))
-        {
+       $j(document).ready(function () {
+  
+
+     if ("{!customMessageChecked}" == 'false') {
+         $j('.customMessageInput').hide();
+     } else {
          $j('.customMessageInput').show();
-        }
-        else
-        {
-        $j('.customMessageInput').hide();
-        }
+     }
+
+
+     //if using the back button then restore selected ids
+     if ('{!renderStep2}' && '{!xSelectedIDs}'.trim().length > 0) {
+         var ids = '{!xSelectedIDs}';
+         var mySplitResult = ids.split(',');
+
+         for (i = 0; i < mySplitResult.length; i++) {
+             // set check boxes checked //
+
+             $j('#' + mySplitResult[i]).attr('checked', true);
+
+         }
+     }
+
+     //set radio button selected for badge
+     $j("input[type='radio']").each(function () {
+         if ($j(this).val() == '{!setBadgeSelect}')
+         // if ($j(this).val() == $j('#hiddenBadge').val())
+         {
+             $j(this).attr('checked', true);
+         }
+     });
+
+
+     customMessageChecked = $j('#contentWrapper').find("input[id*='customMessageCheckBox']");
+     if ((customMessageChecked).attr('checked')) {
+         $j('.customMessageInput').show();
+     } else {
+         $j('.customMessageInput').hide();
+     }
+
+
+     $j("#contentWrapper").delegate("input[type='radio']", "click", function () {
+         showContainer();
+         var urlString = $j(this).closest('td').next().find('img').attr('src');
+         setBadgeID($j(this).val(), urlString);
+     });
+
+     $j("#contentWrapper").delegate("input[id*='emailCheckbox']", "click", function () {
+         if (this.checked) {
+             $j('.customMessageCheckBox').show();
+             $j('.customMessageInput').show();
+         } else {
+             $j('.customMessageCheckBox').hide();
+             $j('.customMessageInput').hide();
+         }
+     });
+
+     $j("#contentWrapper").delegate("input[id*='customMessageCheckBox']", "click", function () {
+         if (this.checked) {
+             $j('.customMessageInput').show();
+         } else {
+             $j('.customMessageInput').hide();
+         }
+
+     });
+
+     $j("#contentWrapper").delegate("div[class*='sorting']", "click", function () {
+         setSort($j(this).attr('id'), $j(this).closest("div[id*='sortDiv']").text());
+     });
+
+
+     attachSorts(); 
+
+ });
+    
+    function attachSorts() {
+       $j("div[id*='sortDiv']").append('<div id="sortUp" class="sorting"><div class="upImage"></div></div>');
+       $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><div class="downImage"></div></div>');
+       
+       //remove unneeded  sorts//
+       
+        $j("div[id*='sortDiv']").each(function() {
+        if ($j(this).text() == 'Description')
+        	{
+        		$j(this).children().remove();
+        	}
         
-		
-		$j("#contentWrapper").delegate("input[type='radio']","click",function()
-		{
-		showContainer();
-		var urlString = $j(this).closest('td').next().find('img').attr('src');
-		setBadgeID($j(this).val(),urlString);
-		}); 
-		
-		$j("#contentWrapper").delegate("input[id*='emailCheckbox']","click",function(){
-		if (this.checked)
-		{
-		$j('.customMessageCheckBox').show();
-		$j('.customMessageInput').show();
-		}
-		else
-		{
-		$j('.customMessageCheckBox').hide();
-		$j('.customMessageInput').hide();
-		}
-		});
-		
-		$j("#contentWrapper").delegate("input[id*='customMessageCheckBox']","click",function(){
-		if (this.checked)
-		{
-		$j('.customMessageInput').show();
-		}
-		else
-		{
-		$j('.customMessageInput').hide();
-		}
-	
-		});
-	
-		
+          if ($j(this).text() == 'Sel')
+        	{
+        		$j(this).children().remove();
+        	}
+        });  
+   }
 
-		});
-          
-       
-             function startUpload() {
-          
-                     upload();
-                     
-                     setInterval(function() {
-                  this.window.location.href = window.location.href}, 3000);
-              }
-              
-          function hideContainer()
-          {
-          $j('#loading-container').hide();
-           $j('#content-container').hide();
-       
-          }
-          
-           function showContainer()
-          {
-          $j('#loading-container').show();
-            $j('#content-container').show();
-          }
-                
 
-          function refreshScreen() {
-              var error = false;
-              
-              if($j('#errorMessages').find('.exceptionText').length != 0)
-              {
-                  error = true;
-              }
+   function startUpload() {
 
-              if (error != true) {
-                  setInterval(function() {
-                  this.window.location.href = window.location.href}, 1000);
-              }
-          }
-          
-            function createMemberBadges(type) {
-            showContainer();
-             var ids = "";
-             var mySplitResult;
-              $j("tbody[id*='blockTableCheckboxes']").find('[type=checkbox]').each(function() {
-                  if ($j(this).is(':checked')) {
-                 ids = ids + $j(this).attr('id') + ',';
-                  }
-              });
-             	   
-                   createMemberBadgesApex(type, ids);
-            }
-            
-             function setBadgeSelected() { 
-                var x = $j("select[id*='selected_badge']").val();
-                 setBadgeID(x);
-            }
-            
-              function setTestimonial() {
-                var x = $j("textarea[id*='testimonial']").val();
-                  setTestimonialText(x);
-            }
-            
+       upload();
+
+       setInterval(function () {
+           this.window.location.href = window.location.href
+       }, 3000);
+   }
+
+   function hideContainer() {
+       $j('#loading-container').hide();
+       $j('#content-container').hide();
+       attachSorts();
+
+   }
+
+   function showContainer() {
+       $j('#loading-container').show();
+       $j('#content-container').show();
+   }
+
+
+   function refreshScreen() {
+       var error = false;
+
+       if ($j('#errorMessages').find('.exceptionText').length != 0) {
+           error = true;
+       }
+
+       if (error != true) {
+           setInterval(function () {
+               this.window.location.href = window.location.href
+           }, 1000);
+       }
+   }
+
+   function createMemberBadges(type) {
+       showContainer();
+       var ids = "";
+       var mySplitResult;
+       $j("tbody[id*='blockTableCheckboxes']").find('[type=checkbox]').each(function () {
+           if ($j(this).is(':checked')) {
+               ids = ids + $j(this).attr('id') + ',';
+           }
+       });
+
+       createMemberBadgesApex(type, ids);
+   }
+
+   function setBadgeSelected() {
+       var x = $j("select[id*='selected_badge']").val();
+       setBadgeID(x);
+   }
+
+   function setTestimonial() {
+       var x = $j("textarea[id*='testimonial']").val();
+       setTestimonialText(x);
+   }
 
         </script>
     </head>
@@ -214,6 +222,7 @@
 	filter:alpha(opacity=40);
 	padding-top: 89px;
 }
+  
         
     </style>
     
@@ -249,6 +258,11 @@
            <apex:param name="firstParam"  assignTo="{!setBadgeSelect }" value="" /> 
            <apex:param name="secondParam"  assignTo="{!setBadgeSelectImage }" value="" />
               </apex:actionFunction>
+              
+                  <apex:actionFunction name="setSort" action="{!setSortController}" rerender="badgeDetailsBlock" onComplete="attachSorts();">
+           <apex:param name="firstParam"  assignTo="{!xSortDirection}" value="" /> 
+           <apex:param name="secondParam"  assignTo="{!xSortField}" value="" />  
+           </apex:actionFunction> 
            
              <apex:actionFunction name="setTestimonialText" action="{!setTestimonialEmpty}" rerender="dummy">
            <apex:param name="firstParamx" assignTo="{!setTestimonialSelect}"  value="" />
@@ -498,6 +512,11 @@
                         <apex:outputField value="{!o.credlyBadgeId__c}" /> 
                          
                     </apex:column>
+                    
+                         <apex:column headerValue="Created Date">
+                        <apex:outputField value="{!o.CreatedDate}"/> 
+                    </apex:column>
+                    
                     </apex:pageBlockTable>
             </apex:outputPanel>
 

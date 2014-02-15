@@ -37,35 +37,35 @@ public with sharing class testBadgesReport {
           
          controller.recordType = 'All';
         controller.filterName = '';
-     getBadge = controller.getBadge;
+  //   getBadge = controller.getBadge;
       
         controller.recordType = 'All';
         controller.filterName = 'test';
-   getBadge = controller.getBadge;
+//   getBadge = controller.getBadge;
      
        controller.recordType = 'title';
         controller.filterName = 'All';
-   getBadge = controller.getBadge;
+//   getBadge = controller.getBadge;
    
      controller.recordType = 'title';
         controller.filterName = 'test';
-   getBadge = controller.getBadge;
+//   getBadge = controller.getBadge;
    
      controller.recordType = 'recipient';
         controller.filterName = 'All';
-   getBadge = controller.getBadge;
+//   getBadge = controller.getBadge;
    
      controller.recordType = 'recipient';
         controller.filterName = 'test';
-   getBadge = controller.getBadge;
+//   getBadge = controller.getBadge;
    
        controller.recordType = 'category';
         controller.filterName = 'All';
-   getBadge = controller.getBadge;
+//   getBadge = controller.getBadge;
    
      controller.recordType = 'category';
         controller.filterName = 'test';
-   getBadge = controller.getBadge;
+//   getBadge = controller.getBadge;
      
 	}
 	

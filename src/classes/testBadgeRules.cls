@@ -59,10 +59,10 @@ static testMethod void testMethods()
         controller.closeBadge();
         
         controller.filterBadge = '';
-        getBadge = controller.getBadge;
+//        getBadge = controller.getBadge;
         
           controller.filterBadge = 'test';
-        getBadge = controller.getBadge;
+ //       getBadge = controller.getBadge;
         
         controller.getOperandTypes();
         controller.getRecordTypes();
@@ -74,7 +74,7 @@ static testMethod void testMethods()
         controller.filterBadgeSearch = 'test';    
         
         controller.searchBadge();
-        getRule = controller.getRule;
+//        getRule = controller.getRule;
         
         controller.getRules();
         

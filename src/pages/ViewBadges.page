@@ -36,9 +36,6 @@
 				
 				$j("#contentWrapper").delegate("div[class*='sorting']","click",function(){
 				setSort($j(this).attr('id'), $j(this).closest("div[id*='sortDiv']").text());
-			//	alert($j(this).attr('id'));
-			//	alert($j(this).closest("div[id*='sortDiv']").text());
-
 				});
 				
 				attachSorts();
@@ -75,8 +72,16 @@
           
           function attachSorts()
           {
-          $j("div[id*='sortDiv']").append('<div id="sortUp" class="sorting"><img src="images/html-basic-tutor-5050.gif" width="50" height="50" alt="HTML Basic Tutor" /></div>');
-		  $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><img src="images/html-basic-tutor-5050.gif" width="50" height="50" alt="HTML Basic Tutor" /></div>');
+          $j("div[id*='sortDiv']").append('<div id="sortUp" class="sorting"><div class="upImage"></div></div>');
+		  $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><div class="downImage"></div></div>');
+		  
+		     $j("div[id*='sortDiv']").each(function() {
+        if ($j(this).text() == 'Description')
+        	{
+        		$j(this).children().remove();
+        	}
+        
+        });  
           }
           
           
@@ -84,7 +89,8 @@
           {
           $j('#loading-container').hide();
            $j('#content-container').hide();
-       
+           
+            attachSorts();
           }
           
            function showContainer()
@@ -115,7 +121,7 @@ function getAutoValues() {
     var titleData;
     var titles = [];
     var data = {};
-      $j.get( "https://api.credly.com/v0.2/badges/categories?query=" + search.trim() + "&page=1&per_page=5&order_direction=ASC", function( data ) {
+      $j.get( "https://api.credly.com/v1.1/assets/badges/categories?query=" + search.trim() + "&page=1&per_page=5&order_direction=ASC", function( data ) {
 
     	titleData = data.data;
     	$j.each(titleData, function(i, val)
@@ -392,8 +398,8 @@ function getAutoValues() {
         <br></br>
          <apex:outputLabel styleClass="smallGreen" >{!totalNumberofRecords} Total Records</apex:outputLabel>
          
-        <apex:commandButton action="{!prev}" value="Prev" id="PrevButton" rerender="detailsBlock"/> 
-        <apex:commandButton action="{!next}" value="Next" id="nextButton" rerender="detailsBlock"/>
+        <apex:commandButton action="{!prev}" value="Prev" id="PrevButton" rerender="detailsBlock" oncomplete="attachSorts();"/> 
+        <apex:commandButton action="{!next}" value="Next" id="nextButton" rerender="detailsBlock" oncomplete="attachSorts();"/>
       
        <apex:pageBlockSection >
   <apex:pageBlockSectionItem >
@@ -414,11 +420,16 @@ function getAutoValues() {
                      <apex:column headerValue="Description">
                         <apex:outputField value="{!o.description__c}" />
                     </apex:column>
-                   
+                    
                        <apex:column headerValue="ID">
                         <apex:outputField value="{!o.credlyBadgeId__c}" />
-                         
+                        </apex:column>
+                        
+                            <apex:column headerValue="Created Date">
+                        <apex:outputField value="{!o.CreatedDate}"/> 
                     </apex:column>
+                         
+                
         </apex:pageBlockTable>
             </apex:outputPanel>
             <apex:pageBlockButtons >

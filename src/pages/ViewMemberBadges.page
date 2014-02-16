@@ -29,23 +29,12 @@ $j(document).ready(function () {
        //remove unneeded  sorts//
        
         $j("div[id*='sortDiv']").each(function() {
-        if ($j(this).text() == 'Description')
+      
+          if ($j(this).text() == 'Badge Image')
         	{
         		$j(this).children().remove();
         	}
         
-          if ($j(this).text() == 'Email')
-        	{
-        		$j(this).children().remove();
-        	}
-        	if ($j(this).text() == 'Recipient')
-        	{
-        		$j(this).children().remove();
-        	}
-        		if ($j(this).text() == 'Testimonial')
-        	{
-        		$j(this).children().remove();
-        	}
         });  
    }
 
@@ -204,8 +193,8 @@ function refreshScreen() {
         <br></br>
          <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
           
-        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton" rerender="detailsBlock"/> 
-        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton" rerender="detailsBlock"/>
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton" rerender="detailsBlock" oncomplete="attachSorts();"/> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton" rerender="detailsBlock" oncomplete="attachSorts();"/>
             <apex:outputPanel styleclass="print" id="details">
              
                  <apex:pageBlockTable value="{!badges}" var="o">  
@@ -224,7 +213,7 @@ function refreshScreen() {
                         <apex:outputField value="{!o.testimonial_m__c}" />
                     </apex:column>
                         <apex:column styleclass="printDetails" headerValue="Evidence">
-                        <apex:outputField value="{!o.evidence_m__c}" />
+                        <apex:outputField value="{!o.evidence_name_m__c}" /> 
                          <apex:outputField value="{!o.evidence_url_m__c}" />
       					</apex:column>
                        <apex:column styleclass="printDetails" headerValue="Email">
@@ -256,8 +245,8 @@ function refreshScreen() {
         <br></br>
          <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
           
-        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton2" rerender="detailsBlock"/> 
-        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton2" rerender="detailsBlock"/>
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton2" rerender="detailsBlock"  oncomplete="attachSorts();"/> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton2" rerender="detailsBlock"  oncomplete="attachSorts();"/>
         </apex:pageBlock>
      
     </apex:form>

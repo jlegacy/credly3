@@ -1,24 +1,66 @@
 public with sharing class CustomBadgeController {
-        
-    
-    public String securityToken {get; set;}
-    
-    public Integer totalNumberofRecords{get;set;} 
-    public Integer pageLimit{get;set;}
-    public Integer pageOffset{get;set;}
-    public Integer numberOfPages{get; set;}
-    public Integer currentPage{get; set;}
-    public ID myID {get;set;}
-    public List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges {get;set;}
-    public set<String> myCredlyBadgeIDs {get;set;}
-    public String xSortDirection {get;set;}
-    public String xSortField {get;set;}
-      public String pSortDirection {get;set;}
-    public String pSortField {get;set;} 
-   
-     public set<String> mySalesForceCredlyBadgeIDs {get;set;}
-     
-       public String filterBadge {
+
+
+    public String securityToken {
+        get;
+        set;
+    }
+
+    public Integer totalNumberofRecords {
+        get;
+        set;
+    }
+    public Integer pageLimit {
+        get;
+        set;
+    }
+    public Integer pageOffset {
+        get;
+        set;
+    }
+    public Integer numberOfPages {
+        get;
+        set;
+    }
+    public Integer currentPage {
+        get;
+        set;
+    }
+    public ID myID {
+        get;
+        set;
+    }
+    public List < CredlyJSON2ApexMyBadges.Data > myCredlyBadges {
+        get;
+        set;
+    }
+    public set < String > myCredlyBadgeIDs {
+        get;
+        set;
+    }
+    public String xSortDirection {
+        get;
+        set;
+    }
+    public String xSortField {
+        get;
+        set;
+    }
+    public String pSortDirection {
+        get;
+        set;
+    }
+    public String pSortField {
+        get;
+        set;
+    }
+
+    public set < String > mySalesForceCredlyBadgeIDs {
+        get;
+        set;
+    }
+
+    public String filterBadge {
         get;
         set;
     }
@@ -33,46 +75,46 @@ public with sharing class CustomBadgeController {
         }
 
     }
-      public PageReference searchBadge() {
-     	 pageOffset = 0;
-         currentPage = 1;
-         getBadges();
+    public PageReference searchBadge() {
+        pageOffset = 0;
+        currentPage = 1;
+        xSortDirection = 'sortUp';
+        xSortField = 'Title';
+        setSortProperties();
         return null;
-     }
-     
-     public PageReference setSortController() {
-     	 pageOffset = 0;
-         currentPage = 1;
-         getBadges();
-         
-         setSortProperties();
-         
-         system.debug(xSortDirection);
-         system.debug(xSortField);
-        return null; 
-     }
-     
-    
-    
-    public CustomBadgeController () {
-    	
-    	pSortDirection = 'ASC';
-    	pSortField = 'title__c';
-    	
-    Double j; 
-    	
-     myId = UserInfo.getUserId();
-     String returnData;
-   
-     renderBadgeBuilder = true;
-     renderUpload = false;
-     
-     //get security token//
-      staticCredlyClass.Token tk = staticCredlyClass.getToken(); 
- 	  securityToken = tk.APItoken;
-  
-       addBlock = false;
-       showIframe = false;
+    }
+
+    public PageReference setSortController() {
+        pageOffset = 0;
+        currentPage = 1;
+
+        setSortProperties();
+
+        return null;
+    }
+
+
+
+    public CustomBadgeController() {
+
+        xSortDirection = 'sortUp';
+        xSortField = 'Title';
+        setSortProperties();
+
+        Double j;
+
+        myId = UserInfo.getUserId();
+        String returnData;
+
+        renderBadgeBuilder = true;
+        renderUpload = false;
+
+        //get security token//
+        staticCredlyClass.Token tk = staticCredlyClass.getToken(); 
+        securityToken = tk.APItoken;
+
+        addBlock = false;
+        showIframe = false;
         detailsBlock = true;
         is_giveable = 'false';
         giveableType = 'false';
@@ -81,64 +123,57 @@ public with sharing class CustomBadgeController {
         pageLimit = staticCredlyClass.PageLimit();
         pageOffset = 0;
         currentPage = 1;
-        
-           filterBadge = '';
-        
+
+        filterBadge = '';
+
         String c = ApexPages.currentPage().getParameters().get('gotoAdd');
-     
-        
-        if (c == 'Y')
-        {
+
+
+        if (c == 'Y') {
             addBadge();
         }
-     
+
     }
-    
-   public void setSortProperties()
-   {
-   	
-   	pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC';
-   	
-   	if (xSortField == 'Image')
-   	{
-   		pSortField = 'image__c';
-   		
-   	}
-   	
-   		if (xSortField == 'Title')
-   	{
-   		pSortField = 'title__c';
-   	}
-   	
-   		if (xSortField == 'Description')
-   	{
-   		pSortField = 'description__c';
-   	}
-   	
-   	if (xSortField == 'ID')
-   	{
-   		pSortField = 'credlyBadgeId__c';
-   	}
-   	
-   	 	if (xSortField == 'Created Date')
-   	{
-   		pSortField = 'CreatedDate';
-   	}
-    
-   	
-   }
-   
-   public String giveableType {
+
+    public void setSortProperties() {
+
+        pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC';
+
+        if (xSortField == 'Image') {
+            pSortField = 'image__c';
+
+        }
+
+        if (xSortField == 'Title') {
+            pSortField = 'title__c';
+        }
+
+        if (xSortField == 'Description') {
+            pSortField = 'description__c';
+        }
+
+        if (xSortField == 'ID') {
+            pSortField = 'credlyBadgeId__c';
+        }
+
+        if (xSortField == 'Created Date') {
+            pSortField = 'CreatedDate';
+        }
+
+
+    }
+
+    public String giveableType {
         get;
         set;
     }
-    
-     
-       public String categories {
+
+
+    public String categories {
         get;
         set;
     }
-    
+
     public String xbadgeName {
         get;
         set;
@@ -147,118 +182,111 @@ public with sharing class CustomBadgeController {
         get;
         set;
     }
-       public String xiconId{
+    public String xiconId {
         get;
         set;
     }
-  
-     public Boolean showIframe {
+
+    public Boolean showIframe {
         get;
         set;
     }
-    
-    public pageReference dmlOperation()
-    {
-    		//Call Credly API to get your badges//
-        	myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
-        	myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
-        	mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
-        	staticCredlyClass.synchBadgesFromCredly(myCredlyBadges, mySalesForceCredlyBadgeIDs);
-       
-         totalNumberofRecords = myCredlyBadgeIDs.size();
-         
-         numberOfPages  = totalNumberofRecords / pageLimit;
-         Integer remainder = Math.mod(totalNumberofRecords,pageLimit); 
-         if (remainder > 0)
-         {
-         	++numberOfPages;
-         }
-         
-   
-         if (numberOfPages < 1)
-         {
-         numberOfPages = 1;
-         }
-         
-         
-     
+
+    public pageReference dmlOperation() {
+        //Call Credly API to get your badges//
+        myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
+        myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
+        mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
+        staticCredlyClass.synchBadgesFromCredly(myCredlyBadges, mySalesForceCredlyBadgeIDs);
+
+        totalNumberofRecords = myCredlyBadgeIDs.size();
+
+        numberOfPages = totalNumberofRecords / pageLimit;
+        Integer remainder = Math.mod(totalNumberofRecords, pageLimit);
+        if (remainder > 0) {
+            ++numberOfPages;
+        }
+
+
+        if (numberOfPages < 1) {
+            numberOfPages = 1;
+        }
+
+
+
         return null;
     }
-    
-    public pageReference setImageAction()
-    {
-    	if (document.body != null)
-    	{
-    		xbadgeURL = 'data:image;base64,' + EncodingUtil.base64Encode(document.body);
-    	}
-    	return null;
-    }
-    
-    public pageReference passBadgeImageParms()
-    {
+
+    public pageReference setImageAction() {
+        if (document.body != null) {
+            xbadgeURL = 'data:image;base64,' + EncodingUtil.base64Encode(document.body);
+        }
         return null;
     }
-    
-    public pageReference setUploadAction()
-    {
-    		renderBadgeBuilder = (upload_option.compareTo('CR') == 0) ? true : false;
-    	    renderUpload = (upload_option.compareTo('SF') == 0) ? true : false;
-    	   
-    	    document = null;
-    	    xBadgeURL = ' ';
-    	    xbadgeName = ' ';
-    	   
-    	    return null;
+
+    public pageReference passBadgeImageParms() {
+        return null;
     }
-    
-  
-     public Integer counter {
+
+    public pageReference setUploadAction() {
+        renderBadgeBuilder = (upload_option.compareTo('CR') == 0) ? true : false;
+        renderUpload = (upload_option.compareTo('SF') == 0) ? true : false;
+
+        document = null;
+        xBadgeURL = ' ';
+        xbadgeName = ' ';
+
+        return null;
+    }
+
+
+    public Integer counter {
         get;
         set;
     }
-     public String is_expireNumber {
-        
+    public String is_expireNumber {
+
         get;
         set;
     }
-    
-      public String is_expirePeriod {
-        
+
+    public String is_expirePeriod {
+
         get;
         set;
     }
-    
+
     public List < SelectOption > getExpireNumbers() {
         Integer counter = 0;
         List < SelectOption > options = new List < SelectOption > ();
         do {
-        options.add(new SelectOption(string.valueof(counter), string.valueof(counter)));
-        counter++;
+            options.add(new SelectOption(string.valueof(counter), string.valueof(counter)));
+            counter++;
         } while (counter < 100);
-      
+
         return options;
     }
-    
-     public List < SelectOption > getExpirePeriods() {
+
+    public List < SelectOption > getExpirePeriods() {
         Integer counter = 0;
         List < SelectOption > options = new List < SelectOption > ();
-      
+
         options.add(new SelectOption('never', 'Never'));
         options.add(new SelectOption('day', 'Day(s)'));
         options.add(new SelectOption('week', 'Weeks(s)'));
         options.add(new SelectOption('month', 'Months(s)'));
         options.add(new SelectOption('year', 'Years(s)'));
-        
+
         return options;
     }
-  public List < SelectOption > getGiveableTypes() {
+    public List < SelectOption > getGiveableTypes() {
         List < SelectOption > options = new List < SelectOption > ();
         options.add(new SelectOption('true', 'Yes'));
         options.add(new SelectOption('false', 'No'));
         return options;
     }
-    
-      public List < SelectOption > getuploadTypes() {
+
+    public List < SelectOption > getuploadTypes() {
         List < SelectOption > options = new List < SelectOption > ();
         options.add(new SelectOption('CR', 'Make badge image with Badge Builder'));
         options.add(new SelectOption('SF', 'Upload a badge image'));
@@ -267,231 +295,266 @@ public with sharing class CustomBadgeController {
     public PageReference incrementCounter() {
         return null;
     }
-     public void dummy() {
-        
+    public void dummy() {
+
     }
-    
-   // @RemoteAction
-     public void setGiveable(String x) {
+
+    // @RemoteAction
+    public void setGiveable(String x) {
         is_giveable = x;
-   }
-    
-  
-    
+    }
+
+
+
     public PageReference closeBadge() {
-    
-    addBlock = false;
-    detailsBlock = true;
-    
-    PageReference pageRef = new PageReference('/apex/ViewBadges');
+
+        addBlock = false;
+        detailsBlock = true;
+
+        PageReference pageRef = new PageReference('/apex/ViewBadges');
         pageRef.setRedirect(true);
         return pageRef;
     }
 
 
-  
-  public String test { get; set; }
- 
-    public String title { get; set; }
-    
-      public String short_description { get; set; }
-        public String description { get; set; }
-          public String criteria { get; set; }
-            public String is_giveable { get; set; }
-              public Integer expires_in { get; set; }
-                  public Boolean addBlock { get; set; }
-                   public Boolean detailsBlock{ get; set; }
-                   public String upload_option { get; set; }
-                    public Boolean renderUpload { get; set; }
-                    public Boolean renderBadgeBuilder { get; set; }
-              
-          
- 
-  public Document document {
-    get {
-      if (document == null)
-        document = new Document();
-      return document;
-    }
-    set;
-  }
- 
-  
-  public class authorizationClass
-  {
-   public String data;
-   public String meta;
-  }
- 
-  public PageReference upload() {
-    
-  Double y;
-  String returnData;
-  String createURL;
-  String badgeID;
-  String errMessage;
-  String stsMessage;
-  String encodedImage; 
-  
-  badge__c insertUser = new badge__c();
-  
- 
-  if (xbadgeURL.trim().length() == 0)
-  {
-     ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Badge Missing - Use Badge Builder to create.'));
-     return null;
-  }
-  
-     if (document.body != null) {
-            document.AuthorId = UserInfo.getUserId();
-            document.FolderId = UserInfo.getUserId(); 
-        //    strBody = EncodingUtil.base64Encode(document.body);
-              try {
-            insert document;
 
-        } catch (DMLException e) {
-            ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error uploading file'));
+    public String test {
+        get;
+        set;
+    }
+
+    public String title {
+        get;
+        set;
+    }
+
+    public String short_description {
+        get;
+        set;
+    }
+    public String description {
+        get;
+        set;
+    }
+    public String criteria {
+        get;
+        set;
+    }
+    public String is_giveable {
+        get;
+        set;
+    }
+    public Integer expires_in {
+        get;
+        set;
+    }
+    public Boolean addBlock {
+        get;
+        set;
+    }
+    public Boolean detailsBlock {
+        get;
+        set;
+    }
+    public String upload_option {
+        get;
+        set;
+    }
+    public Boolean renderUpload {
+        get;
+        set;
+    }
+    public Boolean renderBadgeBuilder {
+        get;
+        set;
+    }
+
+
+
+    public Document document {
+        get {
+            if (document == null)
+                document = new Document();
+            return document;
+        }
+        set;
+    }
+
+
+    public class authorizationClass {
+        public String data;
+        public String meta;
+    }
+
+    public PageReference upload() {
+
+        Double y;
+        String returnData;
+        String createURL;
+        String badgeID;
+        String errMessage;
+        String stsMessage;
+        String encodedImage;
+
+        badge__c insertUser = new badge__c();
+
+
+        if (xbadgeURL.trim().length() == 0) {
+            ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Badge Missing - Use Badge Builder to create.'));
             return null;
         }
-        }
-  
-  
-   try {
-        
-        
-        insertUser.criteria__c = criteria;
-        insertUser.description__c = description;
-         insertUser.expire_number__c = integer.valueof(is_expireNumber);
-           insertUser.expire_period__c = is_expirePeriod;     
 
-          insertUser.is_giveable__c = is_giveable;
-         
+        if (document.body != null) {
+            document.AuthorId = UserInfo.getUserId();
+            document.FolderId = UserInfo.getUserId();
+            //    strBody = EncodingUtil.base64Encode(document.body);
+            try {
+                insert document;
+
+            } catch (DMLException e) {
+                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error uploading file'));
+                return null;
+            }
+        }
+
+
+        try {
+
+
+            insertUser.criteria__c = criteria;
+            insertUser.description__c = description;
+            insertUser.expire_number__c = integer.valueof(is_expireNumber);
+            insertUser.expire_period__c = is_expirePeriod;
+
+            insertUser.is_giveable__c = is_giveable;
+
             insertUser.short_description__c = short_description;
-               insertUser.title__c = title;
-           
-             
-               if (document.body != null)
-                {
-                  insertUser.upload_file_id__c = document.Id;
-                  insertUser.document_id__c = url.getSalesforceBaseUrl().toExternalForm() + '/servlet/servlet.FileDownload?file=' + document.Id;
-                }
-                else
-                {          
-                  insertUser.document_id__c = xbadgeURL;
-                }
-             
-       insert insertUser;
-          
+            insertUser.title__c = title;
+
+
+            if (document.body != null) {
+                insertUser.upload_file_id__c = document.Id;
+                insertUser.document_id__c = url.getSalesforceBaseUrl().toExternalForm() + '/servlet/servlet.FileDownload?file=' + document.Id;
+            } else {
+                insertUser.document_id__c = xbadgeURL;
+            }
+
+            insert insertUser;
+
         } catch (DMLException e) {
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating new badge.'));
             return null;
         }
-        
-    //Submit Job to Send Badges//
-    staticCredlyClass.synchBadgesToCredly();
- 
- 
-    addBlock = false; 
-    showIframe = false;
-    detailsBlock = true;
-    ApexPages.addMessage(new ApexPages.message(ApexPages.severity.INFO,'Badge Created Successfully'));
-  
-    return null;
-  }
-  
-   // ApexPages.StandardgetBadgetroller must be instantiated
+
+        //Submit Job to Send Badges//
+        staticCredlyClass.synchBadgesToCredly();
+
+
+        addBlock = false;
+        showIframe = false;
+        detailsBlock = true;
+        ApexPages.addMessage(new ApexPages.message(ApexPages.severity.INFO, 'Badge Created Successfully'));
+
+        return null;
+    }
+
+    // ApexPages.StandardgetBadgetroller must be instantiated
     // for standard list controllers
-   public List<badge__c> getBadge {
+    public List < badge__c > getBadge {
+
         get {
-        	 List<badge__c> badges;
-        	 
-        	   if (((filterBadge != null) || (filterBadge.trim().length() != 0))) 
-               {
-               filterBadgeSearch = filterBadge;
-               
-                AggregateResult[] groupedResults = [select  count(id) recCnt from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch];   
-          		 Object recordCount = groupedResults[0].get('recCnt');
-          		
-               setPagingInfo(Integer.valueOf(recordCount));
-          		
-           		badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)  order by ' +  pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');   
-               }
-                 if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
-            {
-            	AggregateResult[] groupedResults  = [select count(id) recCnt from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs))];
-            	 Object recordCount = groupedResults[0].get('recCnt');
-            	 
-               setPagingInfo(Integer.valueOf(recordCount));
-              
-            	 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdDate, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' +  pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
+
+            List < badge__c > badges;
+
+            badge__c[] arrayOfBadges;
+
+            //Description is a field that cannot be filtered/ordered on, have to pull all records
+            if (xSortField == 'Description') {
+                arrayOfBadges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or(credlyBadgeId__c = null and createdById = : myId)) and(title__c like: filterBadgeSearch)];
+                arrayOfBadges = staticCredlyClass.sortSpecialBadges(arrayOfBadges, xSortField, pSortDirection);
+                badges = arrayOfBadges;
+                numberOfPages = 1;
+                return badges;
             }
-               
+
+            if (((filterBadge != null) || (filterBadge.trim().length() != 0))) {
+                filterBadgeSearch = filterBadge;
+
+                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs)) and title__c like: filterBadgeSearch];
+                Object recordCount = groupedResults[0].get('recCnt');
+
+                setPagingInfo(Integer.valueOf(recordCount));
+
+                badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)  order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
+            }
+            if (((filterBadge == null) || (filterBadge.trim().length() == 0))) {
+                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs))];
+                Object recordCount = groupedResults[0].get('recCnt');
+
+                setPagingInfo(Integer.valueOf(recordCount));
+
+                badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdDate, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
+            }
+
+
+
             return badges;
         }
-        set; 
-    } 
-    // Initialize getBadge and return a list of records
-    public List<badge__c> getBadges() {
-        return (List<badge__c>) getBadge;
+        set;
     }
-    
+    // Initialize getBadge and return a list of records
+    public List < badge__c > getBadges() {
+        return (List < badge__c > ) getBadge;
+    }
+
     public pageReference addBadge() {
-  
+
         addBlock = true;
         detailsBlock = false;
         return null;
     }
-     public pageReference next() {
-  
-       pageOffset = pageOffset + pageLimit;
-       currentPage = currentPage + 1;
-       if (currentPage > numberOfPages)
-       {
-       	currentPage = 1;
-       	pageOffset = 0;
-       }
-       
-       
-       getBadges();
+    public pageReference next() {
+
+        pageOffset = pageOffset + pageLimit;
+        currentPage = currentPage + 1;
+        if (currentPage > numberOfPages) {
+            currentPage = 1;
+            pageOffset = 0;
+        }
+
         return null;
     }
-     public pageReference prev() {
-  
-       pageOffset = pageOffset - pageLimit;
-       currentPage = currentPage - 1;
-       
-       if (currentPage <= 0)
-       {
-       	pageOffset = 0;
-       	currentPage = 1;
-       }
-       
-       getBadges();
-       
+    public pageReference prev() {
+
+        pageOffset = pageOffset - pageLimit;
+        currentPage = currentPage - 1;
+
+        if (currentPage <= 0) {
+            pageOffset = 0;
+            currentPage = 1;
+        }
+
         return null;
-    }
-   
- 
-        public void setPagingInfo(Integer records)
-    {
-    	
-    	 totalNumberofRecords = records;
-       
-                    numberOfPages  = totalNumberofRecords / pageLimit;
-         			Integer remainder = Math.mod(totalNumberofRecords,pageLimit); 
-         			if (remainder > 0)
-         			{
-         			++numberOfPages;
-         			}
-         
-   
-         			if (numberOfPages < 1)
-         			{
-         			numberOfPages = 1;
-        			 }
-        			 
-    	
     }
 
-	
+
+    public void setPagingInfo(Integer records) {
+
+        totalNumberofRecords = records;
+
+        numberOfPages = totalNumberofRecords / pageLimit;
+        Integer remainder = Math.mod(totalNumberofRecords, pageLimit);
+        if (remainder > 0) {
+            ++numberOfPages;
+        }
+
+
+        if (numberOfPages < 1) {
+            numberOfPages = 1;
+        }
+
+
+    }
+
+
 }

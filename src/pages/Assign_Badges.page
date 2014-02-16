@@ -90,12 +90,16 @@
        //remove unneeded  sorts//
        
         $j("div[id*='sortDiv']").each(function() {
-        if ($j(this).text() == 'Description')
+      //  if ($j(this).text() == 'Description')
+     //   	{
+      //  		$j(this).children().remove();
+      //  	}
+        
+          if ($j(this).text() == 'Sel')
         	{
         		$j(this).children().remove();
         	}
-        
-          if ($j(this).text() == 'Sel')
+        	  if ($j(this).text() == 'Badge')
         	{
         		$j(this).children().remove();
         	}
@@ -352,7 +356,7 @@
   
   <apex:pageBlock rendered="{!renderStep4}">
   <apex:pageBlockButtons >
-                <apex:commandButton styleClass="nextStep" action="{!upload}" value="Continue"/>
+                <apex:commandButton styleClass="nextStep" action="{!upload}" value="Continue"/> 
                   <apex:commandButton styleClass="backStep" action="{!backStep}" value="Back Step"/>
             </apex:pageBlockButtons>
   <h1>Step 4: Review</h1>
@@ -474,10 +478,10 @@
    <apex:pageBlock id="badgeDetailsBlock" rendered="{!renderStep1}">
        <apex:outputLabel styleClass="smallGreen" >Page {!currentBadgePage} of {!numberOfBadgePages} </apex:outputLabel>
         <br></br>
-         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
+         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel> 
           
-        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton" rerender="badgeDetailsBlock"/> 
-        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton" rerender="badgeDetailsBlock"/>
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton" rerender="badgeDetailsBlock" oncomplete="attachSorts();"/> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton" rerender="badgeDetailsBlock" oncomplete="attachSorts();"/>
   <apex:pageBlockSection >
    <apex:pageBlockSectionItem >
     <apex:outputtext >Need a new Credly badge?</apex:outputtext>
@@ -524,8 +528,8 @@
         <br></br>
          <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
           
-        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton2" rerender="badgeDetailsBlock"/> 
-        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton2" rerender="badgeDetailsBlock"/>
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton2" rerender="badgeDetailsBlock" oncomplete="attachSorts();"/> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton2" rerender="badgeDetailsBlock" oncomplete="attachSorts();"/>
   </apex:pageBlock>
   
    <apex:pageBlock rendered="{!renderStep2}">

@@ -566,6 +566,13 @@
           
         </apex:pageBlockTable>
       </apex:outputPanel>
+           <apex:outputLabel styleClass="smallGreen" >Page {!currentRulePage} of {!numberOfRulePages} </apex:outputLabel>
+        <br></br>
+         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofRules} Total Records</apex:outputLabel>
+          
+      
+        <apex:commandButton action="{!prevRule}" value="Prev" id="PrevButton2" rerender="detailsBlock"/> 
+        <apex:commandButton action="{!nextRule}" value="Next" id="nextButton2" rerender="detailsBlock"/>
     
     </apex:pageBlock>
     
@@ -613,8 +620,8 @@
         <br></br>
          <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
           
-        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton" rerender="badgeDetailsBlock"/> 
-        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton" rerender="badgeDetailsBlock"/>
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton" rerender="badgeDetailsBlock"  oncomplete="attachSorts();" /> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton" rerender="badgeDetailsBlock"  oncomplete="attachSorts();"/>
   <apex:pageBlockSection >
    <apex:pageBlockSectionItem >
     <apex:outputtext >Need a new Credly badge?</apex:outputtext>
@@ -652,15 +659,19 @@
                     
                     </apex:pageBlockTable>
             </apex:outputPanel> 
-            
-            
+             
+                <apex:outputLabel styleClass="smallGreen" >Page {!currentBadgePage} of {!numberOfBadgePages} </apex:outputLabel>
+        <br></br>
+         <apex:outputLabel styleClass="smallGreen" >{!totalNumberofBadges} Total Records</apex:outputLabel>
+          
+        <apex:commandButton action="{!prevBadge}" value="Prev" id="PrevButton3" rerender="badgeDetailsBlock"  oncomplete="attachSorts();" /> 
+        <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton3" rerender="badgeDetailsBlock"  oncomplete="attachSorts();"/>
 
       
   </apex:pageBlock>
     
     <apex:pageBlock id="theAddBadge" rendered="{!renderStep3}" mode="edit"  title="Step 3: Enter Rule Information">
      
-   
       <apex:pageBlockButtons >
        <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
          <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 

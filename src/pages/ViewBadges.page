@@ -76,7 +76,11 @@
 		  $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><div class="downImage"></div></div>');
 		  
 		     $j("div[id*='sortDiv']").each(function() {
-        if ($j(this).text() == 'Description')
+      //  if ($j(this).text() == 'Description')
+       // 	{
+       // 		$j(this).children().remove();
+       // 	}
+        	  if ($j(this).text() == 'Image')
         	{
         		$j(this).children().remove();
         	}

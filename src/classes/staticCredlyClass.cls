@@ -626,4 +626,196 @@ return 0;
   	return 5;
   }
   
+  public static badge__c[] sortSpecialBadges(badge__c[] ListToSort, String fieldDescription, String orderby)	{
+		
+   integer j;
+  boolean flag = true; // set flag to true to begin first pass
+  badge__c temp; //holding variable
+  if (ListToSort.size() > 0) {
+      while (flag) {
+          flag = false; //set flag to false awaiting a possible swap
+          for (j = 0; j < ListToSort.size() - 1; j++) {
+
+              if (fieldDescription == 'Description') {
+                  if (orderBy == 'ASC') {
+
+                      if (ListToSort[j].description__c > ListToSort[j + 1].description__c) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+                  if (orderBy == 'DESC') {
+
+                      if (ListToSort[j].description__c < ListToSort[j + 1].description__c) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+              }
+          }
+      }
+  }
+
+  return ListToSort;
+  }
+  
+  public static member_badge__c[] sortSpecialMemberBadges(member_badge__c[] ListToSort, String fieldDescription, String orderby)	{
+		
+   integer j;
+   String curRec;
+   String nxtRec;
+  
+  boolean flag = true; // set flag to true to begin first pass
+  member_badge__c temp; //holding variable
+  if (ListToSort.size() > 0) {
+      while (flag) {
+          flag = false; //set flag to false awaiting a possible swap
+          for (j = 0; j < ListToSort.size() - 1; j++) {
+
+              if (fieldDescription == 'Email') {
+              	
+              	      curRec = (ListToSort[j].lead_lookup_m__r.email == null) ? ListToSort[j].contact_lookup_m__r.email : ListToSort[j].lead_lookup_m__r.email; 
+                  	  nxtRec = (ListToSort[j + 1].lead_lookup_m__r.email == null) ? ListToSort[j + 1].contact_lookup_m__r.email : ListToSort[j + 1].lead_lookup_m__r.email; 
+              	
+                  if (orderBy == 'ASC') {
+       
+                      if (curRec > nxtRec) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+                  if (orderBy == 'DESC') {
+
+               
+                      if (curRec < nxtRec) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+              }
+              if (fieldDescription == 'Evidence') {
+              	
+              		  curRec = (ListToSort[j].evidence_name_m__c == null) ? ListToSort[j].evidence_url_m__c : ListToSort[j].evidence_name_m__c; 
+                  	  nxtRec = (ListToSort[j + 1].evidence_name_m__c == null) ? ListToSort[j + 1].evidence_url_m__c : ListToSort[j + 1].evidence_name_m__c; 
+              	
+                  if (orderBy == 'ASC') {
+                  	
+                      if (curRec > nxtRec) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+                  if (orderBy == 'DESC') {
+
+                      if (curRec < nxtRec) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+              }
+               if (fieldDescription == 'Testimonial') {
+              	
+              		  curRec = (ListToSort[j].testimonial_m__c);
+                  	  nxtRec = (ListToSort[j+1].testimonial_m__c);
+              	
+                  if (orderBy == 'ASC') {
+                  	
+                      if (curRec > nxtRec) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+                  if (orderBy == 'DESC') {
+
+                      if (curRec < nxtRec) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+              }
+               if (fieldDescription == 'Recipient') {
+               	
+               	    
+                        
+                        if (ListToSort[j].account_lookup_m__c <> null)
+                        {
+                        	curRec = (ListToSort[j].account_lookup_m__r.name);
+                        }
+                         if (ListToSort[j].contact_lookup_m__r <> null)
+                        {
+                        	curRec = (ListToSort[j].contact_lookup_m__r.name);
+                        }
+                           if (ListToSort[j].lead_lookup_m__c <> null)
+                        {
+                        	curRec = (ListToSort[j].lead_lookup_m__r.name);
+                        }
+                          
+                          if (ListToSort[j+1].account_lookup_m__c <> null)
+                        {
+                        	nxtRec = (ListToSort[j+1].account_lookup_m__r.name);
+                        }
+                         if (ListToSort[j+1].contact_lookup_m__c <> null)
+                        {
+                        	nxtRec = (ListToSort[j+1].contact_lookup_m__r.name);
+                        }
+                           if (ListToSort[j+1].lead_lookup_m__c <> null)
+                        {
+                        	nxtRec = (ListToSort[j+1].lead_lookup_m__r.name);
+                        }
+                        
+                       
+              	
+              	
+                  if (orderBy == 'ASC') {
+                  	
+                      if (curRec > nxtRec) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+                  if (orderBy == 'DESC') {
+
+                      if (curRec < nxtRec) // change to > for ascending sort
+                      {
+                          temp = ListToSort[j]; //swap elements
+                          ListToSort[j] = ListToSort[j + 1];
+                          ListToSort[j + 1] = temp;
+                          flag = true; //shows a swap occurred  
+                      }
+                  }
+              }
+          }
+      }
+  }
+
+  return ListToSort;
+  }
+  
 }

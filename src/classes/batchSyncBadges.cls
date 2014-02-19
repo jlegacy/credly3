@@ -98,7 +98,7 @@ global class batchSyncBadges implements
        mBadge.put('expires_in', staticCredlyClass.ToString(badge.expires_in__c, false)); 
         mBadge.put('access_token',securityToken);   
         
-        createURL = CredlyJSONCalls.createURLString(mBadge);
+        createURL = CredlyJSONCalls.createURLString(mBadge); 
        
            //post badge to credly
            

@@ -84,6 +84,10 @@
  });
     
     function attachSorts() {
+    $j("div[id*='sortDiv']").each(function() {
+       		$j(this).children().remove();
+        	});
+      
        $j("div[id*='sortDiv']").append('<div id="sortUp" class="sorting"><div class="upImage"></div></div>');
        $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><div class="downImage"></div></div>');
        
@@ -518,7 +522,7 @@
                     </apex:column>
                     
                          <apex:column headerValue="Created Date">
-                        <apex:outputField value="{!o.CreatedDate}"/> 
+                        <apex:outputField value="{!o.credlyCreatedDateTime__c}"/> 
                     </apex:column>
                     
                     </apex:pageBlockTable>

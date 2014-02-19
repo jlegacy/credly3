@@ -1,6 +1,6 @@
 public with sharing class staticCredlyClass {
 	
-    public static String convCRDateTime(String x)
+    public static DateTime convCRDateTime(String x)
 	{ 
 		
 		String[] dateString = x.split(' ');
@@ -58,9 +58,10 @@ public with sharing class staticCredlyClass {
  		+ '-' + dateString[1] + ' ' + dateString[4] + ' ' + dateString[5];
 		
 		
+		DateTime dt = datetime.valueOf(stringDate);
 		
 	//	Thu, 14 Nov 2013 18:49:39 -0500
-		return stringDate;
+		return dt;
 		
 	} 
 	
@@ -207,16 +208,27 @@ public static set<String> getCredlyBadgeIDsFromSalesforce()
    public static void synchBadgesFromCredly(List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges, set<String> mySalesForceCredlyBadgeIDs)
 {
 	boolean check = false;
+	String credlyBadgeString;
 	
 	List<badge__c> newBadges = new List<badge__c>();
+	List<badge__c> updateBadges = new List<badge__c>(); 
 	
 	//loop through credlyList and compare to Salesforce list 
-	
 	   	  	for ( CredlyJSON2ApexMyBadges.Data item : myCredlyBadges) {
 	   	  		check = false;
 	   	  		if (mySalesForceCredlyBadgeIDs.contains(String.valueOf(item.id)))
 	   	  		{
 	   	  		check=true;
+	   	  		credlyBadgeString = String.valueOf(item.id);
+	   	  		try{
+	   	  			badge__c test = [select id, credlyCreatedDateTime__c from badge__c where credlyBadgeId__c = :credlyBadgeString and credlyCreatedDateTime__c = null ];
+	   	  			test.credlyCreatedDateTime__c = staticCredlyClass.convCRDateTime(item.created_at);
+	   	  			updateBadges.add(test);	
+	   	  			}
+	   	  				catch(exception e)
+	   	  				{	
+	   	  				}
+	   	  		  		
 	   	  		} 
 	   	  		
 	   	  		if (check == false)
@@ -225,6 +237,7 @@ public static set<String> getCredlyBadgeIDsFromSalesforce()
       	badge__c insertBadges = new badge__c();
 
         insertBadges.document_id__c = string.valueof(item.image_url);
+       
         
          insertBadges.criteria__c = ''; 
          insertBadges.description__c = ''; 
@@ -252,6 +265,10 @@ public static set<String> getCredlyBadgeIDsFromSalesforce()
 	   	  if (newBadges <> null)
 	   	  {	
 	   	    insert newBadges;
+	   	  }
+	   	    if (updateBadges <> null)
+	   	  {	
+	   	    update updateBadges;
 	   	  }
 	   	  		
     		

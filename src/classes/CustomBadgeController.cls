@@ -157,7 +157,7 @@ public with sharing class CustomBadgeController {
         }
 
         if (xSortField == 'Created Date') {
-            pSortField = 'CreatedDate';
+            pSortField = 'credlyCreatedDateTime__c';
         }
 
 
@@ -463,6 +463,8 @@ public with sharing class CustomBadgeController {
     public List < badge__c > getBadge {
 
         get {
+        	
+        	myId = UserInfo.getUserId();
 
             List < badge__c > badges;
 
@@ -470,7 +472,7 @@ public with sharing class CustomBadgeController {
 
             //Description is a field that cannot be filtered/ordered on, have to pull all records
             if (xSortField == 'Description') {
-                arrayOfBadges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or(credlyBadgeId__c = null and createdById = : myId)) and(title__c like: filterBadgeSearch)];
+                arrayOfBadges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or(credlyBadgeId__c = null and createdById = : myId)) and(title__c like: filterBadgeSearch)];
                 arrayOfBadges = staticCredlyClass.sortSpecialBadges(arrayOfBadges, xSortField, pSortDirection);
                 badges = arrayOfBadges;
                 numberOfPages = 1;
@@ -480,20 +482,20 @@ public with sharing class CustomBadgeController {
             if (((filterBadge != null) || (filterBadge.trim().length() != 0))) {
                 filterBadgeSearch = filterBadge;
 
-                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs)) and title__c like: filterBadgeSearch];
+                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and title__c like: filterBadgeSearch];
                 Object recordCount = groupedResults[0].get('recCnt');
 
                 setPagingInfo(Integer.valueOf(recordCount));
 
-                badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)  order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
+                badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)  order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
             }
             if (((filterBadge == null) || (filterBadge.trim().length() == 0))) {
-                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs))];
+                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId))];
                 Object recordCount = groupedResults[0].get('recCnt');
 
                 setPagingInfo(Integer.valueOf(recordCount));
 
-                badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdDate, createdById from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
+                badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdDate, createdById, credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
             }
 
 

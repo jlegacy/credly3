@@ -835,4 +835,499 @@ return 0;
   return ListToSort;
   }
   
+  public static Integer getRecipientCount(String recordType, String ruleText)
+  {
+  	Integer recordCount;
+  	
+  	if (recordType == 'Account')
+  	{
+  		recordCount = staticCredlyClass.getRecipientAccountCount(ruleText);
+  	}
+  		if (recordType == 'Contact')
+  	{
+  		recordCount = staticCredlyClass.getRecipientContactCount(ruleText);
+  	}
+  	if (recordType == 'Lead')
+  	{
+  		recordCount = staticCredlyClass.getRecipientLeadCount(ruleText);
+  	}
+  	
+  	return recordCount;
+  }
+  
+  public static Integer getRecipientAccountCount(String ruleText)
+  {
+  	Integer recordCount = 0;
+	boolean ruleApplies = false;
+	boolean checkHit;
+
+	//load up sObjects or aka..records//
+	sObject[] o = [SELECT Id,Phone,Jigsaw,ShippingLatitude,
+               ParentId,Type,CreatedById,
+               LastActivityDate,CustomerPriority__c,
+               BillingCity,Description,BillingLongitude,
+               IsDeleted,Industry,SystemModstamp,Fax,
+               TickerSymbol,ShippingCity,ShippingState,
+               BillingPostalCode,AnnualRevenue,CreatedDate,
+               JigsawCompanyId,SLAExpirationDate__c,
+               OwnerId,LastViewedDate,Ownership,NumberOfEmployees,
+               UpsellOpportunity__c,ShippingPostalCode,
+               LastModifiedById,SicDesc,SLASerialNumber__c,
+               AccountSource,BillingState,BillingCountry,
+               BillingLatitude,LastModifiedDate,
+               LastReferencedDate,ShippingStreet,Name,
+               SLA__c,AccountNumber,Site,NumberofLocations__c,
+               Sic,Website,ShippingLongitude,MasterRecordId,
+               ShippingCountry,Active__c,BillingStreet,
+               Rating FROM Account];
+  	
+  	
+  	List<List<String>> parsedRows = new List<List<String>>();
+  	List<String> fieldValues = new List<String>();
+	List<String> ids = new List<String>();
+	
+  	parsedRows = automatedTriggerClass.unparseRules(ruleText);
+//store ids for future lookup
+    ids = automatedTriggerClass.getFieldValues(o,'id');
+    //loop through fields and get values from file//
+    //get fields from file//
+ 
+  Map<String, Integer> foundHitIds = new Map<String, Integer>(); 
+  
+    for(List<String> row: parsedRows)
+        {
+        
+            if(!row.isEmpty())
+            {
+                //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+                  fieldValues = automatedTriggerClass.getFieldValues(o,row.get(0));
+                integer index = 0;  
+                for(String field: fieldValues)
+                  {
+                                      
+                      checkHit = automatedTriggerClass.lookForHit(row.get(3), field, row.get(2), row.get(1));
+                      if (checkHit)
+                      { 
+                         String idKey;
+                          idKey = String.valueOf(o.get(index).get('id'));
+                             Integer value = foundHitIds.get(idKey);
+                             value = (value == null) ? 1 : value + 1;
+                             foundHitIds.put(idKey,value);
+                      }
+                       index++;
+                  }
+                
+                //loop through foundhit ids and determine if any met all field criteria
+                //will check if each parsed row was equated with success
+                
+                for(Id id : foundHitIds.keySet()) {
+                    if (foundHitIds.get(id) == parsedRows.size())
+                    {
+                     recordCount = recordCount + 1;
+                    }
+                
+                }
+            
+            }
+        }
+
+  
+  	return recordCount;
+  }
+  
+    public static Integer getRecipientContactCount(String ruleText)
+  {
+  	
+  Integer recordCount = 0;
+boolean ruleApplies = false;
+boolean checkHit;
+
+//load up sObjects or aka..records//
+sObject[] o = [SELECT Id, Phone,Jigsaw ,MailingLatitude ,OtherState ,LeadSource ,
+CreatedById ,LastActivityDate ,OtherPhone ,Description ,
+IsDeleted ,Level__c ,SystemModstamp,AssistantPhone ,OtherStreet ,Languages__c ,Fax ,HasOptedOutOfEmail ,
+CreatedDate ,OwnerId ,HasOptedOutOfFax ,JigsawContactId ,
+LastViewedDate ,LastCUUpdateDate ,Email ,DoNotCall ,OtherCity ,
+LastModifiedById ,MailingState ,ReportsToId ,Department ,LastName ,
+LastCURequestDate ,OtherLongitude ,LastModifiedDate ,MailingLongitude ,
+MailingCountry ,MobilePhone ,Title ,LastReferencedDate ,
+OtherLatitude ,EmailBouncedDate ,Name ,Birthdate ,MailingStreet ,
+HomePhone ,AccountId ,EmailBouncedReason ,MasterRecordId ,
+OtherPostalCode ,MailingPostalCode ,FirstName ,AssistantName ,
+OtherCountry ,Salutation ,MailingCity  FROM Contact];
+
+//system.debug(o);
+
+//Get fields and Values from automated rules records//
+// Create a list of account records from a SOQL query
+List<List<String>> parsedRows = new List<List<String>>();
+List<String> fieldValues = new List<String>();
+List<String> ids = new List<String>();
+
+
+
+Set<Set<String>> idsWithMatches = new Set<Set<String>>();
+Set<String> idMatches = new Set<String>();
+
+// Loop through rules and pull rules//
+//unparse Rules Row
+//((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+    
+parsedRows = automatedTriggerClass.unparseRules(ruleText);
+//store ids for future lookup
+    ids = automatedTriggerClass.getFieldValues(o,'id');
+    //loop through fields and get values from file//
+    //get fields from file//
+  Map<String, Integer> foundHitIds = new Map<String, Integer>(); 
+  
+    for(List<String> row: parsedRows)
+        {
+        
+            if(!row.isEmpty())
+            {
+                //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+                  fieldValues = automatedTriggerClass.getFieldValues(o,row.get(0));
+                integer index = 0;  
+                for(String field: fieldValues)
+                  {
+                      checkHit = automatedTriggerClass.lookForHit(row.get(3), field, row.get(2), row.get(1));
+                      if (checkHit)
+                      { 
+                         String idKey;
+                          idKey = String.valueOf(o.get(index).get('id'));
+                             Integer value = foundHitIds.get(idKey);
+                             value = (value == null) ? 1 : value + 1;
+                             foundHitIds.put(idKey,value);
+                      }
+                       index++;
+                  }
+                
+                //loop through foundhit ids and determine if any met all field criteria
+                //will check if each parsed row was equated with success
+              
+                for(Id id : foundHitIds.keySet()) {
+                //	system.debug(foundHitIds.get(id) + ',' + parsedRows.size());
+                    if (foundHitIds.get(id) == parsedRows.size())
+                    {
+                     recordCount = recordCount + 1;
+                   //  system.debug(foundHitIds);
+                   }
+                
+                }
+            
+            }
+        }
+           
+        return recordCount;
+
+}
+
+  public static Integer getRecipientLeadCount(String ruleText)
+ {
+  	
+Integer recordCount = 0;
+boolean ruleApplies = false;
+boolean checkHit;
+
+//load up sObjects or aka..records//
+sObject[] o = [SELECT Id, PostalCode,Phone,Jigsaw,Street,LeadSource,ConvertedOpportunityId,
+IsUnreadByOwner,CreatedById,LastActivityDate,
+City,IsConverted,Description,IsDeleted,Longitude,Industry,
+SystemModstamp,Fax,Status,HasOptedOutOfEmail,ConvertedDate,
+AnnualRevenue,Primary__c,CreatedDate,OwnerId,HasOptedOutOfFax,
+JigsawContactId,LastViewedDate,Country,Email,NumberOfEmployees,
+DoNotCall,Company,Latitude,ProductInterest__c,LastModifiedById,
+State,LastName,LastModifiedDate,ConvertedAccountId,MobilePhone,
+Title,LastReferencedDate,EmailBouncedDate,Name,NumberofLocations__c,
+EmailBouncedReason,Website,MasterRecordId,SICCode__c,FirstName,
+CurrentGenerators__c,ConvertedContactId,Rating,LastTransferDate,Salutation  FROM Lead];
+
+//system.debug(o);
+
+//Get fields and Values from automated rules records//
+// Create a list of account records from a SOQL query
+
+List<List<String>> parsedRows = new List<List<String>>();
+List<String> fieldValues = new List<String>();
+List<String> ids = new List<String>();
+
+
+Set<Set<String>> idsWithMatches = new Set<Set<String>>();
+Set<String> idMatches = new Set<String>();
+
+//unparse Rules Row
+//((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+    
+parsedRows = automatedTriggerClass.unparseRules(ruleText);
+//store ids for future lookup
+    ids = automatedTriggerClass.getFieldValues(o,'id');
+    //loop through fields and get values from file//
+    //get fields from file//
+ 
+    Map<String, Integer> foundHitIds = new Map<String, Integer>(); 
+    
+    for(List<String> row: parsedRows)
+        {
+         
+          //  system.debug(row);
+            if(!row.isEmpty())
+            {
+                //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+                  fieldValues = automatedTriggerClass.getFieldValues(o,row.get(0));
+                integer index = 0;  
+                for(String field: fieldValues)
+                  {
+                    //  system.debug(field);
+                     
+                      checkHit = automatedTriggerClass.lookForHit(row.get(3), field, row.get(2), row.get(1));
+                      if (checkHit)
+                      { 
+                         String idKey;
+                          idKey = String.valueOf(o.get(index).get('id'));
+                             Integer value = foundHitIds.get(idKey);
+                             value = (value == null) ? 1 : value + 1;
+                             foundHitIds.put(idKey,value);
+                      }
+                       index++;
+                  } 
+                
+                //loop through foundhit ids and determine if any met all field criteria
+                //will check if each parsed row was equated with success
+                
+                for(Id id : foundHitIds.keySet()) {
+                    if (foundHitIds.get(id) == parsedRows.size())
+                    {
+                    	recordCount = recordCount + 1;
+                    	
+                              }
+                }
+            
+            }
+        }
+           
+         return recordCount;
+}
+
+ public static Map<String, Integer> getRecipientAccountIDs(String ruleText)
+  {
+  	Integer recordCount = 0;
+	boolean ruleApplies = false;
+	boolean checkHit;
+
+	//load up sObjects or aka..records//
+	sObject[] o = [SELECT Id,Phone,Jigsaw,ShippingLatitude,
+               ParentId,Type,CreatedById,
+               LastActivityDate,CustomerPriority__c,
+               BillingCity,Description,BillingLongitude,
+               IsDeleted,Industry,SystemModstamp,Fax,
+               TickerSymbol,ShippingCity,ShippingState,
+               BillingPostalCode,AnnualRevenue,CreatedDate,
+               JigsawCompanyId,SLAExpirationDate__c,
+               OwnerId,LastViewedDate,Ownership,NumberOfEmployees,
+               UpsellOpportunity__c,ShippingPostalCode,
+               LastModifiedById,SicDesc,SLASerialNumber__c,
+               AccountSource,BillingState,BillingCountry,
+               BillingLatitude,LastModifiedDate,
+               LastReferencedDate,ShippingStreet,Name,
+               SLA__c,AccountNumber,Site,NumberofLocations__c,
+               Sic,Website,ShippingLongitude,MasterRecordId,
+               ShippingCountry,Active__c,BillingStreet,
+               Rating FROM Account];
+  	
+  	
+  	List<List<String>> parsedRows = new List<List<String>>();
+  	List<String> fieldValues = new List<String>();
+	List<String> ids = new List<String>();
+	
+  	parsedRows = automatedTriggerClass.unparseRules(ruleText);
+//store ids for future lookup
+    ids = automatedTriggerClass.getFieldValues(o,'id');
+    //loop through fields and get values from file//
+    //get fields from file//
+ 
+  Map<String, Integer> foundHitIds = new Map<String, Integer>(); 
+  
+    for(List<String> row: parsedRows)
+        {
+        
+            if(!row.isEmpty())
+            {
+                //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+                  fieldValues = automatedTriggerClass.getFieldValues(o,row.get(0));
+                integer index = 0;  
+                for(String field: fieldValues)
+                  {
+                                      
+                      checkHit = automatedTriggerClass.lookForHit(row.get(3), field, row.get(2), row.get(1));
+                      if (checkHit)
+                      { 
+                         String idKey;
+                          idKey = String.valueOf(o.get(index).get('id'));
+                             Integer value = foundHitIds.get(idKey);
+                             value = (value == null) ? 1 : value + 1;
+                             foundHitIds.put(idKey,value);
+                      }
+                       index++;
+                  }
+                
+            }
+            
+        }
+         return foundHitIds;
+     
+  }
+  
+    public static Map<String, Integer> getRecipientContactIDs(String ruleText)
+  {
+  	
+  Integer recordCount = 0;
+boolean ruleApplies = false;
+boolean checkHit;
+
+//load up sObjects or aka..records//
+sObject[] o = [SELECT Id, Phone,Jigsaw ,MailingLatitude ,OtherState ,LeadSource ,
+CreatedById ,LastActivityDate ,OtherPhone ,Description ,
+IsDeleted ,Level__c ,SystemModstamp,AssistantPhone ,OtherStreet ,Languages__c ,Fax ,HasOptedOutOfEmail ,
+CreatedDate ,OwnerId ,HasOptedOutOfFax ,JigsawContactId ,
+LastViewedDate ,LastCUUpdateDate ,Email ,DoNotCall ,OtherCity ,
+LastModifiedById ,MailingState ,ReportsToId ,Department ,LastName ,
+LastCURequestDate ,OtherLongitude ,LastModifiedDate ,MailingLongitude ,
+MailingCountry ,MobilePhone ,Title ,LastReferencedDate ,
+OtherLatitude ,EmailBouncedDate ,Name ,Birthdate ,MailingStreet ,
+HomePhone ,AccountId ,EmailBouncedReason ,MasterRecordId ,
+OtherPostalCode ,MailingPostalCode ,FirstName ,AssistantName ,
+OtherCountry ,Salutation ,MailingCity  FROM Contact];
+
+//system.debug(o);
+
+//Get fields and Values from automated rules records//
+// Create a list of account records from a SOQL query
+List<List<String>> parsedRows = new List<List<String>>();
+List<String> fieldValues = new List<String>();
+List<String> ids = new List<String>();
+
+
+
+Set<Set<String>> idsWithMatches = new Set<Set<String>>();
+Set<String> idMatches = new Set<String>();
+
+// Loop through rules and pull rules//
+//unparse Rules Row
+//((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+    
+parsedRows = automatedTriggerClass.unparseRules(ruleText);
+//store ids for future lookup
+    ids = automatedTriggerClass.getFieldValues(o,'id');
+    //loop through fields and get values from file//
+    //get fields from file//
+  Map<String, Integer> foundHitIds = new Map<String, Integer>(); 
+  
+    for(List<String> row: parsedRows)
+        {
+        
+            if(!row.isEmpty())
+            {
+                //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+                  fieldValues = automatedTriggerClass.getFieldValues(o,row.get(0));
+                integer index = 0;  
+                for(String field: fieldValues)
+                  {
+                      checkHit = automatedTriggerClass.lookForHit(row.get(3), field, row.get(2), row.get(1));
+                      if (checkHit)
+                      { 
+                         String idKey;
+                          idKey = String.valueOf(o.get(index).get('id'));
+                             Integer value = foundHitIds.get(idKey);
+                             value = (value == null) ? 1 : value + 1;
+                             foundHitIds.put(idKey,value);
+                      }
+                       index++;
+                  }
+                
+                //loop through foundhit ids and determine if any met all field criteria
+                //will check if each parsed row was equated with success
+              
+            
+            }
+        }
+           
+        return foundHitIds;
+
+}
+
+  public static  Map<String, Integer> getRecipientLeadIDs(String ruleText)
+ {
+  	
+Integer recordCount = 0;
+boolean ruleApplies = false;
+boolean checkHit;
+
+//load up sObjects or aka..records//
+sObject[] o = [SELECT Id, PostalCode,Phone,Jigsaw,Street,LeadSource,ConvertedOpportunityId,
+IsUnreadByOwner,CreatedById,LastActivityDate,
+City,IsConverted,Description,IsDeleted,Longitude,Industry,
+SystemModstamp,Fax,Status,HasOptedOutOfEmail,ConvertedDate,
+AnnualRevenue,Primary__c,CreatedDate,OwnerId,HasOptedOutOfFax,
+JigsawContactId,LastViewedDate,Country,Email,NumberOfEmployees,
+DoNotCall,Company,Latitude,ProductInterest__c,LastModifiedById,
+State,LastName,LastModifiedDate,ConvertedAccountId,MobilePhone,
+Title,LastReferencedDate,EmailBouncedDate,Name,NumberofLocations__c,
+EmailBouncedReason,Website,MasterRecordId,SICCode__c,FirstName,
+CurrentGenerators__c,ConvertedContactId,Rating,LastTransferDate,Salutation  FROM Lead];
+
+//system.debug(o);
+
+//Get fields and Values from automated rules records//
+// Create a list of account records from a SOQL query
+
+List<List<String>> parsedRows = new List<List<String>>();
+List<String> fieldValues = new List<String>();
+List<String> ids = new List<String>();
+
+
+Set<Set<String>> idsWithMatches = new Set<Set<String>>();
+Set<String> idMatches = new Set<String>();
+
+//unparse Rules Row
+//((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+    
+parsedRows = automatedTriggerClass.unparseRules(ruleText);
+//store ids for future lookup
+    ids = automatedTriggerClass.getFieldValues(o,'id');
+    //loop through fields and get values from file//
+    //get fields from file//
+ 
+    Map<String, Integer> foundHitIds = new Map<String, Integer>(); 
+    
+    for(List<String> row: parsedRows)
+        {
+         
+          //  system.debug(row);
+            if(!row.isEmpty())
+            {
+                //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
+                  fieldValues = automatedTriggerClass.getFieldValues(o,row.get(0));
+                integer index = 0;  
+                for(String field: fieldValues)
+                  {
+                    //  system.debug(field);
+                     
+                      checkHit = automatedTriggerClass.lookForHit(row.get(3), field, row.get(2), row.get(1));
+                      if (checkHit)
+                      { 
+                         String idKey;
+                          idKey = String.valueOf(o.get(index).get('id'));
+                             Integer value = foundHitIds.get(idKey);
+                             value = (value == null) ? 1 : value + 1;
+                             foundHitIds.put(idKey,value);
+                      }
+                       index++;
+                  } 
+                
+            
+            }
+        }
+           
+         return foundHitIds;
+}
 }

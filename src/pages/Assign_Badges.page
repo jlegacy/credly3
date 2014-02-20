@@ -6,171 +6,357 @@
       
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
          
-        <script>
-              var $j = jQuery.noConflict();
-       $j(document).ready(function () {
-  
-
-     if ("{!customMessageChecked}" == 'false') {
-         $j('.customMessageInput').hide();
-     } else {
-         $j('.customMessageInput').show();
-     }
+      <script>
+    var $j = jQuery.noConflict();
+    $j(document).ready(function () {
+     bindRuleSelects();
 
 
-     //if using the back button then restore selected ids
-     if ('{!renderStep2}' && '{!xSelectedIDs}'.trim().length > 0) {
-         var ids = '{!xSelectedIDs}';
-         var mySplitResult = ids.split(',');
-
-         for (i = 0; i < mySplitResult.length; i++) {
-             // set check boxes checked //
-
-             $j('#' + mySplitResult[i]).attr('checked', true);
-
-         }
-     }
-
-     //set radio button selected for badge
-     $j("input[type='radio']").each(function () {
-         if ($j(this).val() == '{!setBadgeSelect}')
-         // if ($j(this).val() == $j('#hiddenBadge').val())
-         {
-             $j(this).attr('checked', true);
-         }
-     });
+        if ("{!customMessageChecked}" == 'false') {
+            $j('.customMessageInput').hide();
+        } else {
+            $j('.customMessageInput').show();
+        }
 
 
-     customMessageChecked = $j('#contentWrapper').find("input[id*='customMessageCheckBox']");
-     if ((customMessageChecked).attr('checked')) {
-         $j('.customMessageInput').show();
-     } else {
-         $j('.customMessageInput').hide();
-     }
+        //if using the back button then restore selected ids
+        if ('{!renderStep2}' && '{!xSelectedIDs}'.trim().length > 0) {
+            var ids = '{!xSelectedIDs}';
+            var mySplitResult = ids.split(',');
+
+            for (i = 0; i < mySplitResult.length; i++) {
+                // set check boxes checked //
+
+                $j('#' + mySplitResult[i]).attr('checked', true);
+
+            }
+        }
+
+        //set radio button selected for badge
+        $j("input[type='radio']").each(function () {
+            if ($j(this).val() == '{!setBadgeSelect}')
+            // if ($j(this).val() == $j('#hiddenBadge').val())
+            {
+                $j(this).attr('checked', true);
+            }
+        });
 
 
-     $j("#contentWrapper").delegate("input[type='radio']", "click", function () {
-         showContainer();
-         var urlString = $j(this).closest('td').next().find('img').attr('src');
-         setBadgeID($j(this).val(), urlString);
-     });
-
-     $j("#contentWrapper").delegate("input[id*='emailCheckbox']", "click", function () {
-         if (this.checked) {
-             $j('.customMessageCheckBox').show();
-             $j('.customMessageInput').show();
-         } else {
-             $j('.customMessageCheckBox').hide();
-             $j('.customMessageInput').hide();
-         }
-     });
-
-     $j("#contentWrapper").delegate("input[id*='customMessageCheckBox']", "click", function () {
-         if (this.checked) {
-             $j('.customMessageInput').show();
-         } else {
-             $j('.customMessageInput').hide();
-         }
-
-     });
-
-     $j("#contentWrapper").delegate("div[class*='sorting']", "click", function () {
-         setSort($j(this).attr('id'), $j(this).closest("div[id*='sortDiv']").text());
-     });
+        customMessageChecked = $j('#contentWrapper').find("input[id*='customMessageCheckBox']");
+        if ((customMessageChecked).attr('checked')) {
+            $j('.customMessageInput').show();
+        } else {
+            $j('.customMessageInput').hide();
+        }
 
 
-     attachSorts(); 
+        $j("#contentWrapper").delegate("input[type='radio']", "click", function () {
+            showContainer();
+            var urlString = $j(this).closest('td').next().find('img').attr('src');
+            setBadgeID($j(this).val(), urlString);
+        });
 
- });
+        $j("#contentWrapper").delegate("input[id*='emailCheckbox']", "click", function () {
+            if (this.checked) {
+                $j('.customMessageCheckBox').show();
+                $j('.customMessageInput').show();
+            } else {
+                $j('.customMessageCheckBox').hide();
+                $j('.customMessageInput').hide();
+            }
+        });
+
+        $j("#contentWrapper").delegate("input[id*='customMessageCheckBox']", "click", function () {
+            if (this.checked) {
+                $j('.customMessageInput').show();
+            } else {
+                $j('.customMessageInput').hide();
+            }
+
+        });
+
+        $j("#contentWrapper").delegate("div[class*='sorting']", "click", function () {
+            setSort($j(this).attr('id'), $j(this).closest("div[id*='sortDiv']").text());
+        });
+
+
+        attachSorts();
+
+    });
+
+    function insertDetail() {
+        var count = 0;
+        //get block of html//
+        var y = $j("div[id*='rulesDetails']").find('.pbSubsection:first').html();
+        // var y = $j("div[id*='rulesDetails']").find('.pbSubsection:first').find('table:first').html();
+
+
+
+        // $j("div[id*='rulesDetails']").append(y);
+        $j("div[id*='rulesDetails']").find('.pbSubsection:first').append(y);
+
+        //leave 1 open input
+        $j("div[id*='rulesDetails']").find('.detailList').each(function (index) {
+            if ($j(this).find("select[id*='ruleFields']").val() === "") {
+                count = count + 1;
+                if (count > 1) {
+                    $j(this).remove();
+                }
+            }
+        });
+
+    }
     
+     $j( "table" ).delegate( "img.deleteIcon", "click", function() {
+        if ($j('.deleteIcon').length > 1)
+        {
+       $j(this).closest('table').first().remove();
+       addSelectChange();
+        }
+        });
+
+    function bindRuleSelects() {
+        var split;
+        $j("#contentWrapper").delegate("select[id*='ruleFields']", "change", function () {
+            split = $j(this).val().split(":");
+            setDropOperand($j(this), split[1]);
+        });
+    }
+
+    function getVisualOperand(x) {
+        var result;
+
+        switch (x) {
+
+        case 'eq':
+            result = 'equals to';
+            return result;
+            break;
+
+        case 'lt':
+            result = 'less than';
+            return result;
+            break;
+
+        case 'le':
+            result = 'less than or equal to';
+            return result;
+            break;
+
+        case 'gt':
+            result = 'greater than';
+            return result;
+            break;
+
+        case 'ge':
+            result = 'greater than or equal to';
+            return result;
+            break;
+
+        case 'ne':
+            result = 'not equal to';
+            return result;
+            break;
+
+        case 'ct':
+            result = 'contains';
+            return result;
+            break;
+
+        default:
+            result = ' ';
+            break;
+
+
+        }
+        return result;
+    }
+
+
+    function optionString(options) {
+        var optionString;
+        var split;
+        var baseOptions = '<option value=xxx>yyy</option>';
+        var selectOptions = '<option selected value=xxx>yyy</option>';
+        var tempOptions;
+        var visualOperand;
+        var stringTest;
+
+        split = options.split("|");
+
+        for (var i = 0; i < split.length; i++) {
+            if (split[i].length === 0) {
+                tempOptions = selectOptions;
+            } else {
+                tempOptions = baseOptions;
+            }
+
+            tempOptions = tempOptions.replace("xxx", split[i]);
+
+            if (split[i]) {
+                stringTest = split[i];
+
+                visualOperand = getVisualOperand(stringTest);
+                tempOptions = tempOptions.replace("yyy", visualOperand);
+            } else {
+                tempOptions = tempOptions.replace("yyy", split[i]);
+            }
+
+            optionString = optionString + tempOptions;
+        }
+
+        return optionString;
+    }
+
+    function setDropOperand(selector, fieldType) {
+
+        var options, operands;
+        switch (fieldType.toLowerCase()) {
+        case 'string':
+        case 'picklist':
+        case 'text':
+        case 'textarea':
+            operands = '|eq|ct';
+            options = optionString(operands);
+            break;
+        case 'long':
+        case 'date':
+        case 'datetime':
+        case 'decimal':
+        case 'double':
+        case 'integer':
+            operands = 'eq|lt|le|gt|ge|ne';
+            options = optionString(operands);
+            break;
+        case 'boolean':
+            operands = '|eq|ne';
+            options = optionString(operands);
+            break;
+        default:
+            operands = '|eq|ne';
+            options = optionString(operands);
+            break;
+        }
+
+        var optionPlacement = selector.closest('td').closest('table').find("select[id*='ruleOperands']").find('option').remove().end().append(options);
+
+    }
+
+
     function attachSorts() {
-    $j("div[id*='sortDiv']").each(function() {
-       		$j(this).children().remove();
-        	});
-      
-       $j("div[id*='sortDiv']").append('<div id="sortUp" class="sorting"><div class="upImage"></div></div>');
-       $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><div class="downImage"></div></div>');
-       
-       //remove unneeded  sorts//
-       
-        $j("div[id*='sortDiv']").each(function() {
-      //  if ($j(this).text() == 'Description')
-     //   	{
-      //  		$j(this).children().remove();
-      //  	}
-        
-          if ($j(this).text() == 'Sel')
-        	{
-        		$j(this).children().remove();
-        	}
-        	  if ($j(this).text() == 'Badge')
-        	{
-        		$j(this).children().remove();
-        	}
-        });  
-   }
+        $j("div[id*='sortDiv']").each(function () {
+            $j(this).children().remove();
+        });
+
+        $j("div[id*='sortDiv']").append('<div id="sortUp" class="sorting"><div class="upImage"></div></div>');
+        $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><div class="downImage"></div></div>');
+
+        //remove unneeded  sorts//
+
+        $j("div[id*='sortDiv']").each(function () {
+            //  if ($j(this).text() == 'Description')
+            //   	{
+            //  		$j(this).children().remove();
+            //  	}
+
+            if ($j(this).text() == 'Sel') {
+                $j(this).children().remove();
+            }
+            if ($j(this).text() == 'Badge') {
+                $j(this).children().remove();
+            }
+        });
+    }
 
 
-   function startUpload() {
+    function startUpload() {
 
-       upload();
+        upload();
 
-       setInterval(function () {
-           this.window.location.href = window.location.href
-       }, 3000);
-   }
+        setInterval(function () {
+            this.window.location.href = window.location.href;
+        }, 3000);
+    }
 
-   function hideContainer() {
-       $j('#loading-container').hide();
-       $j('#content-container').hide();
-       attachSorts();
+    function hideContainer() {
+        $j('#loading-container').hide();
+        $j('#content-container').hide();
+        attachSorts();
 
-   }
+    }
 
-   function showContainer() {
-       $j('#loading-container').show();
-       $j('#content-container').show();
-   }
+    function showContainer() {
+        $j('#loading-container').show();
+        $j('#content-container').show();
+    }
 
 
-   function refreshScreen() {
-       var error = false;
+    function refreshScreen() {
+        var error = false;
 
-       if ($j('#errorMessages').find('.exceptionText').length != 0) {
-           error = true;
-       }
+        if ($j('#errorMessages').find('.exceptionText').length !== 0) {
+            error = true;
+        }
 
-       if (error != true) {
-           setInterval(function () {
-               this.window.location.href = window.location.href
-           }, 1000);
-       }
-   }
+        if (error !== true) {
+            setInterval(function () {
+                this.window.location.href = window.location.href;
+            }, 1000);
+        }
+    }
 
-   function createMemberBadges(type) {
-       showContainer();
-       var ids = "";
-       var mySplitResult;
-       $j("tbody[id*='blockTableCheckboxes']").find('[type=checkbox]').each(function () {
-           if ($j(this).is(':checked')) {
-               ids = ids + $j(this).attr('id') + ',';
-           }
-       });
+    function createMemberBadges(type) {
+        showContainer();
+        var ids = "";
+        var mySplitResult;
+        $j("tbody[id*='blockTableCheckboxes']").find('[type=checkbox]').each(function () {
+            if ($j(this).is(':checked')) {
+                ids = ids + $j(this).attr('id') + ',';
+            }
+        });
 
-       createMemberBadgesApex(type, ids);
-   }
+        createMemberBadgesApex(type, ids);
+    }
 
-   function setBadgeSelected() {
-       var x = $j("select[id*='selected_badge']").val();
-       setBadgeID(x);
-   }
+    function setBadgeSelected() {
+        var x = $j("select[id*='selected_badge']").val();
+        setBadgeID(x);
+    }
 
-   function setTestimonial() {
-       var x = $j("textarea[id*='testimonial']").val();
-       setTestimonialText(x);
-   }
+    function setTestimonial() {
+        var x = $j("textarea[id*='testimonial']").val();
+        setTestimonialText(x);
+    }
 
-        </script>
+    function addSelectChange() {
+
+
+        //string the rules into a text field with delimiters//
+
+        //capture all values 
+        var ruleFields = $j("select[id*='ruleFields']");
+        var ruleOperands = $j("select[id*='ruleOperands']");
+        var ruleInputs = $j("input[id*='ruleInputs']");
+        var ruleText = "";
+
+        $j("select[id*='ruleFields']").each(function (index) {
+
+            //only count full full row//
+            if (($j(this).val().length) > 0 && ($j(ruleOperands[index]).val().length > 0) && ($j(ruleInputs[index]).val().length > 0)) {
+                if (ruleText.length > 0) {
+                    ruleText = ruleText + '~' + $j(this).val() + '|' + $j(ruleOperands[index]).val() + '|' + $j(ruleInputs[index]).val();
+                } else {
+                    ruleText = $j(this).val() + '|' + $j(ruleOperands[index]).val() + '|' + $j(ruleInputs[index]).val();
+                }
+            }
+
+
+        });
+
+        setRuleText(ruleText);
+
+    }
+</script>
     </head>
     
     <style type="text/css">
@@ -257,6 +443,10 @@
          <apex:pageBlockSection columns="4" collapsible="false" title="Issuing a badge to one or more Salesforce contacts, leads or contacts is easy. You’ll choose a badge to issue, select your recipients, add optional evidence and testimonial, and choose your notification options. Don’t yet have a badge to issue? Create one now." /> 
          
          </apex:pageBlock>
+         
+           <apex:actionFunction name="setRuleText"  rerender="dummy">
+      <apex:param name="firstParam"  assignTo="{!setRuleText }" value="" />
+    </apex:actionFunction>
         
              <apex:actionFunction name="createMemberBadgesApex" action="{!createMemberBadgesApex}" rerender="dummy" oncomplete="hideContainer();">
            <apex:param name="firstParam"  assignTo="{!xRecordType}" value="" /> 
@@ -275,6 +465,9 @@
              <apex:actionFunction name="setTestimonialText" action="{!setTestimonialEmpty}" rerender="dummy">
            <apex:param name="firstParamx" assignTo="{!setTestimonialSelect}"  value="" />
         </apex:actionFunction>
+        
+              <apex:actionFunction action="{!reloadFields}" name="reloadFields"  rerender="rulesDetails">
+    </apex:actionFunction> 
         
         <apex:outputPanel id="dummy" rendered="false"></apex:outputPanel>
         
@@ -536,27 +729,51 @@
         <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton2" rerender="badgeDetailsBlock" oncomplete="attachSorts();"/>
   </apex:pageBlock>
   
-   <apex:pageBlock rendered="{!renderStep2}">
-     <h1>Step 2: Select Recipient(s)</h1> 
-            <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
-     <br><h2>To whom would you like to issue this badge? Choose one or more contacts, leads or accounts below, and then click “Continue”.</h2></br>
+   <apex:pageBlock rendered="{!renderStep2}" title="Step 2: Enter Rule Information">
+    <!--  <h1>Step 2: Select Recipient(s)</h1> -->
+    <!--         <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> --> 
+    <!--  <br><h2>To whom would you like to issue this badge? Choose one or more contacts, leads or accounts below, and then click “Continue”.</h2></br> -->
+    <!--  <apex:pageBlock id="theAddBadge" rendered="{!renderStep3}" mode="edit"  title="Step 2: Enter Rule Information"> -->
      
-   </apex:pageBlock>
-    
-   <apex:pageBlock title="Filters"  id="selectFilters" rendered="{!renderStep2}">
-    <apex:outputText value="Name Contains:"/>
-    <apex:inputText label="Name Contains" value="{!filterName}"/>
-    <apex:outputText value="Record Type:  "/>
-    
-         
- <apex:selectList value="{!recordType}" multiselect="false" size="1">
+      <apex:pageBlockButtons >
+       <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
+         <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
+      </apex:pageBlockButtons>
+      
+
+      <apex:pageBlockSection >
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel styleClass="ruleLabel" value="Record Type:  "/>
+          <apex:selectList id="selected_type" value="{!populateRecordType}" onchange="reloadFields();" multiselect="false" size="1">
             <apex:selectOptions value="{!recordTypes}"/>
-        </apex:selectList>
-        
-        <apex:commandButton value="Apply Filter" action="{!renderPage}" rerender="imageForm" oncomplete="hideContainer();"/>
-        
-  </apex:pageBlock>
-  
+          </apex:selectList>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+      
+      <apex:pageBlockSection collapsible="false" title="Rules" >
+       </apex:pageBlockSection>
+       
+        <apex:pageBlockSection >
+        <apex:commandButton value="Insert New Rule Line" onclick="insertDetail();" rerender="false"/>
+       </apex:pageBlockSection>
+      
+      <apex:pageBlockSection id="rulesDetails" columns="5">
+      <img border="0" class="icon deleteIcon" src="{!$Resource.delete_icon}" alt="HTML tutorial" width="15" height="15"></img>
+         <apex:selectList styleClass="ruleFieldsSelect" id="ruleFields" onchange="addSelectChange();"  multiselect="false" size="1"  >
+            <apex:selectOptions value="{!getRuleFields}"  />
+            </apex:selectList>
+             <apex:selectList styleClass="operandsSelect" id="ruleOperands" onchange="addSelectChange();" multiselect="false" size="1" >
+            <apex:selectOptions value="{!getOperandTypes}"  />
+            </apex:selectList>
+            <apex:inputText styleClass="inputsSelect" id="ruleInputs" onkeyup="addSelectChange();" ></apex:inputText>
+             <apex:outputLabel styleClass="andSelect">and</apex:outputLabel>
+             
+       </apex:pageBlockSection> 
+     
+       
+    </apex:pageBlock>
+  <!--  </apex:pageBlock> --> 
+    
    <apex:pageBlock id="showDetailsContacts" title="Contacts" rendered="{!renderContacts}">
    
      <apex:pageBlockButtons >

@@ -5,6 +5,8 @@ public with sharing class BadgeContactController {
         xSortDirection = 'sortUp';
         xSortField = 'Title';
         setSortProperties();
+        
+          setRuleText = '';
 
         getOnce = true;
         renderStep1 = true;
@@ -30,7 +32,13 @@ public with sharing class BadgeContactController {
         badgeOffset = 0;
         currentBadgePage = 1;
         myId = UserInfo.getUserId();
+        
+         setTypeSelect  = (populateRecordType != null) ? populateRecordType : 'Account';
 
+        getRuleFields = getFields(setTypeSelect);
+       
+        getOperandTypes = getOperandTypes();
+       
         staticCredlyClass.Token j = staticCredlyClass.getToken(); 
         securityToken = j.APItoken;
 
@@ -54,10 +62,42 @@ public with sharing class BadgeContactController {
 
 
     }
+    
+      public String name { get; set; }
+       public String setRuleText{get;set;}
+    public String rule { get; set; }
+    public String populateRecordType { get; set; }
+    public String selectedRecordType;
+    
+     public List < SelectOption > getRuleFields { get; set; }
+     public List<SelectOption> getOperandTypes { get; set; }
     public String xSortDirection {
         get;
         set;
     }
+    
+    public List<SelectOption> getFields(String xtype) 
+{   
+ // Set<String> result = new Set<String>();
+ String label;
+ List<SelectOption> options = new List<SelectOption>();  
+ Map<String, Schema.SObjectType> 
+ schemaMap = Schema.getGlobalDescribe();
+ 
+Schema.SObjectType leadSchema = schemaMap.get(xtype);
+ 
+ Map<String, Schema.SObjectField> fieldMap = leadSchema.getDescribe().fields.getMap();
+ options.add(new SelectOption('',''));  
+ for (String fieldName: fieldMap.keySet())
+  {  
+  Schema.DescribeFieldResult fieldObject = fieldMap.get(fieldName).getDescribe();
+     
+      options.add(new SelectOption(String.valueOf(fieldObject.getName()) + ':' + String.valueOf(fieldObject.getType()), String.valueOf(fieldObject.getLabel()))); 
+  }  
+   return options;
+   }
+    
+   
     public String xSortField {
         get;
         set;
@@ -99,6 +139,37 @@ public with sharing class BadgeContactController {
     public Integer counter {
         get;
         set;
+    }
+     public String setBadgeSelect{ get; set;}
+    public String setTypeSelect{ get; set; }
+ 
+    
+     public void reloadFields () { 
+        
+       renderUpload = false;
+        addBlock = true;
+        detailsBlock = false;
+     //   setBadgeSelect =  xBadgeId;
+        setTypeSelect  = (populateRecordType != null) ? populateRecordType : 'Account';
+        
+        getRuleFields = getFields(setTypeSelect);
+     
+        getOperandTypes = getOperandTypes();
+      
+    } 
+    
+       
+     public List < SelectOption > getOperandTypes() {
+        List < SelectOption > options = new List < SelectOption > ();
+        options.add(new SelectOption('eq', 'equal to'));
+        options.add(new SelectOption('lt', 'less than'));
+        options.add(new SelectOption('le', 'less than or equal to'));
+         options.add(new SelectOption('gt', 'greater than'));
+           options.add(new SelectOption('ge', 'greater than or equal to'));
+           options.add(new SelectOption('ct', 'contains'));
+             options.add(new SelectOption('ne', 'not equal to'));
+         
+        return options;
     }
 
 
@@ -307,15 +378,12 @@ public with sharing class BadgeContactController {
         set;
     }
 
-    public String setBadgeSelect {
-        get;
-        set;
-    }
-
+   
     public String setBadgeSelectImage {
         get;
         set;
     }
+    
 
     public Boolean renderTestimonial {
         get;
@@ -359,10 +427,11 @@ public with sharing class BadgeContactController {
 
     public PageReference showUploadOnly() {
 
+		//system.debug(setRuleText);
         String email;
 
-        if ((xSelectedIDs == null) || (xSelectedIDs.trim().length() <= 2)) {
-            ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Select Either Accounts, Contacts, or Leads'));
+        if ((SetRuleText == null)) {
+            ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Select a Rule'));
             renderStep1 = false;
             renderStep2 = true;
             renderStep3 = false;
@@ -417,12 +486,19 @@ public with sharing class BadgeContactController {
 
     }
 
+        public void setPopulateRecordType(String selectedRecordType) {
+        this.selectedRecordType = selectedRecordType ;
+    }
+    
+     public String getPopulateRecordType() {
+        return selectedRecordType;
+    } 
+    
     public void showReview() {
 
-        String[] temp = xSelectedIDs.split(',');
-        recipientNumber = temp.size();
-
-
+       // String[] temp = xSelectedIDs.split(','); 
+        recipientNumber = staticCredlyClass.getRecipientCount(setTypeSelect, setRuleText);
+        
         renderStep1 = false;
         renderStep2 = false;
         renderStep3 = false;
@@ -705,6 +781,8 @@ public with sharing class BadgeContactController {
 
     public PageReference upload() {
 
+        Map<String, Integer> foundHitIds;
+        List<List<String>> parsedRows = new List<List<String>>();
         String encodedImage;
         String xbadgeURL = '';
         String strBody;
@@ -714,6 +792,8 @@ public with sharing class BadgeContactController {
         String stsMessage;
         String[] splitName = null;
         String email = ' ';
+        
+        xRecordType = setTypeSelect.toLowerCase();
 
         if (document.body != null) {
             document.AuthorId = UserInfo.getUserId();
@@ -739,14 +819,30 @@ public with sharing class BadgeContactController {
             ];
 
             List < member_badge__c > memberBadgeList = new List < member_badge__c > ();
-            //loop through selected ids//
-            String[] temp = null;
-            temp = xSelectedIDs.split(',');
-
-            for (String i: temp) {
-
-                if (i.length() > 1) {
-
+            
+            parsedRows = automatedTriggerClass.unparseRules(setRuleText);
+            
+             system.debug(xRecordType);
+            //
+            //Get the IDs of the members getting badges//
+             if (xRecordType == 'account') {
+            	foundHitIds = staticCredlyClass.getRecipientAccountIDs(setRuleText);
+             }
+             
+              if (xRecordType == 'lead') {
+            	foundHitIds = staticCredlyClass.getRecipientLeadIDs(setRuleText);
+             }
+             
+              if (xRecordType == 'contact') {
+            	foundHitIds = staticCredlyClass.getRecipientContactIDs(setRuleText);
+             }
+             
+             system.debug(xRecordType);
+             
+              for(Id id : foundHitIds.keySet()) {
+                    if (foundHitIds.get(id) == parsedRows.size())
+                    {
+           
                     member_badge__c memberBadge = new member_badge__c();
 
                     memberBadge.criteria_m__c = badge.criteria__c;
@@ -761,16 +857,16 @@ public with sharing class BadgeContactController {
                     memberBadge.is_giveable_m__c = badge.is_giveable__c;
                     memberBadge.short_description_m__c = badge.short_description__c;
                     memberBadge.title_m__c = badge.title__c;
-                    memberBadge.lookup_id_m__c = i;
+                    memberBadge.lookup_id_m__c = id;
 
                     if (xRecordType == 'account') {
-                        memberBadge.account_lookup_m__c = i;
+                        memberBadge.account_lookup_m__c = id;
                     }
                     if (xRecordType == 'contact') {
-                        memberBadge.contact_lookup_m__c = i;
+                        memberBadge.contact_lookup_m__c = id;
                     }
                     if (xRecordType == 'lead') {
-                        memberBadge.lead_lookup_m__c = i;
+                        memberBadge.lead_lookup_m__c = id;
                     }
 
                     memberBadge.account_type_m__c = xRecordType;
@@ -784,27 +880,13 @@ public with sharing class BadgeContactController {
 
                     memberBadge.testimonial_m__c = setTestimonialSelect;
 
-                    memberBadge.name_m__c = getName(xRecordType, i);
+                    memberBadge.name_m__c = getName(xRecordType, id);
 
                     memberBadge.issue_date_m__c = system.today();
                     insert memberBadge;
-                    memberBadgeList.add(memberBadge);
+                    memberBadgeList.add(memberBadge); 
 
                 }
-            }
-
-
-            //submit badges to Credly with batch job//
-            //    staticCredlyClass.synchMemberBadgesToCredly(); 
-
-            //  system.debug(xRecordType);
-            //   system.debug(emailChecked);
-            if (emailChecked) {
-                //for(member_badge__c a : memberBadgeList)
-                //	{
-                //	sendEmail.sendEmail(a.lookup_id_m__c, a.Id, xRecordType);
-                //	}
-
             }
 
         } catch (DMLException e) {

@@ -23,7 +23,7 @@ if (c.expire_period__c == 'never')
      		c.expires_in__c = integer.valueof(c.expire_number__c) * 31536000;
      	}   
     //If trigger Update and CredlyBadgeId present, then write to changed table
-     if ((Trigger.isUpdate) && (c.credlyBadgeId__c != null))
+  /*   if ((Trigger.isUpdate) && (c.credlyBadgeId__c != null))
      	{ 
      		
      	List<chg_badge__c> aa = [select credlyBadgeId_x__c from chg_badge__c where credlyBadgeId_x__c = :c.credlyBadgeId__c];
@@ -34,6 +34,6 @@ if (c.expire_period__c == 'never')
 	  		insert insertChange;
 	    }
 	    
-		}	
+		}	*/
 }
 }

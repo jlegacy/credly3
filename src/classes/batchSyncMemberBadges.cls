@@ -131,21 +131,21 @@ global class batchSyncMemberBadges implements
             {
                 email = (sendEmail.getEmailAddress(memberBadge.account_lookup_m__c, 'Account') != null) ? sendEmail.getEmailAddress(memberBadge.account_lookup_m__c, 'Account') : ' ';  
                  //Check for Credly ID on SalesForce
-                CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.account_lookup_m__c, 'Account');
+            //    CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.account_lookup_m__c, 'Account');
             }
             
               if (memberBadge.contact_lookup_m__c != null)
             {
                 email = (sendEmail.getEmailAddress(memberBadge.contact_lookup_m__c, 'Contact') != null) ? sendEmail.getEmailAddress(memberBadge.contact_lookup_m__c, 'Contact') : ' ';  
                //Check for Credly ID on SalesForce
-                CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.contact_lookup_m__c, 'Contact');
+             //   CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.contact_lookup_m__c, 'Contact');
             }
             
                 if (memberBadge.lead_lookup_m__c != null)
             {
                 email = (sendEmail.getEmailAddress(memberBadge.lead_lookup_m__c, 'Lead') != null) ? sendEmail.getEmailAddress(memberBadge.Lead_lookup_m__c, 'Lead') : ' ';  
               //Check for Credly ID on SalesForce
-                CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.lead_lookup_m__c, 'Lead');
+               // CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.lead_lookup_m__c, 'Lead');
             }
             
             storeCredly = false;
@@ -203,6 +203,7 @@ global class batchSyncMemberBadges implements
       //   
           //parseResults
          CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+         system.debug(returnData);
         if (obj.meta.status.compareTo('OK') == 0)
             {
              CredlyJSON2ApexMemberBadge obj2 = CredlyJSON2ApexMemberBadge.parse(returnData);

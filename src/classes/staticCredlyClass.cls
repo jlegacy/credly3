@@ -331,12 +331,29 @@ public static set<String> getCredlyMemberIDsFromSalesforce()
    	
    }
    
+   public static Map<String, String> getBadgeIDMap()
+   {
+   	Map<String, String> m = new Map<String, String>();
+   	
+   	badge__c[] badgeRec = [select id, credlyBadgeId__c from badge__c];
+   	
+   	for (badge__c y: badgeRec)
+   	{
+   		m.put(y.CredlyBadgeId__c, y.id);  
+   	}	
+   	return m;
+   }
+   
    public static void synchMemberBadgesFromCredly(List<CredlyJSON2ApexMyMemberBadges.Data> myCredlyMemberBadges, set<String> mySalesForceCredlyMemberBadgeIDs)
 {
 	boolean check = false;
 	ID leadId;
 	ID contactId;
 	
+	Map<String, String> credlyBadgesCrossRef = new Map<String, String>();
+	
+	credlyBadgesCrossRef = getBadgeIdMap();
+
 	List<member_badge__c> newMemberBadges = new List<member_badge__c>();
 	
 	//loop through credlyList and compare to Salesforce list 
@@ -359,7 +376,10 @@ public static set<String> getCredlyMemberIDsFromSalesforce()
       	member_badge__c memberBadge = new member_badge__c();
       	
       	memberBadge.credlyMemberBadge_id_m__c = item.id;
-      	memberBadge.badge_lookup_m__c = staticCredlyClass.getBadgeID(String.valueOf(item.badge_id));
+      //	memberBadge.badge_lookup_m__c = staticCredlyClass.getBadgeID(String.valueOf(item.badge_id));
+      
+      memberBadge.badge_lookup_m__c = credlyBadgesCrossRef.get(String.valueOf(item.badge_id));
+    
       	if (memberBadge.badge_lookup_m__c == null)
       	{
       		continue;
@@ -368,10 +388,16 @@ public static set<String> getCredlyMemberIDsFromSalesforce()
       	leadId = null;
       	contactId = null; 
       	
+      	try{
       	leadId = staticCredlyClass.GetLeadID(item.member_orphan.email);
       	if (leadId == null)
        	{
       		contactId = staticCredlyClass.GetContactID(item.member_orphan.email);
+      	}
+      	}
+      	catch(exception e)
+      	{
+    
       	}
       	
       	

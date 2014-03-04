@@ -427,6 +427,7 @@ public with sharing class CustomBadgeController {
             insertUser.expire_period__c = is_expirePeriod;
 
             insertUser.is_giveable__c = is_giveable;
+            insertUser.categories__c = categories;
 
             insertUser.short_description__c = short_description;
             insertUser.title__c = title;
@@ -463,8 +464,8 @@ public with sharing class CustomBadgeController {
     public List < badge__c > getBadge {
 
         get {
-        	
-        	myId = UserInfo.getUserId();
+                
+                myId = UserInfo.getUserId();
 
             List < badge__c > badges;
 

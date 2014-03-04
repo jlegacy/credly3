@@ -107,6 +107,7 @@ global class batchSyncBadges implements
            }
            else
            {
+           	system.debug(CredlyJSONCalls.getURL()+ 'badges');
          returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'badges', createURL);  
            }
         

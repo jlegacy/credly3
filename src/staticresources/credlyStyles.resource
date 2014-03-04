@@ -148,6 +148,10 @@ input.btn.deleteStep {
     height: 100px;
 }
 
+.wideInputText {
+    width: 500px;
+}
+
 .ruleLabel {
 }
 

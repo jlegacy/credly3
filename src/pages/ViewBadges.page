@@ -126,25 +126,58 @@ function getAutoValues() {
     var titleData;
     var titles = [];
     var data = {};
-      $j.get( "https://api.credly.com/v1.1/assets/badges/categories?query=" + search.trim() + "&page=1&per_page=5&order_direction=ASC", function( data ) {
+    var splitSearch = [];
+    var lastItem;
 
-    	titleData = data.data;
-    	$j.each(titleData, function(i, val)
-    	{
-    	titles.push(titleData[i].name);
-    	});
+    splitSearch = search.trim().split(',');
+    lastItem = splitSearch.pop();
 
+    $j.get("https://api.credly.com/v1.1/assets/badges/categories?query=" + lastItem.trim() + "&page=1&per_page=5&order_direction=ASC", function (data) {
+        //   $j.get( "https://api.credly.com/v1.1/assets/badges/categories?query=" + search.trim() + "&page=1&per_page=5&order_direction=ASC", function( data ) {
+
+        titleData = data.data;
+        $j.each(titleData, function (i, val) {
+            titles.push(titleData[i].name);
         });
 
-    $j("input[id*='autocomplete']").autocomplete({
-        source: ["test", "test2", "php", "coldfusion", "javascript", "asp", "ruby"]
     });
 
-    $j("input[id*='autocomplete']").autocomplete(
-        "option", "source", titles);
+ //   $j("input[id*='autocomplete']").autocomplete({
+ //       source: ["test", "test2", "php", "coldfusion", "javascript", "asp", "ruby"]
+ //   });
+
+    $j("input[id*='autocomplete']") .autocomplete({
+        minLength: 0,
+        source: function( request, response ) {
+          // delegate back to autocomplete, but extract the last term
+          response( $j.ui.autocomplete.filter(
+            titles, extractLast( request.term ) ) );
+        },
+        focus: function() {
+          // prevent value inserted on focus
+          return false;
+        },
+        
+        select: function( event, ui ) {
+          var terms = split( this.value );
+          // remove the current input
+          terms.pop();
+          // add the selected item
+          terms.push( ui.item.value );
+          // add placeholder to get the comma-and-space at the end
+          terms.push( "" );
+          this.value = terms.join( ", " );
+          return false;
+        }
+      });
 
 }
-            
+             function split( val ) {
+      return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+      return split( term ).pop();
+    }
              function setUploadOption(){
         
 			setUploadController();
@@ -358,7 +391,7 @@ function getAutoValues() {
          
            <apex:pageBlockSectionItem >
           <apex:outputLabel value="Categories" />
-         <apex:inputText onkeyup="getAutoValues();" value="{!categories}" id="autocomplete"/>
+         <apex:inputText styleClass="wideInputText" onkeyup="getAutoValues();" value="{!categories}" id="autocomplete"/>
           
         </apex:pageBlockSectionItem>
       
@@ -415,22 +448,22 @@ function getAutoValues() {
   
             <apex:outputPanel id="details">
                   <apex:pageBlockTable value="{!badges}" var="o">
-                    <apex:column headerValue="Image">
+                    <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Image">
                           <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.image__c}" /></apex:outputLink>
                     </apex:column>  
-                   <apex:column headerValue="Title">
+                   <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Title">
                        
                          <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.title__c}" /> </apex:outputLink>
                     </apex:column>
-                     <apex:column headerValue="Description">
+                     <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Description">
                         <apex:outputField value="{!o.description__c}" />
                     </apex:column>
                     
-                       <apex:column headerValue="ID">
+                       <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="ID">
                         <apex:outputField value="{!o.credlyBadgeId__c}" />
                         </apex:column>
                         
-                            <apex:column headerValue="Created Date">
+                      <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Created Date">
                         <apex:outputField value="{!o.credlyCreatedDateTime__c}"/> 
                     </apex:column>
                          

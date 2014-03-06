@@ -10,6 +10,11 @@ public with sharing class CustomBadgeController {
         get;
         set;
     }
+    
+     public String jumpURL {
+        get;
+        set;
+    }
     public Integer pageLimit {
         get;
         set;
@@ -54,6 +59,16 @@ public with sharing class CustomBadgeController {
         get;
         set;
     }
+    
+      public String xEditId {
+        get;
+        set;
+    }
+      public String xCredlyBadgeId {
+        get;
+        set;
+    }
+    
 
     public set < String > mySalesForceCredlyBadgeIDs {
         get;
@@ -75,6 +90,43 @@ public with sharing class CustomBadgeController {
         }
 
     }
+    
+    public PageReference gotoEditController()
+    {
+    	Integer z;
+    	
+    	CredlyJSON2ApexCredlySingleBadgeData.Data singleBadge = staticCredlyClass.getSingleBadgeDataFromCredly(xCredlyBadgeId);
+    	
+    	badge__c x = [select id from badge__c where credlyBadgeID__c = :xCredlyBadgeId];
+    	if (x != null)
+    	{
+    		x.description__c = singleBadge.description;
+    		z = 0;
+    		for (CredlyJSON2ApexCredlySingleBadgeData.Categories j : singleBadge.categories)
+    		{
+    			z = z + 1;
+    			if (z == 1)
+    			{
+    			x.categories__c = j.name;
+    			}
+    			else
+    			{
+    			x.categories__c = x.categories__c + ',' + j.name ;	
+    			}
+    			
+    		}
+    		update x;
+    	}
+    	
+    	
+    	
+    	String fullFileURL = URL.getSalesforceBaseUrl().toExternalForm() +
+   		'/' + xEditId;
+   		PageReference pageRef = new PageReference(fullFileURL);
+   		pageRef.setRedirect(true);
+    	return pageRef;
+    }
+
     public PageReference searchBadge() {
         pageOffset = 0;
         currentPage = 1;

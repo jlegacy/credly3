@@ -186,7 +186,50 @@ public with sharing class CredlyJSONCalls {
    
             return myBadges;
         }
+     
+      public static CredlyJSON2ApexCredlySingleBadgeData getSingleBadge(String BadgeID)
+   {
+    String returnData;
+    String createURL;
+    String errMessage;
+    String stsMessage;
+    String xbadgeURL;
+    String securityToken;
+    Integer credlyId;
+    String userName;
+    String temp;
+    String name;
+    
+    CredlyJSON2ApexCredlySingleBadgeData mySingleBadge = new CredlyJSON2ApexCredlySingleBadgeData();
+    
+     staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+     securityToken = j.APItoken;
+    
+       Map<String, String> mBadge = new Map<String, String>();
+      mBadge.put('access_token',securityToken);  
+     mBadge.put('id',badgeID);  
+      mBadge.put('verbose','false');  
         
+      createURL = CredlyJSONCalls.createURLString(mBadge);
+        
+           //post badge to credly
+         returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'badges/' + badgeID +'?' + createURL);  
+         system.debug(returnData);
+          //parseResults
+         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+        if (obj.meta.status.compareTo('OK') == 0)
+            {
+             CredlyJSON2ApexCredlySingleBadgeData obj2 = CredlyJSON2ApexCredlySingleBadgeData.parse(returnData);
+            mySingleBadge.data = obj2.data; 
+              system.debug(mySingleBadge.data);
+          //    for (CredlyJSON2ApexMyBadges.Data i : myBadges) {
+        //  System.debug(i.id); 
+          //    }
+            } 
+   
+            return mySingleBadge;
+        }
+           
     public static List<CredlyJSON2ApexMyMemberBadges.Data> getMyMemberBadges()
    {
    

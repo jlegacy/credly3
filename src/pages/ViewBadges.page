@@ -16,7 +16,7 @@
 
               $j(document).ready(function() {
              $j('#my-badge').hide();
-            
+             
 				$j( "table" ).delegate( "textarea,input", "keyup", function() {
 				var size;
 				var classString = $j(this).attr('class');
@@ -39,18 +39,10 @@
 				});
 				
 				attachSorts();
-				
-				
-				
-	
-      
+
           });
           
-          
-     
-          
-       
-          
+
           window.addEventListener("message", function(e) {
     if (e.origin === "https://staging.credly.com" && typeof (data = e.data) === "object") {
         var myBadge = document.getElementById("my-badge");
@@ -89,6 +81,10 @@
         });  
           }
           
+          function gotoEdit(id)
+          {
+          gotoEditFunction(id);
+          }
           
              function hideContainer()
           {
@@ -307,6 +303,10 @@ function getAutoValues() {
            <apex:param name="firstParam"  assignTo="{!xSortDirection}" value="" /> 
            <apex:param name="secondParam"  assignTo="{!xSortField}" value="" />  
            </apex:actionFunction> 
+           
+            <apex:actionFunction name="gotoEditFunction" action="{!gotoEditController}" rerender="dummy">
+           <apex:param name="firstParam"  assignTo="{!xEditId}" value="" />  
+           </apex:actionFunction>
         
            <apex:actionFunction name="passImageParms" action="{!passBadgeImageParms}" rerender="addForm">
            <apex:param name="firstParam"  assignTo="{!xbadgeURL}" value="" /> 
@@ -452,11 +452,17 @@ function getAutoValues() {
                           <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.image__c}" /></apex:outputLink>
                     </apex:column>  
                    <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Title">
-                       
-                         <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.title__c}" /> </apex:outputLink>
+                         <apex:commandLink action="{!gotoEditController}" value="{!o.title__c}"> 
+                          <apex:param name="xEditId"
+                				value="{!o.id}"
+                				assignTo="{!xEditId}"/> 
+                				<apex:param name="xCredlyBadgeId"
+                				value="{!o.credlyBadgeId__c}"
+                				assignTo="{!xCredlyBadgeId}"/> 
+                				</apex:commandLink>
                     </apex:column>
                      <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Description">
-                        <apex:outputField value="{!o.description__c}" />
+                        <apex:outputField value="{!o.short_description__c}" />
                     </apex:column>
                     
                        <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="ID">

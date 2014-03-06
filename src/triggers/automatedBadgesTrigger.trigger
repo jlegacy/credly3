@@ -4,7 +4,7 @@ trigger automatedBadgesTrigger on badge__c (before insert, before update) {
 		
 if (c.expire_period__c == 'never')
      	{
-     		c.expires_in__c = 10 * 31536000;
+     		c.expires_in__c = 0;
      	}
      	if (c.expire_period__c == 'day')
      	{

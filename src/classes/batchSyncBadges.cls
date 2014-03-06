@@ -95,7 +95,15 @@ global class batchSyncBadges implements
        mBadge.put('categories',   badge.categories__c = (badge.categories__c == null) ? ' ' : badge.categories__c); 
        mBadge.put('criteria', badge.criteria__c = (badge.criteria__c == null) ? ' ' : badge.criteria__c); 
        mBadge.put('is_giveable', badge.is_giveable__c = (badge.is_giveable__c == null) ? ' ' : badge.is_giveable__c); 
-       mBadge.put('expires_in', staticCredlyClass.ToString(badge.expires_in__c, false)); 
+ 
+       if (badge.expires_in__c > 0.0)
+       		{ 
+       			mBadge.put('expires_in', staticCredlyClass.ToString(badge.expires_in__c, false)); 
+       		}
+       		else
+       		{
+       			mBadge.put('expires_in', '');  
+       		}
         mBadge.put('access_token',securityToken);   
         
         createURL = CredlyJSONCalls.createURLString(mBadge); 
@@ -107,8 +115,9 @@ global class batchSyncBadges implements
            }
            else
            {
-           	system.debug(CredlyJSONCalls.getURL()+ 'badges');
-         returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'badges', createURL);  
+         
+         returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'badges', createURL); 
+         system.debug(returnData); 
            }
         
           //parseResults

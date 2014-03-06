@@ -131,7 +131,7 @@ public with sharing class staticCredlyClass {
 	    try{
 	    delete myToken;
 	    	} catch (DmlException e) {
-	    		system.debug(e);
+	    	//	system.debug(e);
     // Process exception here
 			}
 	    
@@ -140,7 +140,7 @@ public with sharing class staticCredlyClass {
 		try {
     		insert newToken;
 			} catch (DmlException e) {
-				system.debug(e);
+				//system.debug(e);
 						
     // Process exception here
 			}
@@ -178,6 +178,13 @@ public with sharing class staticCredlyClass {
    	List<CredlyJSON2ApexMyMemberBadges.Data> myCredlyMemberBadges = new List<CredlyJSON2ApexMyMemberBadges.Data>();
    	myCredlyMemberBadges = CredlyJSONCalls.getMyMemberBadges(); 
   return myCredlyMemberBadges;
+}
+
+ public static CredlyJSON2ApexCredlySingleBadgeData.Data getSingleBadgeDataFromCredly(String badgeID)
+   {
+   	CredlyJSON2ApexCredlySingleBadgeData mySingleBadge = new CredlyJSON2ApexCredlySingleBadgeData();
+   	mySingleBadge = CredlyJSONCalls.getSingleBadge(badgeID);
+  return mySingleBadge.data; 
 }
 
 public static set<String> getCredlyBadgeIdsFromData(List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges)
@@ -241,7 +248,7 @@ public static set<String> getCredlyBadgeIDsFromSalesforce()
         
          insertBadges.criteria__c = ''; 
          insertBadges.description__c = ''; 
-         insertBadges.expires_in__c = 319999999;  
+         insertBadges.expires_in__c = 0;  
          insertBadges.is_giveable__c = string.valueof(item.is_giveable); 
          
          if (item.short_description  == null)
@@ -429,7 +436,7 @@ public static set<String> getCredlyMemberIDsFromSalesforce()
       	memberBadge.testimonial_m__c = (item.badge_testimonial.Size() == 0) ? ' ' :  item.badge_testimonial[0].body;
         memberBadge.issue_date_m__c = date.valueOf(staticCredlyClass.convCRDateTime(item.created_at));
         memberBadge.expires_in_m__c = item.badge.expires_in;
-        memberBadge.expires_in_m__c = (memberBadge.expires_in_m__c == 0) ? 319999999 : memberBadge.expires_in_m__c;
+      //  memberBadge.expires_in_m__c = (memberBadge.expires_in_m__c == 0) ? 319999999 : memberBadge.expires_in_m__c;
          newMemberBadges.add(memberBadge);
          
     } 

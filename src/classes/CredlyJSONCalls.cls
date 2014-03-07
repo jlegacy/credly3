@@ -20,7 +20,7 @@ public with sharing class CredlyJSONCalls {
       encodedString = encodedString + '&' + key + '=' + EncodingUtil.urlEncode(data.get(key), 'UTF-8');
       } 
       }
-      system.debug(encodedString);
+     // system.debug(encodedString);
      return encodedString;
      }
      
@@ -221,7 +221,7 @@ public with sharing class CredlyJSONCalls {
             {
              CredlyJSON2ApexCredlySingleBadgeData obj2 = CredlyJSON2ApexCredlySingleBadgeData.parse(returnData);
             mySingleBadge.data = obj2.data; 
-              system.debug(mySingleBadge.data);
+          //    system.debug(mySingleBadge.data);
           //    for (CredlyJSON2ApexMyBadges.Data i : myBadges) {
         //  System.debug(i.id); 
           //    }
@@ -229,6 +229,49 @@ public with sharing class CredlyJSONCalls {
    
             return mySingleBadge;
         }
+        
+   public static String getCategoryId(String searchString)
+   {
+    String returnData;
+    String createURL;
+    String errMessage;
+    String stsMessage;
+    String xbadgeURL;
+    String securityToken;
+    Integer credlyId;
+    String userName;
+    String temp;
+    String name;
+    
+    CredlyJSON2ApexCredlyCategoryId myCategoryId = new CredlyJSON2ApexCredlyCategoryId();
+    
+     staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+     securityToken = j.APItoken;
+    
+       Map<String, String> mBadge = new Map<String, String>();
+      mBadge.put('access_token',securityToken);  
+     mBadge.put('query',searchString);  
+      mBadge.put('page','1');  
+       mBadge.put('per_page','1');  
+        
+      createURL = CredlyJSONCalls.createURLString(mBadge);
+        
+           //post badge to credly
+         returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'badges/categories/' + '?' + createURL);  
+         system.debug(returnData);
+          //parseResults
+         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+        if (obj.meta.status.compareTo('OK') == 0)
+            {
+             CredlyJSON2ApexCredlyCategoryId obj2 = CredlyJSON2ApexCredlyCategoryId.parse(returnData);
+              myCategoryId.data = obj2.data; 
+        
+            } 
+   
+            return String.valueOf(myCategoryId.data.id);
+     //   return null;
+        }
+           
            
     public static List<CredlyJSON2ApexMyMemberBadges.Data> getMyMemberBadges()
    {
@@ -242,7 +285,7 @@ public with sharing class CredlyJSONCalls {
     Integer credlyId;
     String userName;
     String temp;
-    String name;
+    String name; 
     
     List<CredlyJSON2ApexMyMemberBadges.Data> myMemberBadges = new List<CredlyJSON2ApexMyMemberBadges.Data>();
     

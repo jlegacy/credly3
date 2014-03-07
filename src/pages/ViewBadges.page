@@ -133,7 +133,7 @@ function getAutoValues() {
 
         titleData = data.data;
         $j.each(titleData, function (i, val) {
-            titles.push(titleData[i].name);
+            titles.push(titleData[i].name); 
         });
 
     });

@@ -96,11 +96,16 @@ public with sharing class CustomBadgeController {
     	Integer z;
     	
     	CredlyJSON2ApexCredlySingleBadgeData.Data singleBadge = staticCredlyClass.getSingleBadgeDataFromCredly(xCredlyBadgeId);
-    	
+    	system.debug(singleBadge);
+    	if (singleBadge != null)
+    	{
     	badge__c x = [select id from badge__c where credlyBadgeID__c = :xCredlyBadgeId];
     	if (x != null)
     	{
-    		x.description__c = singleBadge.description;
+    		if (singleBadge.description != null)
+    		{
+    			x.description__c = singleBadge.description;
+    		}
     		z = 0;
     		for (CredlyJSON2ApexCredlySingleBadgeData.Categories j : singleBadge.categories)
     		{
@@ -111,11 +116,12 @@ public with sharing class CustomBadgeController {
     			}
     			else
     			{
-    			x.categories__c = x.categories__c + ',' + j.name ;	
+    			x.categories__c = x.categories__c + ',' + j.name;	
     			}
     			
     		}
     		update x;
+    	}
     	}
     	
     	

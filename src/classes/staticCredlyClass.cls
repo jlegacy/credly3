@@ -140,7 +140,7 @@ public with sharing class staticCredlyClass {
 		try {
     		insert newToken;
 			} catch (DmlException e) {
-				//system.debug(e);
+				//system.debug(e); 
 						
     // Process exception here
 			}
@@ -185,6 +185,10 @@ public with sharing class staticCredlyClass {
    	CredlyJSON2ApexCredlySingleBadgeData mySingleBadge = new CredlyJSON2ApexCredlySingleBadgeData();
    	mySingleBadge = CredlyJSONCalls.getSingleBadge(badgeID);
   return mySingleBadge.data; 
+}
+ public static String getSingleCategoryID(String searchString)
+   {
+    return CredlyJSONCalls.getCategoryId(searchString);
 }
 
 public static set<String> getCredlyBadgeIdsFromData(List<CredlyJSON2ApexMyBadges.Data> myCredlyBadges)

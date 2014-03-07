@@ -822,7 +822,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
             
             parsedRows = automatedTriggerClass.unparseRules(setRuleText);
             
-             system.debug(xRecordType);
+          //   system.debug(xRecordType);
             //
             //Get the IDs of the members getting badges//
              if (xRecordType == 'account') {
@@ -837,7 +837,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
             	foundHitIds = staticCredlyClass.getRecipientContactIDs(setRuleText);
              }
              
-             system.debug(xRecordType);
+           //  system.debug(xRecordType);
              
               for(Id id : foundHitIds.keySet()) {
                     if (foundHitIds.get(id) == parsedRows.size())

@@ -8,7 +8,7 @@ public with sharing class CredlyJSONCalls {
    {
        String encodedString;
        Integer count = 0;
-     for(String key:data.keySet())
+     for(String key:data.keySet()) 
   {  
       ++count;
       if (count == 1)
@@ -142,6 +142,125 @@ public with sharing class CredlyJSONCalls {
     return res.getBody(); 
    }
    
+   
+     public static String postMyBadge(badge__c badge)
+   {
+    String returnData;
+    String createURL;
+    String errMessage;
+    String stsMessage;
+    String xbadgeURL;
+    String securityToken;
+    Integer credlyId;
+    String userName;
+    String temp;
+    String name;
+    String encodedImage; 
+    String categoriesString;
+  	String categoriesCredly;
+  	Integer z;
+    
+    List<CredlyJSON2ApexMyBadges.Data> myBadges = new List<CredlyJSON2ApexMyBadges.Data>();
+    
+     staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+     securityToken = j.APItoken;
+    
+       Map<String, String> mBadge = new Map<String, String>();
+      mBadge.put('access_token',securityToken);  
+      mBadge.put('page','1');
+      mBadge.put('per_page','9999');  
+        
+      createURL = CredlyJSONCalls.createURLString(mBadge);
+        
+           //post badge to credly
+           
+         List<badge__c> badgeList = new List<badge__c>();
+ 
+    // get the image data
+     	
+     	if (badge.upload_file_id__c == null)
+     	{
+     		 if (test.isRunningTest()) { 
+     		 encodedImage = 'test';	
+     		 }
+     		 else
+     		 {
+     		encodedImage = CredlyJSONCalls.getCredlyImage(badge.document_id__c);
+     		 }	
+     	}
+     	else
+     	{
+     	encodedImage = CredlyJSONCalls.getDocumentBlob(badge.upload_file_id__c);	
+     	}
+     
+        if (encodedImage != null && securityToken != null)
+        {
+        // Build Credly Badge //
+       mBadge.put('attachment', encodedImage); 
+       mBadge.put('title', badge.title__c);
+       mBadge.put('short_description', badge.short_description__c = (badge.short_description__c == null) ? ' ' : badge.short_description__c); 
+       mBadge.put('description', badge.description__c = (badge.description__c == null) ? ' ' : badge.description__c); 
+       mBadge.put('criteria', badge.criteria__c = (badge.criteria__c == null) ? ' ' : badge.criteria__c); 
+       mBadge.put('is_giveable', badge.is_giveable__c = (badge.is_giveable__c == null) ? ' ' : badge.is_giveable__c); 
+       
+       categoriesString = null;
+       categoriesCredly = null;
+       z = 0;
+       
+       String[] rows = badge.categories__c.split('\\,');
+       for (String c: rows)
+            {
+            	categoriesString = (staticCredlyClass.getSingleCategoryID(c));
+            	{
+    			z = z + 1;
+    			if (z == 1)
+    			{
+    			categoriesCredly = categoriesString;
+    			}
+    			else
+    			{
+    			categoriesCredly = categoriesCredly + ',' + categoriesString;	
+    			}
+    			
+    		}
+            }
+            
+          mBadge.put('categories',   categoriesCredly = (categoriesCredly == null) ? ' ' : categoriesCredly);      
+          
+       if (badge.expires_in__c > 0.0)
+       		{ 
+       			mBadge.put('expires_in', staticCredlyClass.ToString(badge.expires_in__c, false)); 
+       		}
+       		else
+       		{
+       			mBadge.put('expires_in', '');  
+       		}
+     
+        createURL = CredlyJSONCalls.createURLString(mBadge); 
+       
+           //post badge to credly
+           
+             if (test.isRunningTest()) {
+           	returnData = '{"meta": {"status_code": 200,"status": "OK","message": "","more_info": null},"data": 1408}';
+           }
+           else
+           {
+         
+         returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'badges', createURL); 
+         system.debug(returnData); 
+           }
+        
+          //parseResults
+         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+     	if (obj.meta.status.compareTo('OK') == 0)
+     	  	{
+     	     CredlyJSON2ApexBadge obj2 = CredlyJSON2ApexBadge.parse(returnData);
+      	  	 return String.valueOf(obj2.data);
+     	  	} 
+        }
+   
+            return null;
+        }
   
    
    public static List<CredlyJSON2ApexMyBadges.Data> getMyBadges()
@@ -221,7 +340,7 @@ public with sharing class CredlyJSONCalls {
             {
              CredlyJSON2ApexCredlySingleBadgeData obj2 = CredlyJSON2ApexCredlySingleBadgeData.parse(returnData);
             mySingleBadge.data = obj2.data; 
-          //    system.debug(mySingleBadge.data);
+              system.debug(mySingleBadge.data);
           //    for (CredlyJSON2ApexMyBadges.Data i : myBadges) {
         //  System.debug(i.id); 
           //    }
@@ -232,6 +351,7 @@ public with sharing class CredlyJSONCalls {
         
    public static String getCategoryId(String searchString)
    {
+   	system.debug(searchString);
     String returnData;
     String createURL;
     String errMessage;
@@ -249,27 +369,23 @@ public with sharing class CredlyJSONCalls {
      securityToken = j.APItoken;
     
        Map<String, String> mBadge = new Map<String, String>();
-      mBadge.put('access_token',securityToken);  
-     mBadge.put('query',searchString);  
-      mBadge.put('page','1');  
-       mBadge.put('per_page','1');  
+        mBadge.put('query',searchString.trim());  
+      	mBadge.put('access_token',securityToken);  
+      	mBadge.put('page','1');  
+       	mBadge.put('per_page','1');  
         
       createURL = CredlyJSONCalls.createURLString(mBadge);
         
            //post badge to credly
-         returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'badges/categories/' + '?' + createURL);  
-         system.debug(returnData);
+         returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'badges/categories' + '?' + createURL); 
           //parseResults
          CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
         if (obj.meta.status.compareTo('OK') == 0)
             {
              CredlyJSON2ApexCredlyCategoryId obj2 = CredlyJSON2ApexCredlyCategoryId.parse(returnData);
               myCategoryId.data = obj2.data; 
-        
             } 
-   
-            return String.valueOf(myCategoryId.data.id);
-     //   return null;
+            return String.valueOf(myCategoryId.data[0].id);
         }
            
            

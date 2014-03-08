@@ -53,6 +53,9 @@ global class batchSyncBadges implements
   	String encodedImage; 
   	String xbadgeURL;
   	String securityToken;
+  	String categoriesString;
+  	String categoriesCredly;
+  	Integer z;
   	
   	    if (test.isRunningTest()) { 
   	     	securityToken = 'test';
@@ -92,10 +95,33 @@ global class batchSyncBadges implements
        mBadge.put('title', badge.title__c);
        mBadge.put('short_description', badge.short_description__c = (badge.short_description__c == null) ? ' ' : badge.short_description__c); 
        mBadge.put('description', badge.description__c = (badge.description__c == null) ? ' ' : badge.description__c); 
-       mBadge.put('categories',   badge.categories__c = (badge.categories__c == null) ? ' ' : badge.categories__c); 
        mBadge.put('criteria', badge.criteria__c = (badge.criteria__c == null) ? ' ' : badge.criteria__c); 
        mBadge.put('is_giveable', badge.is_giveable__c = (badge.is_giveable__c == null) ? ' ' : badge.is_giveable__c); 
- 
+       
+       categoriesString = null;
+       categoriesCredly = null;
+       z = 0;
+       
+       String[] rows = badge.categories__c.split('\\,');
+       for (String c: rows)
+            {
+            	categoriesString = (staticCredlyClass.getSingleCategoryID(c));
+            	{
+    			z = z + 1;
+    			if (z == 1)
+    			{
+    			categoriesCredly = categoriesString;
+    			}
+    			else
+    			{
+    			categoriesCredly = categoriesCredly + ',' + categoriesString;	
+    			}
+    			
+    		}
+            }
+            
+          mBadge.put('categories',   categoriesCredly = (categoriesCredly == null) ? ' ' : categoriesCredly);      
+          
        if (badge.expires_in__c > 0.0)
        		{ 
        			mBadge.put('expires_in', staticCredlyClass.ToString(badge.expires_in__c, false)); 

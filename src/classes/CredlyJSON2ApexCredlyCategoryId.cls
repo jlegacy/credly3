@@ -7,21 +7,21 @@ public class CredlyJSON2ApexCredlyCategoryId {
 	public class Data {
 		public Integer total;
 		public Integer id;
-		public String type;
+		public String type_a;
 		public String name;
 		public String created_at;
-		public Resources resources;
+		public Resources resources; 
 	}
 
 	public class Paging {
 		public Integer page;
 		public Integer per_page;
 		public String order_direction;
-		public Object multi_result_count;
+		public Object multi_result_count; 
 	}
 
 	public Meta meta;
-	public Data data;
+	public List<Data> data;
 	public Paging paging;
 
 	public class Meta {

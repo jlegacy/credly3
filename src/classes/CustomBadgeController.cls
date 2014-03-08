@@ -95,8 +95,11 @@ public with sharing class CustomBadgeController {
     {
     	Integer z;
     	
+    	if (xCredlyBadgeId.trim().compareTo('') == 1)
+    	{
+    
     	CredlyJSON2ApexCredlySingleBadgeData.Data singleBadge = staticCredlyClass.getSingleBadgeDataFromCredly(xCredlyBadgeId);
-    	system.debug(singleBadge);
+    	//system.debug(singleBadge);
     	if (singleBadge != null)
     	{
     	badge__c x = [select id from badge__c where credlyBadgeID__c = :xCredlyBadgeId];
@@ -124,6 +127,7 @@ public with sharing class CustomBadgeController {
     	}
     	}
     	
+    	}
     	
     	
     	String fullFileURL = URL.getSalesforceBaseUrl().toExternalForm() +
@@ -453,6 +457,7 @@ public with sharing class CustomBadgeController {
         String errMessage;
         String stsMessage;
         String encodedImage;
+        String credlyBadgeId;
 
         badge__c insertUser = new badge__c();
 
@@ -497,24 +502,41 @@ public with sharing class CustomBadgeController {
             } else {
                 insertUser.document_id__c = xbadgeURL;
             }
+            
+            
+             credlyBadgeId = staticCredlyClass.sendBadgeToCredly(insertUser);
+             system.debug(credlyBadgeId);
+             
+             if(String.isNotBlank(credlyBadgeId))
+             {
+             	insertUser.credlyBadgeId__c = credlyBadgeId;
+             }
+             else
+             {
+             	ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating new badge on Credly.'));
+             	return null;
+             }
 
             insert insertUser;
 
         } catch (DMLException e) {
-            ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating new badge.'));
+            ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating new badge in Salesforce.'));
             return null;
         }
 
         //Submit Job to Send Badges//
-        staticCredlyClass.synchBadgesToCredly();
+   //     staticCredlyClass.synchBadgesToCredly();
 
 
         addBlock = false;
         showIframe = false;
         detailsBlock = true;
         ApexPages.addMessage(new ApexPages.message(ApexPages.severity.INFO, 'Badge Created Successfully'));
+		
+		PageReference pageRef = new PageReference('/apex/ViewBadges');
+        pageRef.setRedirect(true);
+        return pageRef;
 
-        return null;
     }
 
     // ApexPages.StandardgetBadgetroller must be instantiated

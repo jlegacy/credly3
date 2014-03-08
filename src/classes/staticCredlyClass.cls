@@ -203,6 +203,13 @@ public static set<String> getCredlyBadgeIdsFromData(List<CredlyJSON2ApexMyBadges
      	return myCredlyBadgeIDs;
 }
 
+public static String sendBadgeToCredly(badge__c badge)
+{
+	String credlyBadgeId;
+   	credlyBadgeId = CredlyJSONCalls.postMyBadge(badge); 
+  	return credlyBadgeId; 
+}
+
 public static set<String> getCredlyBadgeIDsFromSalesforce()
    { 
     List<badge__c> myIds = [select credlyBadgeId__c from badge__c where credlyBadgeId__c <> null];

@@ -314,7 +314,7 @@ function getAutoValues() {
            <apex:param name="thirdParam"  assignTo="{!xiconId}" value="" />
            </apex:actionFunction>
         
-       <apex:actionFunction name="upload" action="{!upload}" rerender="addForm"> </apex:actionFunction>
+       <apex:actionFunction name="upload" action="{!upload}" rerender="addform"> </apex:actionFunction>
           <apex:actionFunction action="{!dummy}" name="setGiveable" rerender="dummy"> </apex:actionFunction>
       
      

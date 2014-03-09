@@ -83,6 +83,10 @@
         attachSorts();
 
     });
+    
+    function setSelectedRecipients(){
+    alert('test');
+    }
 
     function insertDetail() {
         var count = 0;
@@ -581,9 +585,7 @@
   
    <apex:outputpanel >
   <apex:outputlabel >
-   <apex:outputtext value="{!recipientNumber}" ></apex:outputtext>
-
-
+   <apex:commandLink action="{!editRecipients}" value="{!recipientNumber}" ></apex:commandLink>
   </apex:outputlabel>
   </apex:outputpanel>
 
@@ -648,8 +650,29 @@
     </apex:pageBlockSection>
  
   </apex:pageBlock>
+    <apex:pageBlock rendered="{!renderStep5}">
+     <apex:pageBlockButtons >
+                <apex:commandButton styleClass="nextStep" action="{!upload}" value="Continue"/> 
+                  <apex:commandButton styleClass="backStep" action="{!backStep}" value="Back Step"/>
+            </apex:pageBlockButtons>
+    <h1>Recipients</h1>
+    <apex:outputPanel id="details">
+                  <apex:pageBlockTable value="{!recipients}" var="o">
+                   <apex:column headerValue="Sel">
+                  <input checked="true" class="selectedRecipients" onclick="setSelectedRecipients();" type="checkBox" name="group1"></input>
+                  </apex:column>
+                  
+                    <apex:column headerValue="Recipient">
+                       <apex:outputField value="{!o.Account_Lookup_rc__c}" /> 
+                       <apex:outputField value="{!o.Contact_Lookup_rc__c}" /> 
+                        <apex:outputField value="{!o.Lead_Lookup_rc__c}" /> 
+                    </apex:column>
+           
+                    </apex:pageBlockTable>
+            </apex:outputPanel>
+    </apex:pageBlock>
    
-     <apex:pageBlock rendered="{!renderStep5}">
+     <apex:pageBlock rendered="{!renderStep6}">
     <h1>Congratulations!</h1>
     <br><h3>Your badge has been queued for delivery.  It may take up to a few minutes to reach recipients
         </h3></br>

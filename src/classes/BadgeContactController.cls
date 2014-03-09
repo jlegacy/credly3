@@ -14,6 +14,7 @@ public with sharing class BadgeContactController {
         renderStep3 = false;
         renderStep4 = false;
         renderStep5 = false;
+        renderStep6 = false;
         renderAccounts = false;
         renderLeads = false;
         renderContacts = false;
@@ -120,6 +121,11 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         set;
     }
     public Integer currentBadgePage {
+        get;
+        set;
+    }
+    
+      public List<recipients__c> selectedRecipients {
         get;
         set;
     }
@@ -321,6 +327,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
             renderStep3 = false;
             renderStep4 = false;
             renderStep5 = false;
+            renderStep6 = false;
             renderAccounts = false;
             renderLeads = false;
             renderContacts = false;
@@ -338,6 +345,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
                 renderStep3 = false;
                 renderStep4 = false;
                 renderStep5 = false;
+                renderStep6 = false;
 
             } else {
                 renderPage();
@@ -351,8 +359,12 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         if (step == 4) {
             showReview();
         }
+        
+         if (step == 5) {
+            showRecipients();  
+        }
 
-        if (step == 5) {
+        if (step == 6) {
             showConfirm();
         }
 
@@ -411,6 +423,10 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         get;
         set;
     }
+     public Boolean renderStep6 {
+        get;
+        set;
+    }
 
 
 
@@ -437,6 +453,8 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
             renderStep3 = false;
             renderStep4 = false;
             renderStep5 = false;
+            renderStep6 = false;
+            
 
             return null;
         }
@@ -458,6 +476,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
                         renderStep3 = false;
                         renderStep4 = false;
                         renderStep5 = false;
+                        renderStep6 = false;
 
                         return null;
 
@@ -474,6 +493,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         renderStep3 = true;
         renderStep4 = false;
         renderStep5 = false;
+        renderStep6 = false;
 
 
         renderLeads = false;
@@ -504,6 +524,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         renderStep3 = false;
         renderStep4 = true;
         renderStep5 = false;
+        renderStep6 = false;
 
         renderLeads = false;
         renderAccounts = false;
@@ -511,7 +532,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
 
     }
 
-    public void showConfirm() {
+    public void showRecipients() {
 
 
         renderStep1 = false;
@@ -519,11 +540,24 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         renderStep3 = false;
         renderStep4 = false;
         renderStep5 = true;
+        renderStep6 = false;
 
         renderLeads = false;
         renderAccounts = false;
         renderContacts = false;
 
+    }
+     public void showConfirm() {
+        renderStep1 = false;
+        renderStep2 = false;
+        renderStep3 = false;
+        renderStep4 = false;
+        renderStep5 = false;
+        renderStep6 = true;
+
+        renderLeads = false;
+        renderAccounts = false;
+        renderContacts = false;
     }
 
 
@@ -606,6 +640,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         renderStep3 = false;
         renderStep4 = false;
         renderStep5 = false;
+        renderStep6 = false;
 
         renderAccounts = false;
         renderContacts = false;
@@ -733,6 +768,59 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
 
 
         return options;
+    }
+    
+    public String editRecipients() {
+    	
+    	  selectedRecipients = new List <recipients__c> ();
+    	 
+    	  
+    	  Map<String, Integer> foundHitIds;
+    	  List<List<String>> parsedRows = new List<List<String>>();
+    	  
+    	   xRecordType = setTypeSelect.toLowerCase();
+    	  
+    	   parsedRows = automatedTriggerClass.unparseRules(setRuleText);
+    	  
+    	  //Get the IDs of the members getting badges//
+             if (xRecordType == 'account') {
+            	foundHitIds = staticCredlyClass.getRecipientAccountIDs(setRuleText);
+             }
+             
+              if (xRecordType == 'lead') {
+            	foundHitIds = staticCredlyClass.getRecipientLeadIDs(setRuleText);
+             }
+             
+              if (xRecordType == 'contact') {
+            	foundHitIds = staticCredlyClass.getRecipientContactIDs(setRuleText);
+             }
+             
+           //  system.debug(xRecordType);
+              for(Id id : foundHitIds.keySet()) {
+                    if (foundHitIds.get(id) == parsedRows.size())
+                    {
+                    	 recipients__c newRecipient = new recipients__c();
+                    	 
+                    	  if (xRecordType == 'account') {
+            			newRecipient.Account_Lookup_rc__c = id;
+             			}
+             
+              if (xRecordType == 'lead') {
+            	newRecipient.Lead_Lookup_rc__c = id;
+             }
+             
+              if (xRecordType == 'contact') {
+            	newRecipient.Contact_Lookup_rc__c = id;
+             }
+             
+             selectedRecipients.add(newRecipient);
+                    	
+                    }
+               }
+            
+    	nextstep();
+    	
+    	return null;
     }
 
 
@@ -896,6 +984,9 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
             document.body = null; // clears the viewstate
             document = new Document();
         }
+        
+        //jump over recipients if no review needed
+        step = step + 1;
 
         nextStep();
 
@@ -1054,6 +1145,11 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
     // Initialize getBadge and return a list of records
     public List < badge__c > getBadges() {
         return (List < badge__c > ) getBadge;
+    }
+    
+     // Initialize getBadge and return a list of records
+    public List < recipients__c > getRecipients() {
+        return selectedRecipients;
     }
 
     public void setPagingInfo(Integer records) {

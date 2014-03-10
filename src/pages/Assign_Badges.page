@@ -85,7 +85,24 @@
     });
     
     function setSelectedRecipients(){
-    alert('test');
+       var ids = "";
+        var mySplitResult;
+        var hrefString;
+        var splitString;
+        var recipient;
+         $j(".selectedRecipients").each(function ()
+         {
+         	recipient = $j(this);
+        	$j(this).closest('tr').find('a').each(function () {
+            if (recipient.is(':checked')) {
+            	hrefString = $j(this).attr('href');
+            	splitString = hrefString.split('/');
+                ids = ids + splitString[3] + ',';
+            }
+        });
+        });
+        
+        createRecipientsController(ids);
     }
 
     function insertDetail() {
@@ -269,6 +286,9 @@
             if ($j(this).text() == 'Badge') {
                 $j(this).children().remove();
             }
+              if ($j(this).text() == 'Recipients') {
+                $j(this).children().remove();
+            }
         });
     }
 
@@ -448,6 +468,10 @@
          
          </apex:pageBlock>
          
+          <apex:actionFunction name="createRecipientsController" action="{!createRecipientsController}" rerender="dummy" oncomplete="hideContainer();">
+           <apex:param name="secondParam"  assignTo="{!xSelectedRecipients}" value="" />
+              </apex:actionFunction>
+         
            <apex:actionFunction name="setRuleText"  rerender="dummy">
       <apex:param name="firstParam"  assignTo="{!setRuleText }" value="" />
     </apex:actionFunction>
@@ -475,8 +499,8 @@
         
         <apex:outputPanel id="dummy" rendered="false"></apex:outputPanel>
         
-         <apex:pageBlock id="uploadEvidence" rendered="{!renderStep3}">   
-  		<h1>Step 3: Select Delivery Options:</h1>
+         <apex:pageBlock id="uploadEvidence" rendered="{!renderStep4}">   
+  		<h1>Step 4: Select Delivery Options:</h1>
   		  <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
   		  <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
           
@@ -555,12 +579,12 @@
     
   </apex:pageBlock> 
   
-  <apex:pageBlock rendered="{!renderStep4}">
+  <apex:pageBlock rendered="{!renderStep5}">
   <apex:pageBlockButtons >
                 <apex:commandButton styleClass="nextStep" action="{!upload}" value="Continue"/> 
-                  <apex:commandButton styleClass="backStep" action="{!backStep}" value="Back Step"/>
+                  <apex:commandButton styleClass="backStep" action="{!backStep}" value="Back Step"/> 
             </apex:pageBlockButtons>
-  <h1>Step 4: Review</h1>
+  <h1>Step 5: Review</h1>
   <!-- **********************ROW1*************************** -->
   <apex:pageBlockSection columns="2">
   <apex:outputpanel >
@@ -585,7 +609,7 @@
   
    <apex:outputpanel >
   <apex:outputlabel >
-   <apex:commandLink action="{!editRecipients}" value="{!recipientNumber}" ></apex:commandLink>
+   <apex:outputtext value="{!recipientNumber}" ></apex:outputtext>
   </apex:outputlabel>
   </apex:outputpanel>
 
@@ -650,19 +674,20 @@
     </apex:pageBlockSection>
  
   </apex:pageBlock>
-    <apex:pageBlock rendered="{!renderStep5}">
+    <apex:pageBlock rendered="{!renderStep3}">
+    <h1>Step 3: Select Recipients:</h1>
      <apex:pageBlockButtons >
-                <apex:commandButton styleClass="nextStep" action="{!upload}" value="Continue"/> 
+                <apex:commandButton styleClass="nextStep" action="{!nextStep}" value="Continue"/> 
                   <apex:commandButton styleClass="backStep" action="{!backStep}" value="Back Step"/>
             </apex:pageBlockButtons>
     <h1>Recipients</h1>
     <apex:outputPanel id="details">
                   <apex:pageBlockTable value="{!recipients}" var="o">
                    <apex:column headerValue="Sel">
-                  <input checked="true" class="selectedRecipients" onclick="setSelectedRecipients();" type="checkBox" name="group1"></input>
+                  <input class="selectedRecipients" onclick="setSelectedRecipients();" type="checkBox"></input>
                   </apex:column>
                   
-                    <apex:column headerValue="Recipient">
+                    <apex:column headerValue="Recipients">
                        <apex:outputField value="{!o.Account_Lookup_rc__c}" /> 
                        <apex:outputField value="{!o.Contact_Lookup_rc__c}" /> 
                         <apex:outputField value="{!o.Lead_Lookup_rc__c}" /> 

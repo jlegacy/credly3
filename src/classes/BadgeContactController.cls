@@ -7,7 +7,9 @@ public with sharing class BadgeContactController {
         setSortProperties();
         
           setRuleText = '';
-
+          
+   //     system.debug('in controller');
+		xSelectedRecipients = '';
         getOnce = true;
         renderStep1 = true;
         renderStep2 = false;
@@ -61,7 +63,6 @@ public with sharing class BadgeContactController {
             numberOfBadgePages = 1;
         }
 
-
     }
     
       public String name { get; set; }
@@ -97,6 +98,11 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
   }  
    return options;
    }
+   
+       public String xSelectedRecipients {
+        get;
+        set;
+    }
     
    
     public String xSortField {
@@ -238,11 +244,18 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         get;
         set;
     }
+    
+    
     public ID myID {
         get;
         set;
     }
 
+public PageReference createRecipientsController()
+{
+	system.debug(xSelectedRecipients);
+	return null;
+}
 
 
     public String setBadgeSelectTitle {
@@ -313,13 +326,15 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
     public void backStep() {
         //if you are on step 3 and going back to step 2, then 
         //the select recipients screen needs to rerender
-
+		//system.debug('back step::::' + step);
         step = step - 2;
         nextStep();
     }
 
     public PageReference nextStep() {
         step = step + 1;
+        
+     //   system.debug(step);
 
         if (step == 1) {
             renderStep1 = true;
@@ -352,16 +367,30 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
             }
 
         }
+       
         if (step == 3) {
-            showUploadOnly();
+        	editRecipients();
+            showRecipients();
         }
+        
+         if (step == 4) {
+         	
+         	  
+            if (xSelectedRecipients.trim().length() == 0) {
+                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need to Select Recipients'));
+                step = 2;
+                nextStep();
 
-        if (step == 4) {
-            showReview();
+            }
+            else
+            {
+         	
+            showUploadOnly();
+            }
         }
         
          if (step == 5) {
-            showRecipients();  
+            showReview();  
         }
 
         if (step == 6) {
@@ -490,8 +519,8 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
 
         renderStep1 = false;
         renderStep2 = false;
-        renderStep3 = true;
-        renderStep4 = false;
+        renderStep3 = false;
+        renderStep4 = true;
         renderStep5 = false;
         renderStep6 = false;
 
@@ -500,7 +529,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         renderAccounts = false;
         renderContacts = false;
 
-        step = 3;
+        step = 4;
 
         return null;
 
@@ -514,15 +543,15 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         return selectedRecordType;
     } 
     
-    public void showReview() {
+    public void showRecipients() {
 
        // String[] temp = xSelectedIDs.split(','); 
-        recipientNumber = staticCredlyClass.getRecipientCount(setTypeSelect, setRuleText);
+       
         
         renderStep1 = false;
         renderStep2 = false;
-        renderStep3 = false;
-        renderStep4 = true;
+        renderStep3 = true;
+        renderStep4 = false;
         renderStep5 = false;
         renderStep6 = false;
 
@@ -532,8 +561,14 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
 
     }
 
-    public void showRecipients() {
+    public void showReview() {
+    	recipientNumber = 0;
+   		String[] rows = xSelectedRecipients.split('\\,');
 
+         for (String x: rows)
+        {
+          recipientNumber = recipientNumber + 1;
+        }
 
         renderStep1 = false;
         renderStep2 = false;
@@ -772,16 +807,17 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
     
     public String editRecipients() {
     	
+    	  String setSelected;
+    	
     	  selectedRecipients = new List <recipients__c> ();
     	 
-    	  
     	  Map<String, Integer> foundHitIds;
     	  List<List<String>> parsedRows = new List<List<String>>();
     	  
     	   xRecordType = setTypeSelect.toLowerCase();
     	  
     	   parsedRows = automatedTriggerClass.unparseRules(setRuleText);
-    	  
+    	 // system.debug(setRuleText);
     	  //Get the IDs of the members getting badges//
              if (xRecordType == 'account') {
             	foundHitIds = staticCredlyClass.getRecipientAccountIDs(setRuleText);
@@ -794,6 +830,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
               if (xRecordType == 'contact') {
             	foundHitIds = staticCredlyClass.getRecipientContactIDs(setRuleText);
              }
+         //     system.debug(foundHitIds);
              
            //  system.debug(xRecordType);
               for(Id id : foundHitIds.keySet()) {
@@ -814,11 +851,10 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
              }
              
              selectedRecipients.add(newRecipient);
+       //       system.debug(selectedRecipients);
                     	
                     }
                }
-            
-    	nextstep();
     	
     	return null;
     }
@@ -868,7 +904,8 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
     }
 
     public PageReference upload() {
-
+		Map<String, String> mySelectedRecipients = new Map<String,String>();
+		
         Map<String, Integer> foundHitIds;
         List<List<String>> parsedRows = new List<List<String>>();
         String encodedImage;
@@ -880,6 +917,15 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         String stsMessage;
         String[] splitName = null;
         String email = ' ';
+        String result;
+        String shortenedID;
+        
+        String[] rows = xSelectedRecipients.split('\\,');
+
+         for (String x: rows)
+        {
+          mySelectedRecipients.put(x,x);
+        }
         
         xRecordType = setTypeSelect.toLowerCase();
 
@@ -930,7 +976,15 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
               for(Id id : foundHitIds.keySet()) {
                     if (foundHitIds.get(id) == parsedRows.size())
                     {
-           
+                    
+                    result = null;
+                    shortenedID = string.valueOf(id).substring(0,15);
+                    result = mySelectedRecipients.get(shortenedID); 
+                    system.debug(shortenedID);
+                    system.debug(result);
+                    
+                    if (result != null)
+           			{
                     member_badge__c memberBadge = new member_badge__c();
 
                     memberBadge.criteria_m__c = badge.criteria__c;
@@ -973,6 +1027,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
                     memberBadge.issue_date_m__c = system.today();
                     insert memberBadge;
                     memberBadgeList.add(memberBadge); 
+                    }
 
                 }
             }
@@ -986,8 +1041,6 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         }
         
         //jump over recipients if no review needed
-        step = step + 1;
-
         nextStep();
 
         // ApexPages.addMessage(new ApexPages.message(ApexPages.severity.INFO, 'Member Badge Successfully Created'));

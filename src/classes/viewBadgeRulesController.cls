@@ -462,13 +462,13 @@ public with sharing class viewBadgeRulesController {
         
           badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where (credlyBadgeId__c IN :myCredlyBadgeIDs) order by title__c LIMIT :pageLimit OFFSET :badgeOffset];   
             
-        	   if (((filterBadge != null) || (filterBadge.trim().length() != 0))) 
+        	  if ((filterBadge.trim().compareTo('') != 0)) {
                {
                filterBadgeSearch = filterBadge;
           badges = [select id,criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c  from badge__c where (credlyBadgeId__c IN :myCredlyBadgeIDs) and title__c like :filterBadgeSearch LIMIT :pageLimit OFFSET :badgeOffset];
             }
             
-            if (((filterBadge == null) || (filterBadge.trim().length() == 0))) 
+            if ((filterBadge.trim().compareTo('') == 0)) {
             {
             badges =[select id,criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c  from badge__c where (credlyBadgeId__c IN :myCredlyBadgeIDs) LIMIT :pageLimit OFFSET :badgeOffset];
             }

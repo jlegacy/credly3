@@ -1156,6 +1156,8 @@ public PageReference createRecipientsController()
 
     public List < badge__c > getBadge {
         get {
+        	
+        	system.debug('calling getBadge');
             List < badge__c > badges;
 
             badge__c[] arrayOfBadges;
@@ -1169,22 +1171,22 @@ public PageReference createRecipientsController()
                 return badges;
             }
 
-            if (((filterBadge != null) || (filterBadge.trim().length() != 0))) {
+            if ((filterBadge.trim().compareTo('') != 0)) {
                 filterBadgeSearch = filterBadge;
 
                 AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs)) and title__c like: filterBadgeSearch];
                 Object recordCount = groupedResults[0].get('recCnt');
                 setPagingInfo(Integer.valueOf(recordCount));
-
+			
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
             }
 
-            if (((filterBadge == null) || (filterBadge.trim().length() == 0))) {
+              if ((filterBadge.trim().compareTo('') == 0)) {
                 AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs))];
                 Object recordCount = groupedResults[0].get('recCnt');
                 setPagingInfo(Integer.valueOf(recordCount));
 
-
+				system.debug('got here');
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
             }
 

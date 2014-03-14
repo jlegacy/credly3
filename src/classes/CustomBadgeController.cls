@@ -466,14 +466,14 @@ public with sharing class CustomBadgeController {
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Badge Missing - Use Badge Builder to create.'));
             return null;
         }
-
+        
         if (document.body != null) {
             document.AuthorId = UserInfo.getUserId();
             document.FolderId = UserInfo.getUserId();
             //    strBody = EncodingUtil.base64Encode(document.body);
             try {
                 insert document;
-
+               
             } catch (DMLException e) {
                 ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error uploading file'));
                 return null;

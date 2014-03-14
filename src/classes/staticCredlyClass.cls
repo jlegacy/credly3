@@ -212,7 +212,8 @@ public static String sendBadgeToCredly(badge__c badge)
 
 public static set<String> getCredlyBadgeIDsFromSalesforce()
    { 
-    List<badge__c> myIds = [select credlyBadgeId__c from badge__c where credlyBadgeId__c <> null];
+   	ID myId = UserInfo.getUserId();
+    List<badge__c> myIds = [select credlyBadgeId__c from badge__c where credlyBadgeId__c <> null and createdBy.Id  = :myId];
    	set<String> mySalesForceBadgeIDs = new set<String>();
    	
    	for (badge__c i: myIds)

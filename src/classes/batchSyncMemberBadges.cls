@@ -149,6 +149,9 @@ global class batchSyncMemberBadges implements
             }
             
             storeCredly = false;
+            
+            system.debug(email);
+            
            //Check for Credly ID if not found above in Salesforce
             if (CredlyId == 0) 
             {
@@ -183,7 +186,6 @@ global class batchSyncMemberBadges implements
             mBadge.put('email', email); 
             }
             
-     
        mBadge.put('testimonial', memberBadge.testimonial_m__c = (memberBadge.testimonial_m__c == null) ? ' ' : memberBadge.testimonial_m__c);  
        mBadge.put('notify', 'True'); 
        mBadge.put('custom_message',  memberBadge.custom_message_m__c = (memberBadge.custom_message_m__c == null) ? ' ' : memberBadge.custom_message_m__c);  

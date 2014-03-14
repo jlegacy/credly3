@@ -10,6 +10,14 @@
     var $j = jQuery.noConflict();
     $j(document).ready(function () {
      bindRuleSelects();
+     
+     
+     	$j("body").delegate("input[id='selectAll']","click",function(){
+     	   $j(".selectedRecipients").each( function() {
+			$j(this).attr("checked",false);
+			 $j(this).click();
+			});
+        });
 
 
         if ("{!customMessageChecked}" == 'false') {
@@ -581,8 +589,8 @@
   
   <apex:pageBlock rendered="{!renderStep5}">
   <apex:pageBlockButtons >
-                <apex:commandButton styleClass="nextStep" action="{!upload}" value="Continue"/> 
                   <apex:commandButton styleClass="backStep" action="{!backStep}" value="Back Step"/> 
+                  <apex:commandButton styleClass="nextStep" action="{!upload}" value="Issue Now"/>
             </apex:pageBlockButtons>
   <h1>Step 5: Review</h1>
   <!-- **********************ROW1*************************** -->
@@ -675,15 +683,23 @@
  
   </apex:pageBlock>
     <apex:pageBlock rendered="{!renderStep3}">
+     <input type="button" class="btn selectAll" id="selectAll" value="Select All"></input> 
     <h1>Step 3: Select Recipients:</h1>
+    
      <apex:pageBlockButtons >
-                <apex:commandButton styleClass="nextStep" action="{!nextStep}" value="Continue"/> 
                   <apex:commandButton styleClass="backStep" action="{!backStep}" value="Back Step"/>
+                  <apex:commandButton styleClass="nextStep" action="{!nextStep}" value="Next Step"/> 
+  
             </apex:pageBlockButtons>
-    <h1>Recipients</h1>
-    <apex:outputPanel id="details">
+   
+   
+     <h1>Recipients</h1>
+    <apex:outputPanel id="details"> 
+    				
                   <apex:pageBlockTable value="{!recipients}" var="o">
+                   
                    <apex:column headerValue="Sel">
+                   
                   <input class="selectedRecipients" onclick="setSelectedRecipients();" type="checkBox"></input>
                   </apex:column>
                   
@@ -784,8 +800,8 @@
     <!--  <apex:pageBlock id="theAddBadge" rendered="{!renderStep3}" mode="edit"  title="Step 2: Enter Rule Information"> -->
      
       <apex:pageBlockButtons >
-       <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
          <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
+          <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
       </apex:pageBlockButtons>
       
 
@@ -826,7 +842,7 @@
    
      <apex:pageBlockButtons >
         
-        <apex:commandButton action="{!showUploadOnly}"   styleClass="nextStep" value="Continue"/>
+        <apex:commandButton action="{!showUploadOnly}"   styleClass="nextStep" value="Next Step"/>
      
       </apex:pageBlockButtons>
     
@@ -851,7 +867,7 @@
                 <apex:pageBlockButtons >
                
        
-        <apex:commandButton action="{!showUploadOnly}" styleClass="nextStep" value="Continue"/>
+        <apex:commandButton action="{!showUploadOnly}" styleClass="nextStep" value="Next Step"/>
         
       
       </apex:pageBlockButtons>
@@ -875,7 +891,7 @@
    
      <apex:pageBlockButtons >
         
-        <apex:commandButton action="{!showUploadOnly}"  styleClass="nextStep" value="Continue"/>
+        <apex:commandButton action="{!showUploadOnly}"  styleClass="nextStep" value="Next Step"/>
       </apex:pageBlockButtons>
     
    <apex:outputPanel id="leads">

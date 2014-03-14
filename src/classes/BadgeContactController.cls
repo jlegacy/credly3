@@ -935,7 +935,6 @@ public PageReference createRecipientsController()
             strBody = EncodingUtil.base64Encode(document.body);
             try {
                 insert document;
-
             } catch (DMLException e) {
                 ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error uploading file'));
                 return null;
@@ -943,7 +942,6 @@ public PageReference createRecipientsController()
         }
 
         try {
-
 
             //get original base badge
 
@@ -976,13 +974,13 @@ public PageReference createRecipientsController()
               for(Id id : foundHitIds.keySet()) {
                     if (foundHitIds.get(id) == parsedRows.size())
                     {
+                    	
+                    	system.debug(id);
                     
                     result = null;
                     shortenedID = string.valueOf(id).substring(0,15);
                     result = mySelectedRecipients.get(shortenedID); 
-                    system.debug(shortenedID);
-                    system.debug(result);
-                    
+                  
                     if (result != null)
            			{
                     member_badge__c memberBadge = new member_badge__c();
@@ -1025,11 +1023,15 @@ public PageReference createRecipientsController()
                     memberBadge.name_m__c = getName(xRecordType, id);
 
                     memberBadge.issue_date_m__c = system.today();
-                    insert memberBadge;
                     memberBadgeList.add(memberBadge); 
                     }
 
                 }
+            }
+            
+            if (!memberBadgeList.isEmpty())
+            {
+            insert memberBadgeList;
             }
 
         } catch (DMLException e) {

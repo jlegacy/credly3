@@ -121,6 +121,12 @@ input.btn.nextStep {
     font-weight: bold;
 }
 
+input.btn.selectAll {
+    background: orange;
+    color: white;
+    font-weight: bold;
+}
+
 input.btn.backStep {
     background: lightgray;
     font-weight: bold;

@@ -37,7 +37,7 @@ global class batchSyncMemberBadges implements
     catch(System.EmailException ex){
       // This message should be added to the page, 
       // as an exception is caught
-      system.debug(ex);
+   //   system.debug(ex);
     }
    }
    
@@ -150,7 +150,7 @@ global class batchSyncMemberBadges implements
             
             storeCredly = false;
             
-            system.debug(email);
+         //   system.debug(email);
             
            //Check for Credly ID if not found above in Salesforce
             if (CredlyId == 0) 
@@ -205,7 +205,7 @@ global class batchSyncMemberBadges implements
       //   
           //parseResults
          CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
-         system.debug(returnData);
+     //    system.debug(returnData);
         if (obj.meta.status.compareTo('OK') == 0)
             {
              CredlyJSON2ApexMemberBadge obj2 = CredlyJSON2ApexMemberBadge.parse(returnData);

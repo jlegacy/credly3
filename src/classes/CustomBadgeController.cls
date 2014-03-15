@@ -505,7 +505,7 @@ public with sharing class CustomBadgeController {
             
             
              credlyBadgeId = staticCredlyClass.sendBadgeToCredly(insertUser);
-             system.debug(credlyBadgeId);
+          //   system.debug(credlyBadgeId);
              
              if(String.isNotBlank(credlyBadgeId))
              {

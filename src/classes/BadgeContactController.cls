@@ -22,7 +22,8 @@ public with sharing class BadgeContactController {
         renderContacts = false;
         step = 1;
         emailChecked = true;
-
+        documentId = '';
+        documentName = '';
         xRecordType = '';
         xSelectedIDs = '';
         setBadgeSelect = '';
@@ -48,7 +49,7 @@ public with sharing class BadgeContactController {
         myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
         myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
         mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
-
+        
         //Badges//
         totalNumberofBadges = myCredlyBadgeIDs.size();
 
@@ -64,6 +65,9 @@ public with sharing class BadgeContactController {
         }
 
     }
+    
+    public String documentId {get; set;}
+    public String documentName {get; set;} 
     
       public String name { get; set; }
        public String setRuleText{get;set;}
@@ -253,7 +257,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
 
 public PageReference createRecipientsController()
 {
-	system.debug(xSelectedRecipients);
+	//system.debug(xSelectedRecipients);
 	return null;
 }
 
@@ -348,13 +352,13 @@ public PageReference createRecipientsController()
             renderContacts = false;
         }
         if (step == 2) {
-            if (setBadgeSelect.trim().length() == 0) {
+            if (setBadgeSelect.trim().compareTo('') == 0) {
                 ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need to Select a Badge'));
-                nextStep();
+                step = step-1;
                 return null;
             }
 
-            if (xSelectedIDs.trim().length() == 0) {
+            if (xSelectedIDs.trim().compareTo('') == 0) {
                 renderStep1 = false;
                 renderStep2 = true;
                 renderStep3 = false;
@@ -400,16 +404,14 @@ public PageReference createRecipientsController()
         return null;
     }
 
-    public PageReference setBadgeIdEmpty() {
+    public void setBadgeIdEmpty() {
 
-        //select id from badge and set fields//
         String i = setBadgeSelect;
         List < badge__c > bd = [Select Id, title__c, image__c, credlyBadgeId__c from badge__c where ID = : i LIMIT 1];
         for (badge__c y: bd) {
             setBadgeSelectTitle = y.title__c;
         }
 
-        return null;
 
     }
 
@@ -558,10 +560,10 @@ public PageReference createRecipientsController()
         renderLeads = false;
         renderAccounts = false;
         renderContacts = false;
-
+        
     }
 
-    public void showReview() {
+    public pageReference showReview() {
     	recipientNumber = 0;
    		String[] rows = xSelectedRecipients.split('\\,');
 
@@ -580,7 +582,24 @@ public PageReference createRecipientsController()
         renderLeads = false;
         renderAccounts = false;
         renderContacts = false;
-
+        
+        
+          if (document.body != null) {
+            document.AuthorId = UserInfo.getUserId();
+            document.FolderId = UserInfo.getUserId();
+            try {
+                insert document;
+                documentId = document.id;
+                documentName = document.name;
+                document.body = null;
+            } catch (DMLException e) {
+                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error uploading file'));
+                return null;
+            }
+        }
+        
+        return null;
+        
     }
      public void showConfirm() {
         renderStep1 = false;
@@ -680,7 +699,7 @@ public PageReference createRecipientsController()
         renderAccounts = false;
         renderContacts = false;
         renderLeads = false;
-
+        
         if (recordType == 'Account') {
             renderAccounts = true;
             getAccount = null;
@@ -792,20 +811,18 @@ public PageReference createRecipientsController()
 
     public List < SelectOption > getDropBadges() {
         List < badge__c > newBadges = getBadges();
-
-
         List < SelectOption > options = new List < SelectOption > ();
         options.add(new SelectOption('', ''));
         for (badge__c c: newBadges) {
             options.add(new SelectOption(c.id, c.title__c + ' - ' + c.short_description__c));
         }
 
-
-
         return options;
     }
     
     public String editRecipients() {
+    	
+    	//  system.debug('in edit rec');
     	
     	  String setSelected;
     	
@@ -929,17 +946,7 @@ public PageReference createRecipientsController()
         
         xRecordType = setTypeSelect.toLowerCase();
 
-        if (document.body != null) {
-            document.AuthorId = UserInfo.getUserId();
-            document.FolderId = UserInfo.getUserId();
-            strBody = EncodingUtil.base64Encode(document.body);
-            try {
-                insert document;
-            } catch (DMLException e) {
-                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error uploading file'));
-                return null;
-            }
-        }
+      
 
         try {
 
@@ -975,9 +982,6 @@ public PageReference createRecipientsController()
                     if (foundHitIds.get(id) == parsedRows.size())
                     {
                     	
-                    	system.debug(id);
-                    
-                    result = null;
                     shortenedID = string.valueOf(id).substring(0,15);
                     result = mySelectedRecipients.get(shortenedID); 
                   
@@ -1011,9 +1015,9 @@ public PageReference createRecipientsController()
 
                     memberBadge.account_type_m__c = xRecordType;
 
-                    if (document.body != null) {
-                        memberBadge.evidence_id_m__c = document.Id;
-                        memberBadge.evidence_name_m__c = document.Name;
+                    if (documentid.trim().compareTo('') != 0) {
+                        memberBadge.evidence_id_m__c = documentId;
+                        memberBadge.evidence_name_m__c = documentName;
                     } else {
                         memberBadge.evidence_url_m__c = urlLink;
                     }
@@ -1159,7 +1163,7 @@ public PageReference createRecipientsController()
     public List < badge__c > getBadge {
         get {
         	
-        	system.debug('calling getBadge');
+        //	system.debug('calling getBadge');
             List < badge__c > badges;
 
             badge__c[] arrayOfBadges;
@@ -1188,7 +1192,7 @@ public PageReference createRecipientsController()
                 Object recordCount = groupedResults[0].get('recCnt');
                 setPagingInfo(Integer.valueOf(recordCount));
 
-				system.debug('got here');
+			//	system.debug('got here');
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
             }
 

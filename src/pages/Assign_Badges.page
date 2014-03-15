@@ -488,9 +488,9 @@
            <apex:param name="firstParam"  assignTo="{!xRecordType}" value="" /> 
            <apex:param name="secondParam"  assignTo="{!xSelectedIDs}" value="" /> 
               </apex:actionFunction>
-             <apex:actionFunction name="setBadgeID" action="{!setBadgeIdEmpty}" rerender="showNext" oncomplete="hideContainer();">
+             <apex:actionFunction name="setBadgeID" action="{!setBadgeIdEmpty}" rerender="dummy" oncomplete="hideContainer();">
            <apex:param name="firstParam"  assignTo="{!setBadgeSelect }" value="" /> 
-           <apex:param name="secondParam"  assignTo="{!setBadgeSelectImage }" value="" />
+           <apex:param name="secondParam"  assignTo="{!setBadgeSelectImage }" value="" /> 
               </apex:actionFunction>
               
                   <apex:actionFunction name="setSort" action="{!setSortController}" rerender="badgeDetailsBlock" onComplete="attachSorts();">

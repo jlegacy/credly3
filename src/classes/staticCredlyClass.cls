@@ -282,12 +282,25 @@ public static set<String> getCredlyBadgeIDsFromSalesforce()
 	   	  			
 	   	  		}
 	   	  if (newBadges <> null)
-	   	  {	
+	   	  {	try
+	   	  	{
 	   	    insert newBadges;
+	   	  	}
+	   	  	catch (exception e){
+	   	  		 ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error Inserting/Synching Badges.'));
+	   	  	}
+	   	  	
 	   	  }
 	   	    if (updateBadges <> null)
 	   	  {	
+	   	   try
+	   	  	{
 	   	    update updateBadges;
+	   	  	}
+	   	  	catch (exception e){
+	   	  		 ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error Updating/Synching Badges.'));
+        
+	   	  	}
 	   	  }
 	   	  		
     		

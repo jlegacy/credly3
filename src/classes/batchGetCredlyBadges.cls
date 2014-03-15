@@ -38,7 +38,7 @@ global class batchGetCredlyBadges implements
 	catch(System.EmailException ex){
       // This message should be added to the page, 
       // as an exception is caught
-      system.debug(ex);
+  //    system.debug(ex);
     }
    }
    

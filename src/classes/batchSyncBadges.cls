@@ -38,7 +38,7 @@ global class batchSyncBadges implements
 	catch(System.EmailException ex){
       // This message should be added to the page, 
       // as an exception is caught
-      system.debug(ex);
+    //  system.debug(ex);
     }
    }
    
@@ -143,7 +143,7 @@ global class batchSyncBadges implements
            {
          
          returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'badges', createURL); 
-         system.debug(returnData); 
+       //  system.debug(returnData); 
            }
         
           //parseResults

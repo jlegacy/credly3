@@ -73,6 +73,8 @@ global class batchSyncMemberBadges implements
     List<member_badge__c> memberBadgeList = new List<member_badge__c>();
     
     for (member_badge__c memberBadge : scope) {
+    	
+    	system.debug(scope);
    
         if (memberBadge.evidence_id_m__c != null)
         {
@@ -192,6 +194,7 @@ global class batchSyncMemberBadges implements
         mBadge.put('access_token',securityToken); 
         
         createURL = CredlyJSONCalls.createURLString(mBadge);
+        system.debug(createURL);
            //post badge to credly
            
            if (test.isRunningTest()) {
@@ -200,6 +203,7 @@ global class batchSyncMemberBadges implements
            else
            {
              returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'member_badges', createURL);
+             system.debug(returnData);
            }
         
       //   

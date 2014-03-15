@@ -8,27 +8,27 @@ trigger automatedMemberBadgesTrigger on member_badge__c (before insert, before u
 	String[] splitName = null;
 	String email;
 	
-	  if ((Trigger.isUpdate) && (c.credlyMemberBadge_Id_m__c != null))
-     	{ 
+	 // if ((Trigger.isUpdate) && (c.credlyMemberBadge_Id_m__c != null))
+     //	{ 
      	
-     	List<chg_member_badge__c> aa = [select credlyMemberBadgeId_x__c from chg_member_badge__c where credlyMemberBadgeId_x__c = :c.credlyMemberBadge_Id_m__c];
+    // 	List<chg_member_badge__c> aa = [select credlyMemberBadgeId_x__c from chg_member_badge__c where credlyMemberBadgeId_x__c = :c.credlyMemberBadge_Id_m__c];
     
-	    if (aa.isEmpty()) {
-	    	chg_member_badge__c insertChange = new chg_member_badge__c();
-	    	insertChange.credlyMemberBadgeId_x__c = c.credlyMemberBadge_Id_m__c;
-	  		insert insertChange;
-	    }
+	//    if (aa.isEmpty()) {
+	//    	chg_member_badge__c insertChange = new chg_member_badge__c();
+	//    	insertChange.credlyMemberBadgeId_x__c = c.credlyMemberBadge_Id_m__c;
+	//  		insert insertChange;
+	//    }
 	    
-		}	
-		 if ((Trigger.isInsert) && (c.credlyMemberBadge_Id_m__c == null))
-		 {
-		 	try{
-		 	staticCredlyClass.synchMemberBadgesToCredly();
-		 	}
-		 	catch(DmlException e)
-		 	{
-		 		System.debug('member badge synch already running');
-		 	} 
-		 }
+	//	}	
+		// if ((Trigger.isInsert) && (c.credlyMemberBadge_Id_m__c == null))
+		// {
+		// 	try{
+		// 	staticCredlyClass.synchMemberBadgesToCredly();
+	//	 	}
+	//	 	catch(DmlException e)
+	//	 	{
+	//	 		System.debug('member badge synch already running');
+	//	 	} 
+	//	 }
 		 }
 	}

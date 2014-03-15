@@ -19,7 +19,6 @@
 			});
         });
 
-
         if ("{!customMessageChecked}" == 'false') {
             $j('.customMessageInput').hide();
         } else {
@@ -793,7 +792,7 @@
         <apex:commandButton action="{!nextBadge}" value="Next" id="nextButton2" rerender="badgeDetailsBlock" oncomplete="attachSorts();"/>
   </apex:pageBlock>
   
-   <apex:pageBlock rendered="{!renderStep2}" title="Step 2: Enter Rule Information">
+   <apex:pageBlock rendered="{!renderStep2}" title="Step 2: Select Recipients">
     <!--  <h1>Step 2: Select Recipient(s)</h1> -->
     <!--         <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> --> 
     <!--  <br><h2>To whom would you like to issue this badge? Choose one or more contacts, leads or accounts below, and then click “Continue”.</h2></br> -->
@@ -814,11 +813,11 @@
         </apex:pageBlockSectionItem>
       </apex:pageBlockSection>
       
-      <apex:pageBlockSection collapsible="false" title="Rules" >
+      <apex:pageBlockSection collapsible="false" title="Filters" >
        </apex:pageBlockSection>
        
         <apex:pageBlockSection >
-        <apex:commandButton value="Insert New Rule Line" onclick="insertDetail();" rerender="false"/>
+        <apex:commandButton value="Create New Search Filter" onclick="insertDetail();" rerender="false"/>
        </apex:pageBlockSection>
       
       <apex:pageBlockSection id="rulesDetails" columns="5">

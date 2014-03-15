@@ -5,6 +5,7 @@ public with sharing class BadgeContactController {
         xSortDirection = 'sortUp';
         xSortField = 'Title';
         setSortProperties();
+        first_time = true;
         
           setRuleText = '';
           
@@ -117,6 +118,9 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         get;
         set;
     }
+    
+    public boolean first_time{get;set;}
+    
     public String pSortField {
         get;
         set;
@@ -720,6 +724,8 @@ public PageReference createRecipientsController()
         return null;
 
     }
+    
+  
 
     public List < SelectOption > getRecordTypes() {
         List < SelectOption > options = new List < SelectOption > ();
@@ -1048,6 +1054,9 @@ public PageReference createRecipientsController()
         
         //jump over recipients if no review needed
         nextStep();
+        
+        //submit memberBadges to Credly//
+        staticCredlyClass.synchMemberBadgesToCredly();
 
         // ApexPages.addMessage(new ApexPages.message(ApexPages.severity.INFO, 'Member Badge Successfully Created'));
 
@@ -1163,10 +1172,14 @@ public PageReference createRecipientsController()
     public List < badge__c > getBadge {
         get {
         	
-        //	system.debug('calling getBadge');
+            myId = UserInfo.getUserId();
+         
+         
             List < badge__c > badges;
 
             badge__c[] arrayOfBadges;
+            
+            system.debug(filterBadge.trim().compareTo(' '));
 
             //Description is a field that cannot be filtered/ordered on, have to pull all records
             if (xSortField == 'Description') {
@@ -1177,22 +1190,31 @@ public PageReference createRecipientsController()
                 return badges;
             }
 
-            if ((filterBadge.trim().compareTo('') != 0)) {
+            if ((filterBadge.trim().compareTo(' ') > 0)) {
                 filterBadgeSearch = filterBadge;
-
-                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs)) and title__c like: filterBadgeSearch];
+                
+                
+                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs)) and createdById = :myId and title__c like: filterBadgeSearch];
                 Object recordCount = groupedResults[0].get('recCnt');
                 setPagingInfo(Integer.valueOf(recordCount));
 			
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
             }
 
-              if ((filterBadge.trim().compareTo('') == 0)) {
-                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs))];
+              if ((filterBadge.trim().compareTo(' ') < 0)) {
+              system.debug(first_time);
+               
+               if (first_time == true)
+               {
+                first_time = false; 
+               }
+               else
+               {
+                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) and createdById = :myId)];
                 Object recordCount = groupedResults[0].get('recCnt');
                 setPagingInfo(Integer.valueOf(recordCount));
-
-			//	system.debug('got here');
+               }
+               
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
             }
 

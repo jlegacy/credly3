@@ -560,7 +560,7 @@ public with sharing class CustomBadgeController {
                 return badges;
             }
 
-            if ((filterBadge.trim().compareTo('') != 0)) {
+            if ((filterBadge.trim().compareTo(' ') > 0)) {
                 filterBadgeSearch = filterBadge;
 
                 AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and title__c like: filterBadgeSearch];
@@ -570,7 +570,7 @@ public with sharing class CustomBadgeController {
 
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)  order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
             }
-             if ((filterBadge.trim().compareTo('') == 0)) {
+              if ((filterBadge.trim().compareTo(' ') < 0)) {
                 AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId))];
                 Object recordCount = groupedResults[0].get('recCnt');
 

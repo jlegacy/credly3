@@ -9,7 +9,7 @@
           <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
             <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
           
-   
+     
         <script>
               var $j = jQuery.noConflict();
 

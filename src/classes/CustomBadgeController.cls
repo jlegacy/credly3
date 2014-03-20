@@ -552,13 +552,13 @@ public with sharing class CustomBadgeController {
             badge__c[] arrayOfBadges;
 
             //Description is a field that cannot be filtered/ordered on, have to pull all records
-            if (xSortField == 'Description') {
-                arrayOfBadges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or(credlyBadgeId__c = null and createdById = : myId)) and(title__c like: filterBadgeSearch)];
-                arrayOfBadges = staticCredlyClass.sortSpecialBadges(arrayOfBadges, xSortField, pSortDirection);
-                badges = arrayOfBadges;
-                numberOfPages = 1;
-                return badges;
-            }
+        //    if (xSortField == 'Description') {
+         //       arrayOfBadges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or(credlyBadgeId__c = null and createdById = : myId)) and(title__c like: filterBadgeSearch)];
+          //      arrayOfBadges = staticCredlyClass.sortSpecialBadges(arrayOfBadges, xSortField, pSortDirection);
+          ////      badges = arrayOfBadges;
+          //      numberOfPages = 1;
+          //      return badges;
+          //  }
 
             if ((filterBadge.trim().compareTo(' ') > 0)) {
                 filterBadgeSearch = filterBadge;

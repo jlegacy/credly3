@@ -208,7 +208,7 @@ function refreshScreen() {
                         <apex:outputField value="{!o.image_m__c}" />
                     </apex:column>
                    <apex:column styleclass="printDetails" headerValue="Badge Title">
-                        <apex:outputLink value="/{!o.id}"> {!o.badge_lookup_m__r.title__c} </apex:outputLink>
+                        <apex:outputLink value="/{!o.id}"> {!o.title_m__c} </apex:outputLink>
                         <!-- <apex:outputLink value="/{!o.badge_lookup_m__c}"> {!o.badge_lookup_m__r.title__c} </apex:outputLink> -->
                     </apex:column>
                      <apex:column styleclass="printDetails" headerValue="Badge Short Description">

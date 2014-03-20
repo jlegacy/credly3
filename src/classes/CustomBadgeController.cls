@@ -199,7 +199,7 @@ public with sharing class CustomBadgeController {
 
     public void setSortProperties() {
 
-        pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC';
+         pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC NULLS LAST';
 
         if (xSortField == 'Image') {
             pSortField = 'image__c';
@@ -211,7 +211,7 @@ public with sharing class CustomBadgeController {
         }
 
         if (xSortField == 'Description') {
-            pSortField = 'description__c';
+            pSortField = 'short_description__c';
         }
 
         if (xSortField == 'ID') {

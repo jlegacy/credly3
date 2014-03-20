@@ -10,7 +10,6 @@
             <link rel="stylesheet" type="text/css" href="{!$Resource.credlyStyles}" />
           
    
-
         <script>
               var $j = jQuery.noConflict();
 
@@ -77,6 +76,10 @@
         	{
         		$j(this).children().remove();
         	}
+        //	  if ($j(this).text() == 'Description')
+        //	{
+        //		$j(this).children().remove();
+      //  	}
         
         });  
           }

@@ -296,6 +296,9 @@
               if ($j(this).text() == 'Recipients') {
                 $j(this).children().remove();
             }
+             if ($j(this).text() == 'Description') {
+                $j(this).children().remove();
+            }
         });
     }
 

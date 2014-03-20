@@ -252,7 +252,7 @@ public with sharing class ViewMemberBadgeController {
     }
 
         if (((filterName == null) || (filterName.trim().length() == 0)) && (recordType.equals('All'))) {
-
+        	
             AggregateResult[] groupedResults = [select count(id) recCnt
                 from member_badge__c where((credlyMemberBadge_id_m__c IN: myCredlyMemberBadgeIDs) or(credlyMemberBadge_id_m__c = null and createdById = : myId))
             ];
@@ -337,6 +337,7 @@ public with sharing class ViewMemberBadgeController {
     }
 
     public PageReference setSortController() {
+    	
         badgeOffset = 0;
         currentBadgePage = 1;
         setSortProperties();
@@ -345,7 +346,7 @@ public with sharing class ViewMemberBadgeController {
 
     public void setSortProperties() {
 
-        pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC';
+        pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC NULLS LAST';
 
         if (xSortField == 'Badge Image') {
             pSortField = 'image_m__c';

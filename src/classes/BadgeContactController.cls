@@ -280,7 +280,7 @@ public PageReference createRecipientsController()
 
     public void setSortProperties() {
 
-        pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC';
+        pSortDirection = (xSortDirection == 'sortUp') ? 'ASC' : 'DESC NULLS LAST';
 
         if (xSortField == 'Image') {
             pSortField = 'image__c';

@@ -405,7 +405,7 @@ function getAutoValues() {
          <apex:inputFile onchange="setImagePicture();" value="{!document.body}" filename="{!document.name}" id="fileEvidence"/>
          </apex:pageBlockSectionItem>
           <apex:pageBlockSectionItem >
-           <h2 class="uploadFileTextPosition">{!document.name}</h2>
+          <div class="uploadFileText"><h2 class="uploadFileTextPosition">{!document_name}</h2></div> 
          </apex:pageBlockSectionItem>
          </apex:pageBlockSection>
          
@@ -480,7 +480,7 @@ function getAutoValues() {
         </apex:pageBlockTable>
             </apex:outputPanel>
             <apex:pageBlockButtons >
-                <apex:commandButton action="{!addBadge}" value="Add" id="theAddButton" reRender="addForm"/>
+                <apex:commandButton action="{!addBadge}" value="Add New Badge" id="theAddButton" reRender="addForm"/>
                 
             </apex:pageBlockButtons>
               <apex:outputLabel styleClass="smallGreen" >Page {!currentPage} of {!numberOfPages} </apex:outputLabel>

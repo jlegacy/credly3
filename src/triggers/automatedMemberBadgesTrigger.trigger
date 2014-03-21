@@ -20,12 +20,12 @@ trigger automatedMemberBadgesTrigger on member_badge__c (before insert, before u
 	//    }
 	    
 	//	}	
-		// if ((Trigger.isInsert) && (c.credlyMemberBadge_Id_m__c == null))
-		// {
-		// 	try{
-		// 	staticCredlyClass.synchMemberBadgesToCredly();
+	//	 if ((Trigger.isInsert) && (c.credlyMemberBadge_Id_m__c == null))
+	//	 {
+	//	 	try{
+	//	 	staticCredlyClass.synchMemberBadgeToCredly(c.id);
 	//	 	}
-	//	 	catch(DmlException e)
+		// 	catch(DmlException e)
 	//	 	{
 	//	 		System.debug('member badge synch already running');
 	//	 	} 

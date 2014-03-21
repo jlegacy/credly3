@@ -42,6 +42,8 @@ textarea.width30 {
     color: green;
 }
 
+
+
 .pbBody h2.required {
     color: red;
 }
@@ -66,9 +68,10 @@ textarea.width30 {
     position: relative;
     margin-left: -165px;
     top: 5px;
-    background-color: white;
-    min-width: 200px;
-    height: 20px;
+    background-color: yellow;
+    height: 30px;
+    padding-left:50px;
+    padding-right:50px;
 }
 
 .badgeFileTextPosition {

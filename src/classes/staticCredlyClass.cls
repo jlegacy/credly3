@@ -164,6 +164,12 @@ public with sharing class staticCredlyClass {
        Database.executeBatch(b, 1);
 	}
 	
+//	public static void synchMemberBadgeToCredly(ID id)
+//	{
+	//    batchSyncMemberBadge b = new batchSyncMemberBadge(id);
+   //    Database.executeBatch(b, 1);
+	//}
+	
 	 public static List<CredlyJSON2ApexMyBadges.Data> getMyBadgesFromCredly()
    { 
   

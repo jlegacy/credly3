@@ -59,8 +59,10 @@ public with sharing class ViewMemberBadgeController {
     }
 
     public ViewMemberBadgeController() {
-
-     
+    	
+    	 //submit memberBadges to Credly//
+    //    staticCredlyClass.synchMemberBadgesToCredly();
+        
         xSortDirection = 'sortUp';
         xSortField = 'Badge Title';
         setSortProperties();

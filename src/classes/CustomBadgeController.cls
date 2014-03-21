@@ -11,6 +11,11 @@ public with sharing class CustomBadgeController {
         set;
     }
     
+    public String document_name {
+    	get;
+    	set;
+    }
+    
      public String jumpURL {
         get;
         set;
@@ -47,6 +52,18 @@ public with sharing class CustomBadgeController {
         get;
         set;
     }
+    
+    public ID document_id_url_form {
+    	get;
+    	set;
+    }
+    
+       public String document_id {
+    	get;
+    	set;
+    }
+    
+    
     public String xSortField {
         get;
         set;
@@ -162,6 +179,8 @@ public with sharing class CustomBadgeController {
         xSortDirection = 'sortUp';
         xSortField = 'Title';
         setSortProperties();
+        document_id = '';
+        document_name = '';
 
         Double j;
 
@@ -282,6 +301,22 @@ public with sharing class CustomBadgeController {
     public pageReference setImageAction() {
         if (document.body != null) {
             xbadgeURL = 'data:image;base64,' + EncodingUtil.base64Encode(document.body);
+          
+            document.AuthorId = UserInfo.getUserId();
+            document.FolderId = UserInfo.getUserId();
+            //    strBody = EncodingUtil.base64Encode(document.body);
+            try {
+                insert document;
+                document_id = document.Id;
+                document_name = document.name;
+                //clear view state
+                document.body = null;
+                document = new Document();
+            } catch (DMLException e) {
+                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error uploading file'));
+                return null;
+            }
+        
         }
         return null;
     }
@@ -461,28 +496,12 @@ public with sharing class CustomBadgeController {
 
         badge__c insertUser = new badge__c();
 
-
         if (xbadgeURL.trim().length() == 0) {
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Badge Missing - Use Badge Builder to create.'));
             return null;
         }
-        
-        if (document.body != null) {
-            document.AuthorId = UserInfo.getUserId();
-            document.FolderId = UserInfo.getUserId();
-            //    strBody = EncodingUtil.base64Encode(document.body);
-            try {
-                insert document;
-               
-            } catch (DMLException e) {
-                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error uploading file'));
-                return null;
-            }
-        }
-
-
+    
         try {
-
 
             insertUser.criteria__c = criteria;
             insertUser.description__c = description;
@@ -496,17 +515,16 @@ public with sharing class CustomBadgeController {
             insertUser.title__c = title;
 
 
-            if (document.body != null) {
-                insertUser.upload_file_id__c = document.Id;
-                insertUser.document_id__c = url.getSalesforceBaseUrl().toExternalForm() + '/servlet/servlet.FileDownload?file=' + document.Id;
+            if (document_Id.trim().compareTo('') != 0) {
+                insertUser.upload_file_id__c = document_Id;
+                insertUser.document_id__c =  url.getSalesforceBaseUrl().toExternalForm() + '/servlet/servlet.FileDownload?file=' + document_Id;
             } else {
                 insertUser.document_id__c = xbadgeURL;
             }
             
             
              credlyBadgeId = staticCredlyClass.sendBadgeToCredly(insertUser);
-          //   system.debug(credlyBadgeId);
-             
+         
              if(String.isNotBlank(credlyBadgeId))
              {
              	insertUser.credlyBadgeId__c = credlyBadgeId;
@@ -516,12 +534,17 @@ public with sharing class CustomBadgeController {
              	ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating new badge on Credly.'));
              	return null;
              }
-
-            insert insertUser;
+             
+          insert insertUser;
 
         } catch (DMLException e) {
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating new badge in Salesforce.'));
             return null;
+        }
+        
+        finally{
+        	    document_id = '';
+        		document_name = '';
         }
 
         //Submit Job to Send Badges//

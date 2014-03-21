@@ -221,6 +221,7 @@ public static void addMemberBadge(id accountID, id ruleID, id badgeID, String ac
              rule.number_of_badges_issued_r__c = (rule.number_of_badges_issued_r__c == null) ? 1 : rule.number_of_badges_issued_r__c + 1;
         	 rule.date_last_issued_r__c = system.now();
              update rule;
+             
      
 }
         } catch (DMLException e) {

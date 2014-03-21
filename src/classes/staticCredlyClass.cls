@@ -158,17 +158,24 @@ public with sharing class staticCredlyClass {
        Database.executeBatch(a, 8);
 	}
 	
-	public static void synchMemberBadgesToCredly()
+	public static void synchMemberBadgeToCredly(id recordId)
 	{
-	    batchSyncMemberBadges b = new batchSyncMemberBadges();
-       Database.executeBatch(b, 1);
+	    String jobName = GuidUtil.NewGuid();
+	    
+	  //  jobName = String.newGuid();
+	    
+	    schedulerSynchMemberBadgeClass apextoSchd = new schedulerSynchMemberBadgeClass();
+        apextoSchd.recordId = recordId;
+        //Get the system date and time.
+        Datetime dt = DateTime.now();
+        //Interval of 2 minutes after processing of first job. It can be set in terms of seconds also.
+        dt = dt.addSeconds(10);     
+        String sch = String.valueOf( dt.second() ) + ' ' + String.valueOf( dt.minute()   ) + ' ' + String.valueOf( dt.hour() ) + ' '  + String.valueOf( dt.day() ) +  ' ' + String.valueOf( dt.month() ) + ' '  + '? ' + String.valueOf( dt.Year());
+
+        /***** Run schedule job for second logic with TimeStamp. *****/
+        system.schedule('SynchMemberBadges:' + jobName + String.valueof(dt) ,sch,apextoSchd);
 	}
 	
-//	public static void synchMemberBadgeToCredly(ID id)
-//	{
-	//    batchSyncMemberBadge b = new batchSyncMemberBadge(id);
-   //    Database.executeBatch(b, 1);
-	//}
 	
 	 public static List<CredlyJSON2ApexMyBadges.Data> getMyBadgesFromCredly()
    { 

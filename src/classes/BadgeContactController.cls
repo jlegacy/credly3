@@ -1056,7 +1056,7 @@ public PageReference createRecipientsController()
         nextStep();
         
         //submit memberBadges to Credly//
-        staticCredlyClass.synchMemberBadgesToCredly();
+      //  staticCredlyClass.synchMemberBadgesToCredly();
 
         // ApexPages.addMessage(new ApexPages.message(ApexPages.severity.INFO, 'Member Badge Successfully Created'));
 
@@ -1179,7 +1179,7 @@ public PageReference createRecipientsController()
 
             badge__c[] arrayOfBadges;
             
-            system.debug(filterBadge.trim().compareTo(' '));
+           // system.debug(filterBadge.trim().compareTo(' '));
 
             //Description is a field that cannot be filtered/ordered on, have to pull all records
             if (xSortField == 'Description') {
@@ -1202,7 +1202,7 @@ public PageReference createRecipientsController()
             }
 
               if ((filterBadge.trim().compareTo(' ') < 0)) {
-              system.debug(first_time);
+              //system.debug(first_time);
                
                if (first_time == true)
                {

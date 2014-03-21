@@ -37,6 +37,7 @@ Set<String> idMatches = new Set<String>();
 
 // Loop through rules and pull rules//
 for(badge_rules__c j : rules){
+	system.debug( j.badge_lookup__c);
 
 //unparse Rules Row
 //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
@@ -74,7 +75,7 @@ parsedRows = automatedTriggerClass.unparseRules(j.badge_rule_r__c);
                 //will check if each parsed row was equated with success
               
                 for(Id id : foundHitIds.keySet()) {
-                //	system.debug(foundHitIds.get(id) + ',' + parsedRows.size());
+                	system.debug(j.badge_lookup__c);
                     if (foundHitIds.get(id) == parsedRows.size())
                     {
                         automatedTriggerClass.addMemberBadge(id, j.Id, j.badge_lookup__c, j.account_type_r__c.toLowerCase());

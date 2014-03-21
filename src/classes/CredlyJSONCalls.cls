@@ -247,7 +247,7 @@ public with sharing class CredlyJSONCalls {
            {
          
          returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'badges', createURL); 
-         system.debug(returnData); 
+    //     system.debug(returnData); 
            }
         
           //parseResults
@@ -333,7 +333,7 @@ public with sharing class CredlyJSONCalls {
         
            //post badge to credly
          returnData = CredlyJSONCalls.getCredly(CredlyJSONCalls.getURL()+ 'badges/' + badgeID +'?' + createURL);  
-         system.debug(returnData);
+       //  system.debug(returnData);
           //parseResults
          CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
         if (obj.meta.status.compareTo('OK') == 0)
@@ -351,7 +351,7 @@ public with sharing class CredlyJSONCalls {
         
    public static String getCategoryId(String searchString)
    {
-   	system.debug(searchString);
+  // 	system.debug(searchString);
     String returnData;
     String createURL;
     String errMessage;

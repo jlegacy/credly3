@@ -5,11 +5,10 @@ public with sharing class BadgeContactController {
         xSortDirection = 'sortUp';
         xSortField = 'Title';
         setSortProperties();
-        first_time = true;
+       
         
           setRuleText = '';
-          
-   //     system.debug('in controller');
+         
 		xSelectedRecipients = '';
         getOnce = true;
         renderStep1 = true;
@@ -119,7 +118,12 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
         set;
     }
     
-    public boolean first_time{get;set;}
+    public List<badge__c> myBadges{
+    	get;
+    	set;
+    }
+    
+    public boolean first_pass{get;set;}
     
     public String pSortField {
         get;
@@ -275,6 +279,7 @@ public PageReference createRecipientsController()
         badgeOffset = 0;
         currentBadgePage = 1;
         setSortProperties();
+         myBadges = getBadges();
         return null;
     }
 
@@ -312,10 +317,12 @@ public PageReference createRecipientsController()
 
     public pageReference dmlOperation() {
         //Call Credly API to get your badges//
+        first_pass = true;
+        
         myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
         myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
         mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
-        staticCredlyClass.synchBadgesFromCredly(myCredlyBadges, mySalesForceCredlyBadgeIDs);
+        staticCredlyClass.synchBadgesFromCredly(myCredlyBadges, mySalesForceCredlyBadgeIDs); 
 
         totalNumberofRecords = myCredlyBadgeIDs.size();
 
@@ -325,6 +332,8 @@ public PageReference createRecipientsController()
         if (numberOfPages < 1) {
             numberOfPages = 1;
         }
+        
+        myBadges = getBadges();
 
 
 
@@ -688,6 +697,7 @@ public PageReference createRecipientsController()
         xSortDirection = 'sortUp';
         xSortField = 'Title';
         setSortProperties();
+         myBadges = getBadges();
         return null;
     }
 
@@ -1146,7 +1156,7 @@ public PageReference createRecipientsController()
             currentBadgePage = 1;
             badgeOffset = 0;
         }
-
+		 myBadges = getBadges();
 
         return null;
     }
@@ -1159,7 +1169,7 @@ public PageReference createRecipientsController()
             BadgeOffset = 0;
             currentBadgePage = 1;
         }
-
+        myBadges = getBadges();
 
         return null;
     }
@@ -1190,7 +1200,7 @@ public PageReference createRecipientsController()
                 return badges;
             }
 
-            if ((filterBadge.trim().compareTo(' ') > 0)) {
+            if ((filterBadge.trim().compareTo('') != 0)) {
                 filterBadgeSearch = filterBadge;
                 
                 
@@ -1201,21 +1211,17 @@ public PageReference createRecipientsController()
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
             }
 
-              if ((filterBadge.trim().compareTo(' ') < 0)) {
-              //system.debug(first_time);
-               
-               if (first_time == true)
-               {
-                first_time = false; 
-               }
-               else
-               {
+              if ((filterBadge.trim().compareTo('') == 0)) {
+             
+              if (!first_pass)
+              {
                 AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) and createdById = :myId)];
                 Object recordCount = groupedResults[0].get('recCnt');
                 setPagingInfo(Integer.valueOf(recordCount));
                }
                
-                badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
+               first_pass = false;
+               badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
             }
 
             return badges;

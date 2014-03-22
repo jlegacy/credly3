@@ -8,7 +8,7 @@ public with sharing class CustomBadgeController {
 
     public Integer totalNumberofRecords {
         get;
-        set;
+        set; 
     }
     
     public String document_name {
@@ -40,6 +40,17 @@ public with sharing class CustomBadgeController {
         get;
         set;
     }
+    
+    public List < badge__c > myBadge {
+    	get;
+    	set;
+    }
+    
+    public Boolean firstPass {
+    	get;
+    	set;
+    }
+    
     public List < CredlyJSON2ApexMyBadges.Data > myCredlyBadges {
         get;
         set;
@@ -155,11 +166,13 @@ public with sharing class CustomBadgeController {
     }
 
     public PageReference searchBadge() {
+    	system.debug('in search');
         pageOffset = 0;
         currentPage = 1;
         xSortDirection = 'sortUp';
         xSortField = 'Title';
         setSortProperties();
+        myBadges = getBadges();
         return null;
     }
 
@@ -168,6 +181,7 @@ public with sharing class CustomBadgeController {
         currentPage = 1;
 
         setSortProperties();
+        myBadges = getBadges();
 
         return null;
     }
@@ -181,6 +195,7 @@ public with sharing class CustomBadgeController {
         setSortProperties();
         document_id = '';
         document_name = '';
+        
 
         Double j;
 
@@ -213,7 +228,8 @@ public with sharing class CustomBadgeController {
         if (c == 'Y') {
             addBadge();
         }
-
+        
+ 
     }
 
     public void setSortProperties() {
@@ -267,6 +283,11 @@ public with sharing class CustomBadgeController {
         get;
         set;
     }
+    
+    public List<badge__c> myBadges{
+    	get;
+    	set;
+    }
 
     public Boolean showIframe {
         get;
@@ -275,6 +296,7 @@ public with sharing class CustomBadgeController {
 
     public pageReference dmlOperation() {
         //Call Credly API to get your badges//
+        firstPass = true;
         myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
         myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
         mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
@@ -292,8 +314,8 @@ public with sharing class CustomBadgeController {
         if (numberOfPages < 1) {
             numberOfPages = 1;
         }
-
-
+        
+       myBadges = getBadges();
 
         return null;
     }
@@ -567,25 +589,15 @@ public with sharing class CustomBadgeController {
     public List < badge__c > getBadge {
 
         get {
-                
                 myId = UserInfo.getUserId();
 
             List < badge__c > badges;
 
             badge__c[] arrayOfBadges;
 
-            //Description is a field that cannot be filtered/ordered on, have to pull all records
-        //    if (xSortField == 'Description') {
-         //       arrayOfBadges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or(credlyBadgeId__c = null and createdById = : myId)) and(title__c like: filterBadgeSearch)];
-          //      arrayOfBadges = staticCredlyClass.sortSpecialBadges(arrayOfBadges, xSortField, pSortDirection);
-          ////      badges = arrayOfBadges;
-          //      numberOfPages = 1;
-          //      return badges;
-          //  }
-
-            if ((filterBadge.trim().compareTo(' ') > 0)) {
-                filterBadgeSearch = filterBadge;
-
+            if ((filterBadge.trim().compareTo('') > 0)) {
+                filterBadgeSearch = filterBadge; 
+                
                 AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and title__c like: filterBadgeSearch];
                 Object recordCount = groupedResults[0].get('recCnt');
 
@@ -593,23 +605,30 @@ public with sharing class CustomBadgeController {
 
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)  order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
             }
-              if ((filterBadge.trim().compareTo(' ') < 0)) {
+              if ((filterBadge.trim().compareTo('') == 0)) {
+              	
+              	if (!firstPass)   
+             	{
                 AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId))];
-                Object recordCount = groupedResults[0].get('recCnt');
+                Object recordCount = groupedResults[0].get('recCnt'); 
 
                 setPagingInfo(Integer.valueOf(recordCount));
-
+             	}
+              	
+            
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdDate, createdById, credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
             }
 
-
-
+		
+			firstPass = false; 
+			
             return badges;
         }
         set;
     }
     // Initialize getBadge and return a list of records
     public List < badge__c > getBadges() {
+    	system.debug('get badges');
         return (List < badge__c > ) getBadge;
     }
 
@@ -627,6 +646,8 @@ public with sharing class CustomBadgeController {
             currentPage = 1;
             pageOffset = 0;
         }
+        
+         myBadges = getBadges();
 
         return null;
     }
@@ -639,6 +660,8 @@ public with sharing class CustomBadgeController {
             pageOffset = 0;
             currentPage = 1;
         }
+        
+         myBadges = getBadges();
 
         return null;
     }

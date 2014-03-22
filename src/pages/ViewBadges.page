@@ -450,7 +450,7 @@ function getAutoValues() {
   </apex:pageBlockSection>
   
             <apex:outputPanel id="details">
-                  <apex:pageBlockTable value="{!badges}" var="o">
+                  <apex:pageBlockTable value="{!myBadges}" var="o">
                     <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Image">
                           <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.image__c}" /></apex:outputLink>
                     </apex:column>  

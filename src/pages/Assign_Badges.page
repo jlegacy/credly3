@@ -757,7 +757,7 @@
   </apex:pageBlockSection>
        
                  <apex:outputPanel id="details">
-                  <apex:pageBlockTable value="{!badges}" var="o">
+                  <apex:pageBlockTable value="{!myBadges}" var="o">
                    <apex:column headerValue="Sel">
                   <input class="badgeRadios" type="radio" value="{!o.id}" name="group1"></input>
                   

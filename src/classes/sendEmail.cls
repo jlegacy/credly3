@@ -73,13 +73,11 @@ if (emailType == 'contact')
 recipientContact = [SELECT id FROM Contact  where ID = :whoId LIMIT 1];
 mail.setTargetObjectId(recipientContact.id);
 try{
-	//system.debug('attempting email');
 	Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail});
 	}
 	catch(System.EmailException ex){
       // This message should be added to the page, 
       // as an exception is caught
-      system.debug(ex);
     }
 }
 if (emailType == 'lead')
@@ -92,7 +90,6 @@ try{
 	catch(System.EmailException ex){
       // This message should be added to the page, 
       // as an exception is caught
-      system.debug(ex);
     }
 }
 if (emailType == 'account')
@@ -107,7 +104,6 @@ for(Contact a : contacts){
 	catch(System.EmailException ex){
       // This message should be added to the page, 
       // as an exception is caught
-      system.debug(ex);
     }
 		
 	}

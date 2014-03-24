@@ -121,10 +121,6 @@ public static String displayRule(String rule)
 }
 
 public static void addMemberBadge(id accountID, id ruleID, id badgeID, String accountType) {
-//system.debug(accountID);
-//system.debug(ruleID);
-//system.debug(badgeID);
-//system.debug(accountType);
 
 //check to see if rule and account number already exists in member badges//
  try {
@@ -225,7 +221,6 @@ public static void addMemberBadge(id accountID, id ruleID, id badgeID, String ac
      
 }
         } catch (DMLException e) {
-  //          system.debug(e);
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating Member Badge.'));
         }
    

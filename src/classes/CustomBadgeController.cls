@@ -127,7 +127,6 @@ public with sharing class CustomBadgeController {
     	{
     
     	CredlyJSON2ApexCredlySingleBadgeData.Data singleBadge = staticCredlyClass.getSingleBadgeDataFromCredly(xCredlyBadgeId);
-    	//system.debug(singleBadge);
     	if (singleBadge != null)
     	{
     	badge__c x = [select id from badge__c where credlyBadgeID__c = :xCredlyBadgeId];
@@ -166,7 +165,6 @@ public with sharing class CustomBadgeController {
     }
 
     public PageReference searchBadge() {
-    	system.debug('in search');
         pageOffset = 0;
         currentPage = 1;
         xSortDirection = 'sortUp';
@@ -628,7 +626,6 @@ public with sharing class CustomBadgeController {
     }
     // Initialize getBadge and return a list of records
     public List < badge__c > getBadges() {
-    	system.debug('get badges');
         return (List < badge__c > ) getBadge;
     }
 

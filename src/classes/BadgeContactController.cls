@@ -265,7 +265,6 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
 
 public PageReference createRecipientsController()
 {
-	//system.debug(xSelectedRecipients);
 	return null;
 }
 
@@ -343,7 +342,6 @@ public PageReference createRecipientsController()
     public void backStep() {
         //if you are on step 3 and going back to step 2, then 
         //the select recipients screen needs to rerender
-		//system.debug('back step::::' + step);
         step = step - 2;
         nextStep();
     }
@@ -351,8 +349,6 @@ public PageReference createRecipientsController()
     public PageReference nextStep() {
         step = step + 1;
         
-     //   system.debug(step);
-
         if (step == 1) {
             renderStep1 = true;
             renderStep2 = false;
@@ -487,7 +483,6 @@ public PageReference createRecipientsController()
 
     public PageReference showUploadOnly() {
 
-		//system.debug(setRuleText);
         String email;
 
         if ((SetRuleText == null)) {
@@ -838,8 +833,6 @@ public PageReference createRecipientsController()
     
     public String editRecipients() {
     	
-    	//  system.debug('in edit rec');
-    	
     	  String setSelected;
     	
     	  selectedRecipients = new List <recipients__c> ();
@@ -850,7 +843,6 @@ public PageReference createRecipientsController()
     	   xRecordType = setTypeSelect.toLowerCase();
     	  
     	   parsedRows = automatedTriggerClass.unparseRules(setRuleText);
-    	 // system.debug(setRuleText);
     	  //Get the IDs of the members getting badges//
              if (xRecordType == 'account') {
             	foundHitIds = staticCredlyClass.getRecipientAccountIDs(setRuleText);
@@ -863,9 +855,7 @@ public PageReference createRecipientsController()
               if (xRecordType == 'contact') {
             	foundHitIds = staticCredlyClass.getRecipientContactIDs(setRuleText);
              }
-         //     system.debug(foundHitIds);
-             
-           //  system.debug(xRecordType);
+
               for(Id id : foundHitIds.keySet()) {
                     if (foundHitIds.get(id) == parsedRows.size())
                     {
@@ -884,7 +874,6 @@ public PageReference createRecipientsController()
              }
              
              selectedRecipients.add(newRecipient);
-       //       system.debug(selectedRecipients);
                     	
                     }
                }
@@ -977,7 +966,6 @@ public PageReference createRecipientsController()
             
             parsedRows = automatedTriggerClass.unparseRules(setRuleText);
             
-          //   system.debug(xRecordType);
             //
             //Get the IDs of the members getting badges//
              if (xRecordType == 'account') {
@@ -992,7 +980,7 @@ public PageReference createRecipientsController()
             	foundHitIds = staticCredlyClass.getRecipientContactIDs(setRuleText);
              }
              
-           //  system.debug(xRecordType);
+
              
               for(Id id : foundHitIds.keySet()) {
                     if (foundHitIds.get(id) == parsedRows.size())
@@ -1142,7 +1130,7 @@ public PageReference createRecipientsController()
                 }
 
             }
-            //      system.debug(getAccount);
+
             return getAccount;
         }
         set;
@@ -1189,8 +1177,6 @@ public PageReference createRecipientsController()
 
             badge__c[] arrayOfBadges;
             
-           // system.debug(filterBadge.trim().compareTo(' '));
-
             //Description is a field that cannot be filtered/ordered on, have to pull all records
             if (xSortField == 'Description') {
                 arrayOfBadges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or(credlyBadgeId__c = null and createdById = : myId)) and(title__c like: filterBadgeSearch)];

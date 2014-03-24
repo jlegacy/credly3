@@ -112,7 +112,6 @@ public with sharing class staticCredlyClass {
         try {
             delete myToken;
         } catch (DmlException e) {
-            //	system.debug(e);
             // Process exception here
         }
 
@@ -121,8 +120,6 @@ public with sharing class staticCredlyClass {
         try {
             insert newToken;
         } catch (DmlException e) {
-            //system.debug(e); 
-
             // Process exception here
         }
 
@@ -915,8 +912,6 @@ public with sharing class staticCredlyClass {
             OtherCountry, Salutation, MailingCity FROM Contact
         ];
 
-        //system.debug(o);
-
         //Get fields and Values from automated rules records//
         // Create a list of account records from a SOQL query
         List < List < String >> parsedRows = new List < List < String >> ();
@@ -961,10 +956,8 @@ public with sharing class staticCredlyClass {
                 //will check if each parsed row was equated with success
 
                 for (Id id: foundHitIds.keySet()) {
-                    //	system.debug(foundHitIds.get(id) + ',' + parsedRows.size());
                     if (foundHitIds.get(id) == parsedRows.size()) {
                         recordCount = recordCount + 1;
-                        //  system.debug(foundHitIds);
                     }
 
                 }
@@ -996,8 +989,6 @@ public with sharing class staticCredlyClass {
             CurrentGenerators__c, ConvertedContactId, Rating, LastTransferDate, Salutation FROM Lead
         ];
 
-        //system.debug(o);
-
         //Get fields and Values from automated rules records//
         // Create a list of account records from a SOQL query
 
@@ -1022,13 +1013,11 @@ public with sharing class staticCredlyClass {
 
         for (List < String > row: parsedRows) {
 
-            //  system.debug(row);
             if (!row.isEmpty()) {
                 //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
                 fieldValues = automatedTriggerClass.getFieldValues(o, row.get(0));
                 integer index = 0;
                 for (String field: fieldValues) {
-                    //  system.debug(field);
 
                     checkHit = automatedTriggerClass.lookForHit(row.get(3), field, row.get(2), row.get(1));
                     if (checkHit) {
@@ -1143,8 +1132,6 @@ public with sharing class staticCredlyClass {
             OtherCountry, Salutation, MailingCity FROM Contact
         ];
 
-        //system.debug(o);
-
         //Get fields and Values from automated rules records//
         // Create a list of account records from a SOQL query
         List < List < String >> parsedRows = new List < List < String >> ();
@@ -1216,7 +1203,6 @@ public with sharing class staticCredlyClass {
             CurrentGenerators__c, ConvertedContactId, Rating, LastTransferDate, Salutation FROM Lead
         ];
 
-        //system.debug(o);
 
         //Get fields and Values from automated rules records//
         // Create a list of account records from a SOQL query
@@ -1242,13 +1228,11 @@ public with sharing class staticCredlyClass {
 
         for (List < String > row: parsedRows) {
 
-            //  system.debug(row);
             if (!row.isEmpty()) {
                 //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
                 fieldValues = automatedTriggerClass.getFieldValues(o, row.get(0));
                 integer index = 0;
                 for (String field: fieldValues) {
-                    //  system.debug(field);
 
                     checkHit = automatedTriggerClass.lookForHit(row.get(3), field, row.get(2), row.get(1));
                     if (checkHit) {

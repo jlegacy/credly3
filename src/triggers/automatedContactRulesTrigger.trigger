@@ -20,7 +20,6 @@ HomePhone ,AccountId ,EmailBouncedReason ,MasterRecordId ,
 OtherPostalCode ,MailingPostalCode ,FirstName ,AssistantName ,
 OtherCountry ,Salutation ,MailingCity  FROM Contact];
 
-//system.debug(o);
 
 //Get fields and Values from automated rules records//
 // Create a list of account records from a SOQL query
@@ -37,7 +36,6 @@ Set<String> idMatches = new Set<String>();
 
 // Loop through rules and pull rules//
 for(badge_rules__c j : rules){
-	system.debug( j.badge_lookup__c);
 
 //unparse Rules Row
 //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
@@ -75,7 +73,6 @@ parsedRows = automatedTriggerClass.unparseRules(j.badge_rule_r__c);
                 //will check if each parsed row was equated with success
               
                 for(Id id : foundHitIds.keySet()) {
-                	system.debug(j.badge_lookup__c);
                     if (foundHitIds.get(id) == parsedRows.size())
                     {
                         automatedTriggerClass.addMemberBadge(id, j.Id, j.badge_lookup__c, j.account_type_r__c.toLowerCase());

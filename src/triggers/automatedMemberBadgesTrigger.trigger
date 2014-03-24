@@ -15,7 +15,6 @@ trigger automatedMemberBadgesTrigger on member_badge__c (after insert, before up
 		 	}
 		 	catch(DmlException e)
 		 	{
-		 		System.debug('member badge synch already running');
 		 	} 
 		 }
 		 }

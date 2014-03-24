@@ -46,7 +46,6 @@ global class batchSyncMemberBadges implements
     catch(System.EmailException ex){
       // This message should be added to the page, 
       // as an exception is caught
-   //   system.debug(ex);
     }
    }
    
@@ -82,8 +81,6 @@ global class batchSyncMemberBadges implements
     List<member_badge__c> memberBadgeList = new List<member_badge__c>();
     
     for (member_badge__c memberBadge : scope) {
-    	
-    	system.debug(scope);
    
         if (memberBadge.evidence_id_m__c != null)
         {
@@ -160,8 +157,7 @@ global class batchSyncMemberBadges implements
             }
             
             storeCredly = false;
-            
-         //   system.debug(email);
+
             
            //Check for Credly ID if not found above in Salesforce
             if (CredlyId == 0) 
@@ -203,22 +199,17 @@ global class batchSyncMemberBadges implements
         mBadge.put('access_token',securityToken); 
         
         createURL = CredlyJSONCalls.createURLString(mBadge);
-       // system.debug(createURL);
-           //post badge to credly
-           
+
            if (test.isRunningTest()) {
             returnData = '{"meta": {"status_code": 200,"status": "OK","message": "","more_info": null},"data": 1408}';
            }
            else
            {
              returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'member_badges', createURL);
-       //      system.debug(returnData);
            }
-        
-      //   
+       
           //parseResults
          CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
-     //    system.debug(returnData);
         if (obj.meta.status.compareTo('OK') == 0)
             {
              CredlyJSON2ApexMemberBadge obj2 = CredlyJSON2ApexMemberBadge.parse(returnData);

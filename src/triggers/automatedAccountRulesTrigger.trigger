@@ -24,7 +24,6 @@ sObject[] o = [SELECT Id,Phone,Jigsaw,ShippingLatitude,
                ShippingCountry,Active__c,BillingStreet,
                Rating FROM Account];
 
-//system.debug(o);
 
 //Get fields and Values from automated rules records//
 // Create a list of account records from a SOQL query

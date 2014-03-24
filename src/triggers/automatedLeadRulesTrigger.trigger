@@ -18,8 +18,6 @@ Title,LastReferencedDate,EmailBouncedDate,Name,NumberofLocations__c,
 EmailBouncedReason,Website,MasterRecordId,SICCode__c,FirstName,
 CurrentGenerators__c,ConvertedContactId,Rating,LastTransferDate,Salutation  FROM Lead];
 
-//system.debug(o);
-
 //Get fields and Values from automated rules records//
 // Create a list of account records from a SOQL query
 List<badge_rules__c> rules = [SELECT Id, badge_rule_r__c, badge_lookup__c,account_type_r__c FROM badge_rules__c WHERE account_type_r__c = 'Lead']; 
@@ -48,8 +46,6 @@ parsedRows = automatedTriggerClass.unparseRules(j.badge_rule_r__c);
     
     for(List<String> row: parsedRows)
         {
-         
-          //  system.debug(row);
             if(!row.isEmpty())
             {
                 //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
@@ -57,8 +53,6 @@ parsedRows = automatedTriggerClass.unparseRules(j.badge_rule_r__c);
                 integer index = 0;  
                 for(String field: fieldValues)
                   {
-                    //  system.debug(field);
-                     
                       checkHit = automatedTriggerClass.lookForHit(row.get(3), field, row.get(2), row.get(1));
                       if (checkHit)
                       { 

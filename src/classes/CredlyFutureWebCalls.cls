@@ -31,7 +31,6 @@ public static void updateBadge(ID badgeId)
        
            //post badge to credly
          returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'badges/' + badge.credlyBadgeId__c, createURL);
-         system.debug(returnData);
       //   
           //parseResults
          CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);

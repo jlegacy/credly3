@@ -454,9 +454,7 @@ public with sharing class viewBadgeRulesController {
        get {
        	
        	List<badge__c> badges;
-        	//	system.debug(filterBadge);
-        	
-        	 // ApexPages.StandardgetBadgetroller must be instantiated
+     	 // ApexPages.StandardgetBadgetroller must be instantiated
     // for standard list controllers
 
         
@@ -642,11 +640,6 @@ public Document document {
 
         //  test = 'this better work';
         // getBadges('https://apistaging2.credly.com/v0.2/badges?page=1&per_page=10&order_direction=ASC');
-        //system.debug(strBody);
-
-        //  system.debug(document.body);
-
-
 
         try {
          if (document.body != null) {

@@ -847,6 +847,7 @@ public with sharing class staticCredlyClass {
         List < String > fieldValues = new List < String > ();
         List < String > ids = new List < String > ();
 
+        //There is a problem here causing a bug on line 863
         parsedRows = automatedTriggerClass.unparseRules(ruleText);
         //store ids for future lookup
         ids = automatedTriggerClass.getFieldValues(o, 'id');

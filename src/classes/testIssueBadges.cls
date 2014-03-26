@@ -136,7 +136,7 @@ public  class testIssueBadges {
        
         
 		BadgeContactController controller = new BadgeContactController(); 
-       controller.setBadgeSelect = 'a01i00000084HQUAA2'; 
+       controller.setBadgeSelect = 'a01i000000CNjisAAD'; 
         
        controller.GetName('contact', '123');
        controller.GetName('account', '123');
@@ -147,16 +147,16 @@ public  class testIssueBadges {
           sc = controller.getLead;
       //    controller.getContact
       
-     		 controller.xSelectedIDs = '003i000000Qw9iSAAR';
+     		 controller.xSelectedIDs = 'a01i000000CNjitAAD';
               controller.xRecordType = 'contact';
                controller.upload();
                
-                controller.xSelectedIDs = '001i000000TM30RAAT';
+                controller.xSelectedIDs = 'a01i000000CNjitAAD';
                controller.xRecordType = 'account';
                 controller.upload();
                 
               
-                controller.xSelectedIDs = '00Qi0000007QIh4EAG';
+                controller.xSelectedIDs = 'a01i000000CNjitAAD';
                controller.xRecordType = 'lead';
                 controller.upload();
             

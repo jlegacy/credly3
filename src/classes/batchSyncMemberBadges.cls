@@ -201,11 +201,12 @@ global class batchSyncMemberBadges implements
         createURL = CredlyJSONCalls.createURLString(mBadge);
 
            if (test.isRunningTest()) {
-            returnData = '{"meta": {"status_code": 200,"status": "OK","message": "","more_info": null},"data": 1408}';
+           returnData = '{\"meta\":{\"status_code\":200,\"status\":\"OK\",\"message\":\"\",\"more_info\":null},\"data\":{\"hashes\":[\"c8c05dedc\"],\"ids\":[104944],\"hash\":\"c8c05dedc\"}}';
            }
            else
            {
              returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'member_badges', createURL);
+             system.debug(returnData);
            }
        
           //parseResults

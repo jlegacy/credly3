@@ -1,5 +1,11 @@
 @isTest 
-public class testBadges {
+public class testCustomBadgeController {
+		static testMethod void testDMLController()
+	{
+        CustomBadgeController controller = new CustomBadgeController(); 
+        controller.dmlOperation();
+	}
+	
 	
 	static testMethod void testController() 
 	{
@@ -15,6 +21,104 @@ public class testBadges {
         CustomBadgeController controller = new CustomBadgeController(); 
 	}
 	
+	static testMethod void testFunctions()
+	{
+		 CustomBadgeController controller = new CustomBadgeController(); 
+		 
+		
+		 	//create fake badge for testing//
+		badge__c myNewBadge = new badge__c();
+	
+            myNewBadge.description__c = 'testOnlyLong';
+            myNewBadge.expire_number__c = 0;
+            myNewBadge.expire_period__c = 'NEVER';
+
+            myNewBadge.is_giveable__c = 'true';
+            myNewBadge.categories__c = 'test1,test2,test3';
+
+            myNewBadge.short_description__c = 'testOnlyShort';
+            myNewBadge.title__c = 'josephTestingOnly';
+
+            myNewBadge.document_id__c = 'https://credlyapp.s3.amazonaws.com/badges/5c51479bc27446c205810bcbf9dee3e4.png';
+        
+            myNewBadge.credlyBadgeId__c = '13114';
+           insert myNewBadge;
+		  controller.xCredlyBadgeId = '13114';
+		  
+
+		 controller.gotoEditController();
+		 
+		
+	}
+	static testMethod void testSetPagingInfo()
+	{
+		CustomBadgeController controller = new CustomBadgeController(); 
+		controller.setPagingInfo(10);
+	}
+	
+		static testMethod void testNext()
+	{
+		CustomBadgeController controller = new CustomBadgeController(); 
+		controller.next();
+	}
+	
+		static testMethod void testPrev()
+	{
+		CustomBadgeController controller = new CustomBadgeController(); 
+		controller.prev();
+	}
+	
+	
+	
+		static testMethod void testSetImageAction()
+	{
+		CustomBadgeController controller = new CustomBadgeController(); 
+		controller.setImageAction();
+	}
+	
+static testMethod void testGetUploadTypes()
+	{
+		CustomBadgeController controller = new CustomBadgeController(); 
+		controller.getUploadTypes();
+	}
+	
+	static testMethod void testSetUploadAction()
+	{
+		CustomBadgeController controller = new CustomBadgeController(); 
+		controller.setUploadAction();
+	}
+	
+	static testMethod void testsearchBadge()
+	{ 	//create fake badge for testing//
+		badge__c myNewBadge = new badge__c();
+	
+            myNewBadge.description__c = 'testOnlyLong';
+            myNewBadge.expire_number__c = 0;
+            myNewBadge.expire_period__c = 'NEVER';
+
+            myNewBadge.is_giveable__c = 'true';
+            myNewBadge.categories__c = 'test1,test2,test3';
+
+            myNewBadge.short_description__c = 'testOnlyShort';
+            myNewBadge.title__c = 'josephTestingOnly';
+
+            myNewBadge.document_id__c = 'https://credlyapp.s3.amazonaws.com/badges/5c51479bc27446c205810bcbf9dee3e4.png';
+        
+            myNewBadge.credlyBadgeId__c = '13114';
+           insert myNewBadge;
+		
+		CustomBadgeController controller = new CustomBadgeController(); 
+		controller.myBadges = new List<badge__c>();
+		controller.searchBadge();
+	}
+	
+	static testMethod void testsetSortController()
+	{
+		CustomBadgeController controller = new CustomBadgeController(); 
+		controller.setSortController();
+	}
+	
+
 	static testMethod void testSelectOption() 
 	{
 		testRequestHTTPMock fakeResponse = new testRequestHTTPMock(200,
@@ -74,6 +178,7 @@ public class testBadges {
           controller.addBlock = true;
           controller.detailsBlock = true;
           controller.setGiveable('true');
+          controller.filterBadgeSearch = 'test';
 	}
 	
 	
@@ -92,7 +197,7 @@ public class testBadges {
 		     
 		   controller.criteria = 'test';
         controller.description = 'test';
-         controller.is_expireNumber = '10000000';
+         controller.is_expireNumber = '0';
           controller.is_expirePeriod = 'never';
           controller.xiconId = '3444';         
 

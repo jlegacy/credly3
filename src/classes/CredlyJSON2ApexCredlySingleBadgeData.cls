@@ -14,7 +14,7 @@ public class CredlyJSON2ApexCredlySingleBadgeData {
 	public class Creator {
 		public Integer id;
 		public String slug;
-		public String type;
+		public String creator_type;
 		public String display_name;
 		public String avatar;
 		public String account_type;
@@ -106,7 +106,7 @@ public class CredlyJSON2ApexCredlySingleBadgeData {
 
 	public class Icon {
 		public Integer id;
-		public String type;
+		public String icon_type;
 		public String filename;
 		public String vector_ext;
 		public String raster_ext;

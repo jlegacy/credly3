@@ -129,10 +129,10 @@ public with sharing class staticCredlyClass {
     }
 
 
-    public static void synchBadgesToCredly() {
-        batchSyncBadges a = new batchSyncBadges();
-        Database.executeBatch(a, 8);
-    }
+  //  public static void synchBadgesToCredly() {
+  //      batchSyncBadges a = new batchSyncBadges();
+  //      Database.executeBatch(a, 8);
+ //   }
 
     public static void synchMemberBadgeToCredly(id recordId) {
         String jobName = GuidUtil.NewGuid();

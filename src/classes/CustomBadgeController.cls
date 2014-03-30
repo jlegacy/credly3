@@ -121,9 +121,10 @@ public with sharing class CustomBadgeController {
     
     public PageReference gotoEditController()
     {
+   
     	Integer z;
     	
-    	if (xCredlyBadgeId.trim().compareTo('') == 1)
+    	if (xCredlyBadgeId.trim().compareTo('') != 0)
     	{
     
     	CredlyJSON2ApexCredlySingleBadgeData.Data singleBadge = staticCredlyClass.getSingleBadgeDataFromCredly(xCredlyBadgeId);
@@ -619,6 +620,8 @@ public with sharing class CustomBadgeController {
 
 		
 			firstPass = false; 
+			
+			system.debug(badges);
 			
             return badges;
         }

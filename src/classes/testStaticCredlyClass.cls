@@ -115,11 +115,53 @@ public with sharing class testStaticCredlyClass {
 		 staticCredlyClass.getMyBadgesFromCredly();
 	}
 	
-	static testmethod void testCredly2Json()
+	static testmethod void synchBadgesFromCredly()
 	{
-//		String json = '{\"meta\":{\"status_code\":200,\"status\":\"OK\",\"message\":\"\",\"more_info\":null},\"data\":{\"id\":13246,\"title\":\"assignbyId\",\"short_description\":\"assign by id\",\"image_url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4.png\",\"is_giveable\":false,\"created_at\":\"Sun, 02 Feb 2014 22:16:00 _0500\",\"creator_id\":10636,\"is_claimable\":false,\"description\":\"assignbyid\",\"criteria\":\" \",\"expires_in\":3,\"creator\":{\"id\":10636,\"slug\":\"\",\"type\":\"user\",\"display_name\":\"Joseph Legacy\",\"avatar\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/avatars\\/ca02cd78b68d82da8e01272ba271901d.jpeg\",\"account_type\":\"Free\",\"is_pro\":false,\"is_email_verified\":true,\"is_account_verified\":false,\"member_badge_count\":0,\"issued_badge_count\":0,\"trusted_by_count\":0,\"lists_count\":0,\"first_name\":\"Joseph\",\"last_name\":\"Legacy\",\"email\":\"jlegacy@suddenlink.net\",\"bio\":\"\",\"location\":\"\",\"website\":\"\",\"last_activity\":false,\"created_at\":\"Wed, 27 Nov 2013 23:32:54 _0500\",\"updated_at\":\"Thu, 06 Feb 2014 03:03:08 _0500\"},\"categories\":[],\"require_claim_code\":true,\"require_claim_evidence\":false,\"require_claim_evidence_description\":\"\",\"approve_claim_automatically\":false,\"components\":{\"icon\":{\"id\":3771,\"type\":\"icon\",\"filename\":\"pencil_347\",\"vector_ext\":\"svg\",\"raster_ext\":\"png\",\"vector_url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/assets\\/icon\\/pencil_347.svg\",\"raster_url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/assets\\/icon\\/pencil_347.png\",\"meta\":{\"attribute\":\"The Noun Project\",\"license\":\"Creative Commons _ Attribution (CC BY 3.0)\",\"noun\":\"Pencil\",\"npid\":\"347\"}},\"meta\":{\"banner_color\":\"#c3c3c3\",\"banner_text\":\"Blank Slate\",\"banner_text_color\":\"#ffffff\",\"border\":\"solid\",\"border_color\":\"#000000\",\"custom_icon\":\"1\",\"expires_amount\":\"1\",\"expires_units\":\"never\",\"icon_color\":\"#000000\",\"shape\":\"circle_badge\",\"shape_color\":\"#ffffff\"}},\"image_data\":{\"file_name\":\"5c51479bc27446c205810bcbf9dee3e4.png\",\"time_created\":1391397359,\"file_hash\":{\"md5\":\"5c51479bc27446c205810bcbf9dee3e4\"},\"mime_type\":\"image\\/png\",\"size\":{\"bytes\":28233,\"kilobytes\":27.6,\"megabytes\":0},\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4.png\",\"resized_images\":{\"_1\":{\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4_1.png\",\"max_width\":36,\"max_height\":36},\"_3\":{\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4_3.png\",\"max_width\":55,\"max_height\":55},\"_5\":{\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4_5.png\",\"max_width\":72,\"max_height\":72},\"_7\":{\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4_7.png\",\"max_width\":90,\"max_height\":90},\"_9\":{\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4_9.png\",\"max_width\":100,\"max_height\":100},\"_11\":{\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4_11.png\",\"max_width\":120,\"max_height\":120},\"_13\":{\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4_13.png\",\"max_width\":180,\"max_height\":180},\"_15\":{\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4_15.png\",\"max_width\":280,\"max_height\":280},\"_17\":{\"url\":\"https:\\/\\/credlyapp.s3.amazonaws.com\\/badges\\/5c51479bc27446c205810bcbf9dee3e4_17.png\",\"max_width\":600,\"max_height\":600}}}}}';
-//		CredlyJSON2ApexCredlySingleBadgeData obj = parse(json);
-//		System.assert(obj != null);
+		 List < CredlyJSON2ApexMyBadges.Data > myCredlyBadges; 
+		 set < String > myCredlyBadgeIDs ;
+		 set < String > mySalesForceCredlyBadgeIDs;
+		  
+		 
+		 myCredlyBadges = staticCredlyClass.getMyBadgesFromCredly();
+        myCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIdsFromData(myCredlyBadges);
+        mySalesForceCredlyBadgeIDs = staticCredlyClass.getCredlyBadgeIDsFromSalesforce();
+        staticCredlyClass.synchBadgesFromCredly(myCredlyBadges, mySalesForceCredlyBadgeIDs);
+	}
+	
+		static testmethod void synchMemberBadgesFromCredly()
+	{
+		List < CredlyJSON2ApexMyMemberBadges.Data > myCredlyMemberBadges;
+		set < String > mySalesForceCredlyMemberBadgeIDs;
+		set < Integer > myCredlyMemberBadgeIDs;
+		
+		  myCredlyMemberBadges = staticCredlyClass.getMyMemberBadgesFromCredly();
+        mySalesForceCredlyMemberBadgeIDs = staticCredlyClass.getCredlyMemberIDsFromSalesforce();
+        staticCredlyClass.synchMemberBadgesFromCredly(myCredlyMemberBadges, mySalesForceCredlyMemberBadgeIDs);
+        myCredlyMemberBadgeIDs = staticCredlyClass.getCredlyMemberBadgeIdsFromData(myCredlyMemberBadges);
+		
+		
+	}
+	
+	static testmethod void singleBadgeDataFromCredly()
+	{
+		
+        staticCredlyClass.getSingleBadgeDataFromCredly('12345');
+		
+		
+	}
+		static testmethod void getSingleCategorID()
+	{
+		
+        staticCredlyClass.getSingleCategoryID('test');
+		
+		
+	}
+	
+	static testmethod void testRecipients()
+	{
+		staticCredlyClass.getRecipientAccountIDs('Name:Name|ct|a');
+		staticCredlyClass.getRecipientLeadIDs('Name:Name|ct|a');
+		staticCredlyClass.getRecipientContactIDs('Name:Name|ct|a');
 	}
 	
 	static testmethod void test() {
@@ -134,13 +176,13 @@ public with sharing class testStaticCredlyClass {
           staticCredlyClass.getLeadID('legacy@starfishenterprises.net');
            staticCredlyClass.getBadgeDocumentId('123');
            
-            staticCredlyClass.storeCredlyId(1,'1','contact');
-            staticCredlyClass.storeCredlyId(1,'1','lead');
-            staticCredlyClass.storeCredlyId(1,'1','account');
+            staticCredlyClass.storeCredlyId(1,'003i000000JaDM9AAN','contact');
+            staticCredlyClass.storeCredlyId(1,'00Qi0000007QIh4EAG','lead');
+            staticCredlyClass.storeCredlyId(1, '001i000000NI5txAAD','account');
             
-            staticCredlyClass.getCredlyIdfromSalesForce('123','contact');
-            staticCredlyClass.getCredlyIdfromSalesForce('123','account');
-            staticCredlyClass.getCredlyIdfromSalesForce('123','lead');
+            staticCredlyClass.getCredlyIdfromSalesForce('003i000000JaDM9AAN','contact');
+            staticCredlyClass.getCredlyIdfromSalesForce('001i000000NI5txAAD','account');
+            staticCredlyClass.getCredlyIdfromSalesForce('00Qi0000007QIh4EAG','lead');
                   
 	}
 

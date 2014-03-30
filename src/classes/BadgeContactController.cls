@@ -475,12 +475,6 @@ public PageReference createRecipientsController()
     }
 
 
-    public String getCheckIt() {
-
-        return null;
-    }
-
-
     public PageReference showUploadOnly() {
 
         String email;
@@ -965,6 +959,8 @@ public PageReference createRecipientsController()
             List < member_badge__c > memberBadgeList = new List < member_badge__c > ();
             
             parsedRows = automatedTriggerClass.unparseRules(setRuleText);
+            
+            system.debug('Checking Record Type:....' + xRecordType);
             
             //
             //Get the IDs of the members getting badges//

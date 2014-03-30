@@ -28,8 +28,9 @@ for(Contact a : contacts){
 }
 return null;
 }
-	
-public static void sendEmail(ID whoId, ID badgeId, String emailType)
+
+//*no longer needed*//
+/*public static void sendEmail(ID whoId, ID badgeId, String emailType)
 {
 Contact recipientContact;
 Contact recipientAccount;
@@ -109,6 +110,6 @@ for(Contact a : contacts){
 	}
 }
 
-}
+}*/
 
      }

@@ -32,6 +32,19 @@ public static List<String> getFieldValues(SObject[] objects, String field) {
   }
   return result;
 }
+
+public static Map<String, String> symbolMap(){
+Map<String, String> symMap = new Map<String, String>();
+symMap.put('eq', '=');
+symMap.put('lt', '<');
+symMap.put('le', '<=');
+symMap.put('gt', '>');
+symMap.put('ge', '>=');
+symMap.put('ne', '!=');
+symMap.put('ct', 'LIKE');
+return symMap;
+}
+
 public static Boolean lookForHit(String ruleValue, String fieldValue, String operand, String fieldType) {
 Boolean result;
 
@@ -68,7 +81,7 @@ if (operand.compareTo('ge') == 0)
 {
 return result = (fieldValue >= ruleValue) ? true : false;
 }
-if (operand.compareTo('not eq') == 0)
+if (operand.compareTo('ne') == 0)
 {
 return result = (fieldValue != ruleValue) ? true : false;
 }
@@ -195,27 +208,27 @@ public static void addMemberBadge(id accountID, id ruleID, id badgeID, String ac
               if (accountType.equals('contact'))
                  {
                  if (rule.send_email_r__c)
-                 	{
-                 //	sendEmail.sendEmail(memberBadge.contact_lookup_m__c, memberBadge.Id, accountType);
-                 	}
+                    {
+                 // sendEmail.sendEmail(memberBadge.contact_lookup_m__c, memberBadge.Id, accountType);
+                    }
                  }
                    if (accountType.equals('lead'))
                  {
                  if (rule.send_email_r__c)
-                 	{
-                // 	sendEmail.sendEmail(memberBadge.lead_lookup_m__c, memberBadge.Id, accountType);
-                 	}
+                    {
+                //  sendEmail.sendEmail(memberBadge.lead_lookup_m__c, memberBadge.Id, accountType);
+                    }
                  }
                    if (accountType.equals('account'))
                  {
                  if (rule.send_email_r__c)
-                 	{
-                 //	sendEmail.sendEmail(memberBadge.account_lookup_m__c, memberBadge.Id, accountType);
-                 	}
+                    {
+                 // sendEmail.sendEmail(memberBadge.account_lookup_m__c, memberBadge.Id, accountType);
+                    }
                  }
             
              rule.number_of_badges_issued_r__c = (rule.number_of_badges_issued_r__c == null) ? 1 : rule.number_of_badges_issued_r__c + 1;
-        	 rule.date_last_issued_r__c = system.now();
+             rule.date_last_issued_r__c = system.now();
              update rule;
              
      

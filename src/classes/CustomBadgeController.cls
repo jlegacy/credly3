@@ -1,4 +1,4 @@
-public with sharing class CustomBadgeController {
+public with sharing class CustomBadgeController { 
 
 
     public String securityToken {
@@ -12,8 +12,8 @@ public with sharing class CustomBadgeController {
     }
     
     public String document_name {
-    	get;
-    	set;
+        get;
+        set;
     }
     
      public String jumpURL {
@@ -42,13 +42,13 @@ public with sharing class CustomBadgeController {
     }
     
     public List < badge__c > myBadge {
-    	get;
-    	set;
+        get;
+        set;
     }
     
     public Boolean firstPass {
-    	get;
-    	set;
+        get;
+        set;
     }
     
     public List < CredlyJSON2ApexMyBadges.Data > myCredlyBadges {
@@ -65,13 +65,13 @@ public with sharing class CustomBadgeController {
     }
     
     public ID document_id_url_form {
-    	get;
-    	set;
+        get;
+        set;
     }
     
        public String document_id {
-    	get;
-    	set;
+        get;
+        set;
     }
     
     
@@ -122,47 +122,47 @@ public with sharing class CustomBadgeController {
     public PageReference gotoEditController()
     {
    
-    	Integer z;
-    	
-    	if (xCredlyBadgeId.trim().compareTo('') != 0)
-    	{
+        Integer z;
+        
+        if (xCredlyBadgeId.trim().compareTo('') != 0)
+        {
     
-    	CredlyJSON2ApexCredlySingleBadgeData.Data singleBadge = staticCredlyClass.getSingleBadgeDataFromCredly(xCredlyBadgeId);
-    	if (singleBadge != null)
-    	{
-    	badge__c x = [select id from badge__c where credlyBadgeID__c = :xCredlyBadgeId];
-    	if (x != null)
-    	{
-    		if (singleBadge.description != null)
-    		{
-    			x.description__c = singleBadge.description;
-    		}
-    		z = 0;
-    		for (CredlyJSON2ApexCredlySingleBadgeData.Categories j : singleBadge.categories)
-    		{
-    			z = z + 1;
-    			if (z == 1)
-    			{
-    			x.categories__c = j.name;
-    			}
-    			else
-    			{
-    			x.categories__c = x.categories__c + ',' + j.name;	
-    			}
-    			
-    		}
-    		update x;
-    	}
-    	}
-    	
-    	}
-    	
-    	
-    	String fullFileURL = URL.getSalesforceBaseUrl().toExternalForm() +
-   		'/' + xEditId;
-   		PageReference pageRef = new PageReference(fullFileURL);
-   		pageRef.setRedirect(true);
-    	return pageRef;
+        CredlyJSON2ApexCredlySingleBadgeData.Data singleBadge = staticCredlyClass.getSingleBadgeDataFromCredly(xCredlyBadgeId);
+        if (singleBadge != null)
+        {
+        badge__c x = [select id from badge__c where credlyBadgeID__c = :xCredlyBadgeId];
+        if (x != null)
+        {
+            if (singleBadge.description != null)
+            {
+                x.description__c = singleBadge.description;
+            }
+            z = 0;
+            for (CredlyJSON2ApexCredlySingleBadgeData.Categories j : singleBadge.categories)
+            {
+                z = z + 1;
+                if (z == 1)
+                {
+                x.categories__c = j.name;
+                }
+                else
+                {
+                x.categories__c = x.categories__c + ',' + j.name;   
+                }
+                
+            }
+            update x;
+        }
+        }
+        
+        }
+        
+        
+        String fullFileURL = URL.getSalesforceBaseUrl().toExternalForm() +
+        '/' + xEditId;
+        PageReference pageRef = new PageReference(fullFileURL);
+        pageRef.setRedirect(true);
+        return pageRef;
     }
 
     public PageReference searchBadge() {
@@ -194,6 +194,8 @@ public with sharing class CustomBadgeController {
         setSortProperties();
         document_id = '';
         document_name = '';
+        
+        
         
 
         Double j;
@@ -227,6 +229,8 @@ public with sharing class CustomBadgeController {
         if (c == 'Y') {
             addBadge();
         }
+        
+   
         
  
     }
@@ -284,8 +288,8 @@ public with sharing class CustomBadgeController {
     }
     
     public List<badge__c> myBadges{
-    	get;
-    	set;
+        get;
+        set;
     }
 
     public Boolean showIframe {
@@ -315,13 +319,14 @@ public with sharing class CustomBadgeController {
         }
         
        myBadges = getBadges();
+       
 
         return null;
     }
 
     public pageReference setImageAction() {
         if (document.body != null) {
-            xbadgeURL = 'data:image;base64,' + EncodingUtil.base64Encode(document.body);
+            //xbadgeURL = 'data:image;base64,' + EncodingUtil.base64Encode(document.body);
           
             document.AuthorId = UserInfo.getUserId();
             document.FolderId = UserInfo.getUserId();
@@ -336,6 +341,9 @@ public with sharing class CustomBadgeController {
             } catch (DMLException e) {
                 ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error uploading file'));
                 return null;
+            } finally{
+                document.body = null;
+                document = new Document();
             }
         
         }
@@ -514,10 +522,10 @@ public with sharing class CustomBadgeController {
         String stsMessage;
         String encodedImage;
         String credlyBadgeId;
-
+        
         badge__c insertUser = new badge__c();
 
-        if (xbadgeURL.trim().length() == 0) {
+        if (xbadgeURL.trim().length() == 0 && document_id == null) {
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Badge Missing - Use Badge Builder to create.'));
             return null;
         }
@@ -534,26 +542,28 @@ public with sharing class CustomBadgeController {
 
             insertUser.short_description__c = short_description;
             insertUser.title__c = title;
-
-
-            if (document_Id.trim().compareTo('') != 0) {
-                insertUser.upload_file_id__c = document_Id;
-                insertUser.document_id__c =  url.getSalesforceBaseUrl().toExternalForm() + '/servlet/servlet.FileDownload?file=' + document_Id;
+            
+        
+            if (document_id.trim().compareTo('') != 0) {
+                insertUser.upload_file_id__c = document_id;
+                insertUser.document_id__c =  url.getSalesforceBaseUrl().toExternalForm() + '/servlet/servlet.FileDownload?file=' + document_id;
+                   
             } else {
+            
                 insertUser.document_id__c = xbadgeURL;
             }
             
-            
+         
              credlyBadgeId = staticCredlyClass.sendBadgeToCredly(insertUser);
          
              if(String.isNotBlank(credlyBadgeId))
              {
-             	insertUser.credlyBadgeId__c = credlyBadgeId;
+                insertUser.credlyBadgeId__c = credlyBadgeId;
              }
              else
              {
-             	ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating new badge on Credly.'));
-             	return null;
+                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating new badge on Credly.'));
+                return null;
              }
              
           insert insertUser;
@@ -564,8 +574,8 @@ public with sharing class CustomBadgeController {
         }
         
         finally{
-        	    document_id = '';
-        		document_name = '';
+                document_id = '';
+                document_name = '';
         }
 
         //Submit Job to Send Badges//
@@ -576,8 +586,8 @@ public with sharing class CustomBadgeController {
         showIframe = false;
         detailsBlock = true;
         ApexPages.addMessage(new ApexPages.message(ApexPages.severity.INFO, 'Badge Created Successfully'));
-		
-		PageReference pageRef = new PageReference('/apex/ViewBadges');
+        
+        PageReference pageRef = new PageReference('/apex/ViewBadges');
         pageRef.setRedirect(true);
         return pageRef;
 
@@ -605,24 +615,23 @@ public with sharing class CustomBadgeController {
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) and (title__c  like :filterBadgeSearch)  order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
             }
               if ((filterBadge.trim().compareTo('') == 0)) {
-              	
-              	if (!firstPass)   
-             	{
+                
+                if (!firstPass)   
+                {
                 AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId))];
                 Object recordCount = groupedResults[0].get('recCnt'); 
 
                 setPagingInfo(Integer.valueOf(recordCount));
-             	}
-              	
+                }
+                
             
                 badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdDate, createdById, credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs) or (credlyBadgeId__c = null and createdById = :myId)) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :pageOffset');
             }
 
-		
-			firstPass = false; 
-			
-			system.debug(badges);
-			
+        
+            firstPass = false; 
+            
+            
             return badges;
         }
         set;

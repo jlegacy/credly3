@@ -1,6 +1,6 @@
 public with sharing class BadgeContactController {
 
-    public BadgeContactController() {
+    public BadgeContactController() { 
 
         xSortDirection = 'sortUp';
         xSortField = 'Title';
@@ -382,6 +382,12 @@ public PageReference createRecipientsController()
         }
        
         if (step == 3) {
+        	
+        	 if (setRuleText.trim().compareTo('') == 0) {
+                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need To Select Rule(s)'));
+               step = step-1;
+                return null;
+           }
         	editRecipients();
             showRecipients();
         }
@@ -959,8 +965,6 @@ public PageReference createRecipientsController()
             List < member_badge__c > memberBadgeList = new List < member_badge__c > ();
             
             parsedRows = automatedTriggerClass.unparseRules(setRuleText);
-            
-            system.debug('Checking Record Type:....' + xRecordType);
             
             //
             //Get the IDs of the members getting badges//

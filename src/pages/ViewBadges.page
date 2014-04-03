@@ -16,28 +16,28 @@
               $j(document).ready(function() {
              $j('#my-badge').hide();
              
-				$j( "table" ).delegate( "textarea,input", "keyup", function() {
-				var size;
-				var classString = $j(this).attr('class');
-				var n = classString.search("maxSize");
-				if (n > 0)
-				{
-				n = n + 7;
-				size = classString.substring(n, n+3);
-				}
-				
-				if ($j(this).val().length >= size) {
-				alert('Maximum Characters: ' + size);
-    			$j(this).val($j(this).val().substr(0, size));
-  				}
+                                $j( "table" ).delegate( "textarea,input", "keyup", function() {
+                                var size;
+                                var classString = $j(this).attr('class');
+                                var n = classString.search("maxSize");
+                                if (n > 0)
+                                {
+                                n = n + 7;
+                                size = classString.substring(n, n+3);
+                                }
+                                
+                                if ($j(this).val().length >= size) {
+                                alert('Maximum Characters: ' + size);
+                        $j(this).val($j(this).val().substr(0, size));
+                                }
 
-				});
-				
-				$j("#contentWrapper").delegate("div[class*='sorting']","click",function(){
-				setSort($j(this).attr('id'), $j(this).closest("div[id*='sortDiv']").text());
-				});
-				
-				attachSorts();
+                                });
+                                
+                                $j("#contentWrapper").delegate("div[class*='sorting']","click",function(){
+                                setSort($j(this).attr('id'), $j(this).closest("div[id*='sortDiv']").text());
+                                });
+                                
+                                attachSorts();
 
           });
           
@@ -52,7 +52,7 @@
         myBadge.extraParameters = data.packagedData;
         
         var img = new Image();
-		img.src = data.image;
+                img.src = data.image;
 
         // Remove the badge builder
         passImageParms(data.image, data.packagedData.iconstub,data.packagedData.icon_id )
@@ -64,22 +64,22 @@
           function attachSorts()
           {
            $j("div[id*='sortDiv']").each(function() {
-       		$j(this).children().remove();
-        	});
-        	
+                $j(this).children().remove();
+                });
+                
           $j("div[id*='sortDiv']").append('<div id="sortUp" class="sorting"><div class="upImage"></div></div>');
-		  $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><div class="downImage"></div></div>');
-		  
-		     $j("div[id*='sortDiv']").each(function() {
+                  $j("div[id*='sortDiv']").append('<div id="sortDown" class="sorting"><div class="downImage"></div></div>');
+                  
+                     $j("div[id*='sortDiv']").each(function() {
 
-        	  if ($j(this).text() == 'Image')
-        	{
-        		$j(this).children().remove();
-        	}
-        //	  if ($j(this).text() == 'Description')
-        //	{
-        //		$j(this).children().remove();
-      //  	}
+                  if ($j(this).text() == 'Image')
+                {
+                        $j(this).children().remove();
+                }
+        //        if ($j(this).text() == 'Description')
+        //      {
+        //              $j(this).children().remove();
+      //        }
         
         });  
           }
@@ -179,7 +179,7 @@ function getAutoValues() {
     }
              function setUploadOption(){
         
-			setUploadController();
+                        setUploadController();
 
             }
             
@@ -227,47 +227,47 @@ function getAutoValues() {
         width:50px;
         }
    .content-container {
- 	position: fixed;
-	top: 50%;
-	left: 50%;
-	margin-top: 61px;
-	margin-left: -43px;
-	font-size: 25px;
-	display:none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-top: 61px;
+        margin-left: -43px;
+        font-size: 25px;
+        display:none;
   }
     .loading-container {
     z-index:100;
-	position:absolute;
-	top:0;
- 	right:0;
-	bottom:0;
-	left:0;
-	display:none;
-	background-image:url({!$Resource.ajaxloader});
-	background-repeat:no-repeat;
-	background-attachment:fixed;
-	background-position:center; 
+        position:absolute;
+        top:0;
+        right:0;
+        bottom:0;
+        left:0;
+        display:none;
+        background-image:url({!$Resource.ajaxloader});
+        background-repeat:no-repeat;
+        background-attachment:fixed;
+        background-position:center; 
 }
 .loading-container:before {
-	z-index:100;
-	position:absolute;
-	width:100%;
-	height:100%;
-	line-height:480px;
-	text-align: center;
-	vertical-align: middle; 
-	font-size:25px;
-	font-weight:bold;
-	color:black;
-	text-align:center;
-	background:rgba(70, 70, 70, 0.9);
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;  
-	content: ' ';
-	opacity:0.4;
-	filter:alpha(opacity=40);
-	padding-top: 89px;
+        z-index:100;
+        position:absolute;
+        width:100%;
+        height:100%;
+        line-height:480px;
+        text-align: center;
+        vertical-align: middle; 
+        font-size:25px;
+        font-weight:bold;
+        color:black;
+        text-align:center;
+        background:rgba(70, 70, 70, 0.9);
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;  
+        content: ' ';
+        opacity:0.4;
+        filter:alpha(opacity=40);
+        padding-top: 89px;
 }
         
     </style>
@@ -279,7 +279,7 @@ function getAutoValues() {
   
               
            <div id="loading-container" class="loading-container"></div>
-	<div id="content-container" class="content-container">Loading</div>
+        <div id="content-container" class="content-container">Loading</div>
         
  <apex:iframe id="my-badge" frameborder="0" scrolling="no" width="960" height="540" src="https://staging.credly.com/badge-builder/embed/11"/>      
  <apex:form id="addForm" enctype="multipart/form-data">
@@ -457,12 +457,12 @@ function getAutoValues() {
                    <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Title">
                          <apex:commandLink action="{!gotoEditController}" value="{!o.title__c}"> 
                           <apex:param name="xEditId"
-                				value="{!o.id}"
-                				assignTo="{!xEditId}"/> 
-                				<apex:param name="xCredlyBadgeId"
-                				value="{!o.credlyBadgeId__c}"
-                				assignTo="{!xCredlyBadgeId}"/> 
-                				</apex:commandLink>
+                                                value="{!o.id}"
+                                                assignTo="{!xEditId}"/> 
+                                                <apex:param name="xCredlyBadgeId"
+                                                value="{!o.credlyBadgeId__c}"
+                                                assignTo="{!xCredlyBadgeId}"/> 
+                                                </apex:commandLink>
                     </apex:column>
                      <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Description">
                         <apex:outputField value="{!o.short_description__c}" />

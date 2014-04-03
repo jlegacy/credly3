@@ -349,5 +349,43 @@ public  class testBadgeContactController {
 		  controller.getRecordTypes();
 	}
 	
+		static testMethod void closeBadge()
+	{
+		  BadgeContactController controller = new BadgeContactController();
+		  controller.closeBadge();
+	}
+	
+	static testMethod void getDropBadges()
+	{
+		  BadgeContactController controller = new BadgeContactController();
+		  controller.getDropBadges();
+	}
+	
+		static testMethod void getSelectedItem()
+	{
+		  BadgeContactController controller = new BadgeContactController();
+		  controller.getSelectedItem();
+	}
+	
+		static testMethod void testNext()
+	{
+		BadgeContactController controller = new BadgeContactController(); 
+	
+		controller.badgeOffset = 5;
+		controller.pageLimit = 5;
+		controller.currentBadgePage = 5;
+		controller.numberOfBadgePages = 1;
+		controller.nextBadge();
+		
+	}
+		static testMethod void testPrev()
+	{
+		BadgeContactController controller = new BadgeContactController();
+		controller.badgeOffset = 5;
+		controller.pageLimit = 5; 
+		controller.currentBadgePage = 0;
+		controller.prevBadge();
+	}
+	
 	
 }

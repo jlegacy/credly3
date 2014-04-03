@@ -1,16 +1,13 @@
-global class batchSyncMemberBadges implements
+global class batchSyncMemberBadgesAll implements 
 
     
    Database.Batchable<sObject>,Database.AllowsCallouts {
-   	
-   public id recordId;
-   	
-   global id idcron; 
+    
 
    global final String query;
    
    global Database.QueryLocator start(Database.BatchableContext BC){
-      String query = 'select id , criteria_m__c, custom_message_m__c, description_m__c, expires_in_m__c, is_visible_m__c, badge_lookup_m__r.credlyBadgeId__c, short_description_m__c,title_m__c, image_m__c, credlyMemberBadge_id_m__c,evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c, badge_lookup_m__r.title__c,issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c from member_badge__c where credlyMemberBadge_id_m__c = null and id = :recordId';
+      String query = 'select id , criteria_m__c, custom_message_m__c, description_m__c, expires_in_m__c, is_visible_m__c, badge_lookup_m__r.credlyBadgeId__c, short_description_m__c,title_m__c, image_m__c, credlyMemberBadge_id_m__c,evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c, badge_lookup_m__r.title__c,issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c from member_badge__c where credlyMemberBadge_id_m__c = null';
       return Database.getQueryLocator(query);
    }
    
@@ -22,14 +19,11 @@ global class batchSyncMemberBadges implements
    }
    
    global void finish(Database.BatchableContext BC){
-       AsyncApexJob a = 
+     AsyncApexJob a = 
            [SELECT Id, Status, NumberOfErrors, JobItemsProcessed,
             TotalJobItems, CreatedBy.Email, ExtendedStatus
             FROM AsyncApexJob WHERE Id =
             :BC.getJobId()];
-            
-              //Abort the Schedule Class.
-        System.abortjob(idcron);
       
        // Send an email to the Apex job's submitter 
        //   notifying of job completion. 
@@ -92,17 +86,17 @@ global class batchSyncMemberBadges implements
      //   evidenceImage = CredlyJSONCalls.getCredlyImage(memberBadge.evidence_url_m__c );
      //  if (evidenceImage == null)   
      //   {   
-     		//evidenceImage = memberBadge.evidence_url_m__c;
-     		Boolean result =   memberBadge.evidence_url_m__c.contains('http');
-     		if (result == false)
-     		{
-     			evidenceImage = 'http://' + memberBadge.evidence_url_m__c;
-     		}
-     		else
-     		{
-     			evidenceImage = memberBadge.evidence_url_m__c;
-     		}
-     		
+            //evidenceImage = memberBadge.evidence_url_m__c;
+            Boolean result =   memberBadge.evidence_url_m__c.contains('http');
+            if (result == false)
+            {
+                evidenceImage = 'http://' + memberBadge.evidence_url_m__c;
+            }
+            else
+            {
+                evidenceImage = memberBadge.evidence_url_m__c;
+            }
+            
         //    evidenceImage = EncodingUtil.Base64Encode( Blob.valueOf( memberBadge.evidence_url_m__c ) );
      //   }
         }
@@ -182,7 +176,9 @@ global class batchSyncMemberBadges implements
            }
             
             } 
-           
+            
+            system.debug('Credly ID...' + CredlyId + 'or email...' + email );
+           // system.debug(email);
             
            if (CredlyId <> 0)
           {
@@ -206,6 +202,7 @@ global class batchSyncMemberBadges implements
            else
            {
              returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'member_badges', createURL);
+             system.debug(returnData);
            }
        
           //parseResults

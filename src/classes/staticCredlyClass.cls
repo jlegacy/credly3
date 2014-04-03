@@ -46,7 +46,7 @@ public with sharing class staticCredlyClass {
 
         DateTime dt = datetime.valueOf(stringDate);
 
-        //	Thu, 14 Nov 2013 18:49:39 -0500
+        //  Thu, 14 Nov 2013 18:49:39 -0500
         return dt;
 
     }
@@ -133,20 +133,56 @@ public with sharing class staticCredlyClass {
   //      batchSyncBadges a = new batchSyncBadges();
   //      Database.executeBatch(a, 8);
  //   }
+ 
+    /* public static DateTime getLastWaitingJob()
+     {
+     DateTime x = system.now();
+     memberJobRun__c myJobs = [select jobRunDateTime__c from memberJobRun__c order by jobRunDateTime__c DESC limit 1];
+     if (myJobs != null)
+     {
+     x = myJobs.jobRunDateTime__c;
+     }
+     return x;
+     
+     }
+     
+      public void insertJob(String x, DateTime y)
+     {
+     memberJobRun__c myJobs = new memberJobRun__c();
+       myJobs.jobName__c = x;
+         myJobs.jobRunDateTime__c = y;
+         insert myJobs;
+     }
+       public void deleteJob(String x)
+     {
+     memberJobRun__c myJobs = [select jobRunDateTime__c from memberJobRun__c where jobName__c = :x limit 1];
+          if (myJobs != null)
+     {
+     delete myJobs;
+     }
+     }*/
 
     public static void synchMemberBadgeToCredly(id recordId) {
+    
+        //check to see if any jobs left to run//
+        
         String jobName = GuidUtil.NewGuid();
 
         //  jobName = String.newGuid();
+      //  DateTime dt;
+        
+     //   dt = staticCredlyClass.getLastWaitingJob();
 
         schedulerSynchMemberBadgeClass apextoSchd = new schedulerSynchMemberBadgeClass();
         apextoSchd.recordId = recordId;
         //Get the system date and time.
         Datetime dt = DateTime.now();
         //Interval of 2 minutes after processing of first job. It can be set in terms of seconds also.
-        dt = dt.addSeconds(10);
+        dt = dt.addSeconds(30);
+        
         String sch = String.valueOf(dt.second()) + ' ' + String.valueOf(dt.minute()) + ' ' + String.valueOf(dt.hour()) + ' ' + String.valueOf(dt.day()) + ' ' + String.valueOf(dt.month()) + ' ' + '? ' + String.valueOf(dt.Year());
-
+        
+     //   staticCredlyClass.insertJob('test', dt);
         /***** Run schedule job for second logic with TimeStamp. *****/
         system.schedule('SynchMemberBadges:' + jobName + String.valueof(dt), sch, apextoSchd);
     }
@@ -216,11 +252,11 @@ public with sharing class staticCredlyClass {
         List < badge__c > updateBadges = new List < badge__c > ();
         
          List <badge__c> badgesWithNoCredlyDate = [select credlyBadgeId__c from badge__c where credlyCreatedDateTime__c = null and createdById = :myId];
-		
-		for(badge__c a : badgesWithNoCredlyDate){
-			m.put(a.credlyBadgeId__c,a.credlyBadgeId__c );
-		}
-		
+        
+        for(badge__c a : badgesWithNoCredlyDate){
+            m.put(a.credlyBadgeId__c,a.credlyBadgeId__c );
+        }
+        
         //loop through credlyList and compare to Salesforce list 
         for (CredlyJSON2ApexMyBadges.Data item: myCredlyBadges) {
             check = false;
@@ -228,14 +264,14 @@ public with sharing class staticCredlyClass {
                 check = true;
                 credlyBadgeString = String.valueOf(item.id);
                 try {
-                	value = '';
-                	value = m.get(credlyBadgeString);
-                	if (value.trim().compareTo('') != 0)
-                	{
-                    	badge__c test = [select id, credlyCreatedDateTime__c from badge__c where credlyBadgeId__c = :credlyBadgeString and credlyCreatedDateTime__c = null and createdById = :myId];
-                    	test.credlyCreatedDateTime__c = staticCredlyClass.convCRDateTime(item.created_at);
-                    	updateBadges.add(test);
-                	}
+                    value = '';
+                    value = m.get(credlyBadgeString);
+                    if (value.trim().compareTo('') != 0)
+                    {
+                        badge__c test = [select id, credlyCreatedDateTime__c from badge__c where credlyBadgeId__c = :credlyBadgeString and credlyCreatedDateTime__c = null and createdById = :myId];
+                        test.credlyCreatedDateTime__c = staticCredlyClass.convCRDateTime(item.created_at);
+                        updateBadges.add(test);
+                    }
                 } catch (exception e) {}
 
             }
@@ -335,7 +371,7 @@ public with sharing class staticCredlyClass {
     }
 
     public static Map < String, String > getBadgeIDMap() {
-    	 ID myId = UserInfo.getUserId();
+         ID myId = UserInfo.getUserId();
         Map < String, String > m = new Map < String, String > ();
 
         badge__c[] badgeRec = [select id, credlyBadgeId__c from badge__c where createdById = :myId];
@@ -373,7 +409,7 @@ public with sharing class staticCredlyClass {
                 member_badge__c memberBadge = new member_badge__c();
 
                 memberBadge.credlyMemberBadge_id_m__c = item.id;
-                //	memberBadge.badge_lookup_m__c = staticCredlyClass.getBadgeID(String.valueOf(item.badge_id));
+                //  memberBadge.badge_lookup_m__c = staticCredlyClass.getBadgeID(String.valueOf(item.badge_id));
 
                 memberBadge.badge_lookup_m__c = credlyBadgesCrossRef.get(String.valueOf(item.badge_id));
 
@@ -508,7 +544,7 @@ public with sharing class staticCredlyClass {
             }
             return CredlyId;
         }
-        return 0;
+        return CredlyId;
 
     }
 
@@ -849,6 +885,60 @@ public with sharing class staticCredlyClass {
 
         //There is a problem here causing a bug on line 863
         parsedRows = automatedTriggerClass.unparseRules(ruleText);
+        
+          //Start LGMK Code
+        sObject[] matchingObjects;
+        string queryString = 'SELECT Id';
+      //  Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Account.fields.getMap();
+      
+       Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+         Schema.SObjectType accountSchema= schemaMap.get('Account');
+          Map<String, Schema.SObjectField> fieldMap = accountSchema.getDescribe().fields.getMap();
+
+        //Populate the query with all of the object fields.
+        for(String key : fieldMap.keySet())
+        {
+             if (fieldMap.get(key).getDescribe().isAccessible())
+             {
+            if(key.compareTo('id') != 0){
+                queryString += (', ' + key);
+            }
+            }
+        
+        }
+        queryString += ' FROM Account';
+        
+        if(parsedRows.isEmpty())
+            matchingObjects = Database.query(queryString);
+        else{   
+        queryString += ' WHERE';
+        Boolean isFirst = True;
+        //Maps symbol codes to string symbols
+        Map<String, String> symMap = automatedTriggerClass.symbolMap();
+        
+        // For each row: 
+        // row[0] = field name
+        // row[1] = field type
+        // row[2] = operand
+        // row[3] = field value
+        for(String[] rule : parsedRows)
+        {
+            if(isFirst) isFirst = False;
+            else queryString += ' AND';
+            //Add field name to query.
+            queryString += ' ' + rule.get(0) + ' ';
+            //Add operand to query
+            string op = symMap.get(rule.get(2));
+            queryString += op + ' ';
+            //Add the condition
+            //For LIKE to operate like 'contains' we must have wildcards on either side of the expression
+            if(op == 'LIKE') queryString += '\'%' + String.valueOf(rule.get(3)) + '%\'';
+            else queryString += '\'' + String.valueOf(rule.get(3)) + '\'';
+        }
+        //Can add an ORDER BY clause if so desired.
+        matchingObjects = Database.query(queryString);
+        }
+        //End LGMK Code 
         //store ids for future lookup
         ids = automatedTriggerClass.getFieldValues(o, 'id');
         //loop through fields and get values from file//
@@ -929,6 +1019,59 @@ public with sharing class staticCredlyClass {
         //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
 
         parsedRows = automatedTriggerClass.unparseRules(ruleText);
+        
+        
+          //Start LGMK Code
+        sObject[] matchingObjects;
+        string queryString = 'SELECT Id';
+      //  Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Contact.fields.getMap();
+      
+       Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+         Schema.SObjectType contactSchema = schemaMap.get('Contact');
+          Map<String, Schema.SObjectField> fieldMap = contactSchema.getDescribe().fields.getMap();
+        //Populate the query with all of the object fields.
+        for(String key : fieldMap.keySet())
+        {
+             if (fieldMap.get(key).getDescribe().isAccessible())
+             {
+            if(key.compareTo('id') != 0){
+                queryString += (', ' + key);
+            }
+            }
+        
+        }
+        queryString += ' FROM Contact';
+        if(parsedRows.isEmpty())
+            matchingObjects = Database.query(queryString);
+        else{   
+        queryString += ' WHERE';
+        Boolean isFirst = True;
+        //Maps symbol codes to string symbols
+        Map<String, String> symMap = automatedTriggerClass.symbolMap();
+        
+        // For each row: 
+        // row[0] = field name
+        // row[1] = field type
+        // row[2] = operand
+        // row[3] = field value
+        for(String[] rule : parsedRows)
+        {
+            if(isFirst) isFirst = False;
+            else queryString += ' AND';
+            //Add field name to query.
+            queryString += ' ' + rule.get(0) + ' ';
+            //Add operand to query
+            string op = symMap.get(rule.get(2));
+            queryString += op + ' ';
+            //Add the condition
+            //For LIKE to operate like 'contains' we must have wildcards on either side of the expression
+            if(op == 'LIKE') queryString += '\'%' + String.valueOf(rule.get(3)) + '%\'';
+            else queryString += '\'' + String.valueOf(rule.get(3)) + '\'';
+        }
+        //Can add an ORDER BY clause if so desired.
+        matchingObjects = Database.query(queryString);
+        }
+        //End LGMK Code 
         //store ids for future lookup
         ids = automatedTriggerClass.getFieldValues(o, 'id');
         //loop through fields and get values from file//
@@ -1005,6 +1148,59 @@ public with sharing class staticCredlyClass {
         //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
 
         parsedRows = automatedTriggerClass.unparseRules(ruleText);
+        
+          //Start LGMK Code
+        sObject[] matchingObjects;
+        string queryString = 'SELECT Id';
+      //  Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Lead.fields.getMap();
+      
+       Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+         Schema.SObjectType leadSchema= schemaMap.get('Lead');
+          Map<String, Schema.SObjectField> fieldMap = leadSchema.getDescribe().fields.getMap();
+        //Populate the query with all of the object fields.
+        for(String key : fieldMap.keySet())
+        {
+             if (fieldMap.get(key).getDescribe().isAccessible())
+             {
+            if(key.compareTo('id') != 0){
+                queryString += (', ' + key);
+            }
+            }
+        
+        }
+        queryString += ' FROM Lead';
+        if(parsedRows.isEmpty())
+            matchingObjects = Database.query(queryString);
+        else{   
+        queryString += ' WHERE';
+        Boolean isFirst = True;
+        //Maps symbol codes to string symbols
+        Map<String, String> symMap = automatedTriggerClass.symbolMap();
+        
+        // For each row: 
+        // row[0] = field name
+        // row[1] = field type
+        // row[2] = operand
+        // row[3] = field value
+        for(String[] rule : parsedRows)
+        {
+            if(isFirst) isFirst = False;
+            else queryString += ' AND';
+            //Add field name to query.
+            queryString += ' ' + rule.get(0) + ' ';
+            //Add operand to query
+            string op = symMap.get(rule.get(2));
+            queryString += op + ' ';
+            //Add the condition
+            //For LIKE to operate like 'contains' we must have wildcards on either side of the expression
+            if(op == 'LIKE') queryString += '\'%' + String.valueOf(rule.get(3)) + '%\'';
+            else queryString += '\'' + String.valueOf(rule.get(3)) + '\'';
+        }
+        //Can add an ORDER BY clause if so desired.
+        matchingObjects = Database.query(queryString);
+        }
+        //End LGMK Code 
+        
         //store ids for future lookup
         ids = automatedTriggerClass.getFieldValues(o, 'id');
         //loop through fields and get values from file//
@@ -1079,6 +1275,60 @@ public with sharing class staticCredlyClass {
         List < String > ids = new List < String > ();
 
         parsedRows = automatedTriggerClass.unparseRules(ruleText);
+        
+          //Start LGMK Code
+        sObject[] matchingObjects;
+        string queryString = 'SELECT Id';
+     //   Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Account.fields.getMap();
+        
+        
+        
+         Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+         Schema.SObjectType accountSchema = schemaMap.get('Account');
+          Map<String, Schema.SObjectField> fieldMap = accountSchema.getDescribe().fields.getMap();
+        //Populate the query with all of the object fields.
+        for(String key : fieldMap.keySet())
+        {
+             if (fieldMap.get(key).getDescribe().isAccessible())
+             {
+            if(key.compareTo('id') != 0){
+                queryString += (', ' + key);
+            }
+            }
+        
+        }
+        queryString += ' FROM Account';
+        if(parsedRows.isEmpty())
+            matchingObjects = Database.query(queryString);
+        else{   
+        queryString += ' WHERE';
+        Boolean isFirst = True;
+        //Maps symbol codes to string symbols
+        Map<String, String> symMap = automatedTriggerClass.symbolMap();
+        
+        // For each row: 
+        // row[0] = field name
+        // row[1] = field type
+        // row[2] = operand
+        // row[3] = field value
+        for(String[] rule : parsedRows)
+        {
+            if(isFirst) isFirst = False;
+            else queryString += ' AND';
+            //Add field name to query.
+            queryString += ' ' + rule.get(0) + ' ';
+            //Add operand to query
+            string op = symMap.get(rule.get(2));
+            queryString += op + ' ';
+            //Add the condition
+            //For LIKE to operate like 'contains' we must have wildcards on either side of the expression
+            if(op == 'LIKE') queryString += '\'%' + String.valueOf(rule.get(3)) + '%\'';
+            else queryString += '\'' + String.valueOf(rule.get(3)) + '\'';
+        }
+        //Can add an ORDER BY clause if so desired.
+        matchingObjects = Database.query(queryString);
+        }
+        //End LGMK Code 
         //store ids for future lookup
         ids = automatedTriggerClass.getFieldValues(o, 'id');
         //loop through fields and get values from file//
@@ -1149,12 +1399,69 @@ public with sharing class staticCredlyClass {
         //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
 
         parsedRows = automatedTriggerClass.unparseRules(ruleText);
+        
+        //Start LGMK Code
+        sObject[] matchingObjects;
+        string queryString = 'SELECT id';
+     //   Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Contact.fields.getMap();
+        
+        
+         Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+         Schema.SObjectType contactSchema = schemaMap.get('Contact');
+          Map<String, Schema.SObjectField> fieldMap = contactSchema.getDescribe().fields.getMap();
+ 
+         
+        //Populate the query with all of the object fields.
+        for(String key : fieldMap.keySet())
+        {
+             if (fieldMap.get(key).getDescribe().isAccessible())
+             {
+            if(key.compareTo('id') != 0){
+                queryString += (', ' + key);
+            }
+            }
+        
+        }
+        queryString += ' FROM Contact';
+        if(parsedRows.isEmpty())
+            matchingObjects = Database.query(queryString);
+        else{   
+        queryString += ' WHERE';
+        Boolean isFirst = True;
+        //Maps symbol codes to string symbols
+        Map<String, String> symMap = automatedTriggerClass.symbolMap();
+        
+        // For each row: 
+        // row[0] = field name
+        // row[1] = field type
+        // row[2] = operand
+        // row[3] = field value
+        for(String[] rule : parsedRows)
+        {
+            if(isFirst) isFirst = False;
+            else queryString += ' AND';
+            //Add field name to query.
+            queryString += ' ' + rule.get(0) + ' ';
+            //Add operand to query
+            string op = symMap.get(rule.get(2));
+            queryString += op + ' ';
+            //Add the condition
+            //For LIKE to operate like 'contains' we must have wildcards on either side of the expression
+            if(op == 'LIKE') queryString += '\'%' + String.valueOf(rule.get(3)) + '%\'';
+            else queryString += '\'' + String.valueOf(rule.get(3)) + '\'';
+        }
+        
+        system.debug(queryString);
+        //Can add an ORDER BY clause if so desired.
+        matchingObjects = Database.query(queryString);
+        }
+        //End LGMK Code 
         //store ids for future lookup
         ids = automatedTriggerClass.getFieldValues(o, 'id');
         //loop through fields and get values from file//
         //get fields from file//
         Map < String, Integer > foundHitIds = new Map < String, Integer > ();
-
+        //(String ruleValue, String fieldValue, String operand, String fieldType)
         for (List < String > row: parsedRows) {
 
             if (!row.isEmpty()) {
@@ -1220,6 +1527,57 @@ public with sharing class staticCredlyClass {
         //((BillingCity, STRING, ct, test), (Industry, PICKLIST, eq, it))
 
         parsedRows = automatedTriggerClass.unparseRules(ruleText);
+          //Start LGMK Code
+        sObject[] matchingObjects;
+        string queryString = 'SELECT Id';
+      //  Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Lead.fields.getMap();
+      
+        Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+         Schema.SObjectType leadSchema= schemaMap.get('Lead');
+          Map<String, Schema.SObjectField> fieldMap = leadSchema.getDescribe().fields.getMap();
+        //Populate the query with all of the object fields.
+        for(String key : fieldMap.keySet())
+        {
+             if (fieldMap.get(key).getDescribe().isAccessible())
+             {
+            if(key.compareTo('id') != 0){
+                queryString += (', ' + key);
+            }
+            }
+        
+        }
+        queryString += ' FROM Lead';
+        if(parsedRows.isEmpty())
+            matchingObjects = Database.query(queryString);
+        else{   
+        queryString += ' WHERE';
+        Boolean isFirst = True;
+        //Maps symbol codes to string symbols
+        Map<String, String> symMap = automatedTriggerClass.symbolMap();
+        
+        // For each row: 
+        // row[0] = field name
+        // row[1] = field type
+        // row[2] = operand
+        // row[3] = field value
+        for(String[] rule : parsedRows)
+        {
+            if(isFirst) isFirst = False;
+            else queryString += ' AND';
+            //Add field name to query.
+            queryString += ' ' + rule.get(0) + ' ';
+            //Add operand to query
+            string op = symMap.get(rule.get(2));
+            queryString += op + ' ';
+            //Add the condition
+            //For LIKE to operate like 'contains' we must have wildcards on either side of the expression
+            if(op == 'LIKE') queryString += '\'%' + String.valueOf(rule.get(3)) + '%\'';
+            else queryString += '\'' + String.valueOf(rule.get(3)) + '\'';
+        }
+        //Can add an ORDER BY clause if so desired.
+        matchingObjects = Database.query(queryString);
+        }
+        //End LGMK Code 
         //store ids for future lookup
         ids = automatedTriggerClass.getFieldValues(o, 'id');
         //loop through fields and get values from file//

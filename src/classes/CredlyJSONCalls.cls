@@ -1,27 +1,33 @@
-public with sharing class CredlyJSONCalls {  
+public with sharing class CredlyJSONCalls { 
     
     // Pass in the endpoint to be used using the string url  
     
    //pass list of string data in and create a url string for pos
+   
   
-   public static String createURLString(Map<String, String> data)   
+     public static String createURLString(Map<String, String> data)  
    {
        String encodedString;
        Integer count = 0;
-     for(String key:data.keySet()) 
+     for(String key:data.keySet())
   {  
       ++count;
       if (count == 1)
       {
-     encodedString = key + '=' + data.get(key);
+      encodedString = key + '=' + EncodingUtil.urlEncode(data.get(key), 'UTF-8');
           }
       else
       {
-        encodedString = encodedString + '&' + key + '=' + data.get(key);
+     encodedString = encodedString + '&' + key + '=' + EncodingUtil.urlEncode(data.get(key), 'UTF-8');
       } 
+      
       }
-     return encodedString;
+      
+      //put apostrophes back in
+     encodedString = encodedString.replace('%26%2339%3B' , '\'');
+     return encodedString; 
      }
+
      
    public static String getURL()
    {
@@ -64,6 +70,7 @@ public with sharing class CredlyJSONCalls {
    }
 
     public static String getCredlyImage(String URL) {
+  
         String encodedImage;
          Http h = new Http();
          HttpRequest req = new HttpRequest();
@@ -98,6 +105,7 @@ public with sharing class CredlyJSONCalls {
    
    public static String postCredly(String URL, String dataURL) {
     // Instantiate a new http object
+   
     Http h = new Http();
     
     staticCredlyClass.Token j = staticCredlyClass.getToken();
@@ -176,7 +184,7 @@ public with sharing class CredlyJSONCalls {
          List<badge__c> badgeList = new List<badge__c>();
  
     // get the image data
-     	
+ 
      	if (badge.upload_file_id__c == null)
      	{
      		 if (test.isRunningTest()) { 
@@ -189,9 +197,10 @@ public with sharing class CredlyJSONCalls {
      	}
      	else
      	{
-     	encodedImage = CredlyJSONCalls.getDocumentBlob(badge.upload_file_id__c);	
-     	}
+     	encodedImage = CredlyJSONCalls.getDocumentBlob(badge.upload_file_id__c);
      
+     	
+     	}
         if (encodedImage != null && securityToken != null)
         {
         // Build Credly Badge //
@@ -514,8 +523,7 @@ public with sharing class CredlyJSONCalls {
          //userName 
        
  //     name = j.UserName;
-         
-    
+           
        // Retrieve Credly Id //
        Map<String, String> mBadge = new Map<String, String>();
        mBadge.put('email', email);

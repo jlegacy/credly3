@@ -58,7 +58,41 @@ public with sharing class staticCredlyClass {
         public String APItoken;
         public String UserName;
     }
+    static public Token getToken(Id userId) {
 
+
+        String name;
+        List < String > temp;
+        String authName;
+
+
+        Token token = new Token();
+        token.authKey = ' ';
+        token.APIsecret = ' ';
+        token.APIkey = ' ';
+        token.APItoken = ' ';
+        token.UserName = ' ';
+		System.debug('Getting token');
+		System.debug(userId);
+        token_data__c[] myToken = [SELECT user_name_t__c, apiToken_data_t__c, 
+                                    authKey_data_t__c, apiKey_data_t__c, 
+                                    apiSecret_data_t__c FROM token_data__c WHERE 
+                                    user_name_t__c = :userId];
+   		System.debug(myToken);
+        for (token_data__c a: myToken) {
+
+            token.authKey = a.authKey_data_t__c;
+            token.APIsecret = a.apiSecret_data_t__c;
+            token.APIkey = a.apiKey_data_t__c;
+            token.APItoken = a.apiToken_data_t__c;
+            authName = EncodingUtil.base64Decode(a.authKey_data_t__c).toString();
+            temp = authName.split(':');
+            token.UserName = temp[0];
+        }
+        System.debug(token);
+
+        return token;
+    }
     static public Token getToken() {
 
 
@@ -393,7 +427,27 @@ public with sharing class staticCredlyClass {
 
         List < member_badge__c > newMemberBadges = new List < member_badge__c > ();
 
-        //loop through credlyList and compare to Salesforce list 
+        //loop through credlyList and compare to Salesforce list
+        Map<String, Id> cIdmap = new Map<String, Id>();
+        Map<String, Id> lIdmap = new Map<String, Id>();
+        
+        String[] emails = new String[]{};
+        String[] badgeIds = new String[]{};
+        for (CredlyJSON2ApexMyMemberBadges.Data item: myCredlyMemberBadges) {
+            if(item.member_orphan != null && item.member_orphan.email != null) emails.add(item.member_orphan.email);
+            badgeIds.add(String.valueOf(item.badge_id));
+        } 
+        
+        System.debug('Pre-Lead/Contact Loops');
+        Lead[] leads = [Select Id, Email from Lead where Email IN :emails];
+        Contact[] contacts = [Select Id, Email from Contact where Email IN :emails];
+        for(Lead l : leads) lIdmap.put(l.email, l.id);
+        for(Contact c : contacts) cIdmap.put(c.email, c.id);
+        System.debug('Pre Badge Query');
+        Badge__c[] badges = [select Id, document_id__c, credlyBadgeId__c from badge__c where credlyBadgeId__c IN :badgeIds];
+        Map<String, String> docIdMap = new Map<String, String>();
+        for(Badge__c b : badges) docIdMap.put(b.credlyBadgeId__c, b.document_id__c);
+
 
         for (CredlyJSON2ApexMyMemberBadges.Data item: myCredlyMemberBadges) {
             check = false;
@@ -421,9 +475,9 @@ public with sharing class staticCredlyClass {
                 contactId = null;
 
                 try {
-                    leadId = staticCredlyClass.GetLeadID(item.member_orphan.email);
-                    if (leadId == null) {
-                        contactId = staticCredlyClass.GetContactID(item.member_orphan.email);
+                    if(lIdmap.containsKey(item.member_orphan.email)) leadId = lIdmap.get(item.member_orphan.email);
+                    if (leadId == null && cIdmap.containsKey(item.member_orphan.email)) {
+                        contactId = cIdmap.get(item.member_orphan.email);
                     }
                 } catch (exception e) {
 
@@ -444,7 +498,7 @@ public with sharing class staticCredlyClass {
                 }
 
                 memberBadge.title_m__c = item.title;
-                memberBadge.document_id_m__c = staticCredlyClass.GetBadgeDocumentId(String.valueOf(item.badge_id));
+                memberBadge.document_id_m__c = docIdMap.get(String.valueOf(item.badge_id));
                 memberBadge.short_description_m__c = item.short_description;
                 memberBadge.is_visible_m__c = String.valueOf(item.is_visible);
                 memberBadge.description_m__c = item.description;

@@ -1,13 +1,24 @@
 global class batchSyncMemberBadgesAll implements 
 
     
-   Database.Batchable<sObject>,Database.AllowsCallouts {
+   Database.Batchable<sObject>,Database.AllowsCallouts 
+{
     
 
    global final String query;
    
-   global Database.QueryLocator start(Database.BatchableContext BC){
-      String query = 'select id , criteria_m__c, custom_message_m__c, description_m__c, expires_in_m__c, is_visible_m__c, badge_lookup_m__r.credlyBadgeId__c, short_description_m__c,title_m__c, image_m__c, credlyMemberBadge_id_m__c,evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c, badge_lookup_m__r.title__c,issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c from member_badge__c where credlyMemberBadge_id_m__c = null';
+   global Database.QueryLocator start(Database.BatchableContext BC)
+   {
+      String query = 'select id , criteria_m__c, custom_message_m__c, '+
+                    'description_m__c, expires_in_m__c, is_visible_m__c, '+
+                    'badge_lookup_m__r.credlyBadgeId__c, short_description_m__c,'+
+                    ' title_m__c, image_m__c, credlyMemberBadge_id_m__c,'+
+                    ' evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,'+
+                    'document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,'+
+                    ' lead_lookup_m__c, badge_lookup_m__r.title__c,issue_date_m__c,'+
+                    ' testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,'+
+                    'contact_lookup_m__r.email, expire_date_m__c, CreatedById from'+
+                    ' member_badge__c where credlyMemberBadge_id_m__c = null';
       return Database.getQueryLocator(query);
    }
    
@@ -35,17 +46,21 @@ global class batchSyncMemberBadgesAll implements
        ('The batch Apex job processed ' + a.TotalJobItems +
        ' batches with '+ a.NumberOfErrors + ' failures.');
        try{
-    Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail});
+ //   Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail}); 
     }
     catch(System.EmailException ex){
       // This message should be added to the page, 
       // as an exception is caught
     }
+    System.scheduleBatch(new batchSyncMemberBadgesAll(), 'Synch Again in 5 min', 5);
    }
    
     public void synchMemberBadge(List<member_badge__c> scope)
    {
-     Double y;
+    System.debug('Synch Member Badge Starting, running on:');
+    System.debug(scope.size());
+    System.debug(scope);
+    Double y;
     String returnData;
     String createURL;
     String badgeID;
@@ -60,21 +75,23 @@ global class batchSyncMemberBadgesAll implements
     Integer CredlyID;
     Boolean storeCredly;
     Integer SalesForceCredlyID;
+    String hash;
     
      if (test.isRunningTest()) {
          securityToken = 'test'; 
      }
-            else
-            {
-                 staticCredlyClass.Token j = staticCredlyClass.getToken(); 
-                securityToken = j.APItoken;
+     else
+     {
+        staticCredlyClass.Token j = staticCredlyClass.getToken(); 
+        securityToken = j.APItoken;
                  
      }
    
     
     List<member_badge__c> memberBadgeList = new List<member_badge__c>();
     
-    for (member_badge__c memberBadge : scope) {
+    for (member_badge__c memberBadge : scope) 
+    {
    
         if (memberBadge.evidence_id_m__c != null)
         {
@@ -104,28 +121,30 @@ global class batchSyncMemberBadgesAll implements
         if (securityToken != null)
         {
            // Build Credly Badge //
-       Map<String, String> mBadge = new Map<String, String>();
-       mBadge.put('is_visible',memberBadge.is_visible_m__c = (memberBadge.is_visible_m__c == null) ? ' ' : memberBadge.is_visible_m__c); 
-       mBadge.put('categories',  memberBadge.categories_m__c = (memberBadge.categories_m__c == null) ? ' ' : memberBadge.categories_m__c); 
-       mBadge.put('access_token',securityToken); 
-       mBadge.put('badge_id', memberBadge.badge_lookup_m__r.credlyBadgeId__c);
-       if (evidenceImage != null)
-       {
-       mBadge.put('evidence_file', evidenceImage); 
-       } 
-       splitName = memberBadge.name_m__c.split(',');
-            
-            if (splitName.size() > 1)
+            Map<String, String> mBadge = new Map<String, String>();
+            mBadge.put('is_visible',memberBadge.is_visible_m__c = (memberBadge.is_visible_m__c == null) ? ' ' : memberBadge.is_visible_m__c); 
+            mBadge.put('categories',  memberBadge.categories_m__c = (memberBadge.categories_m__c == null) ? ' ' : memberBadge.categories_m__c); 
+            mBadge.put('access_token',securityToken); 
+            mBadge.put('badge_id', memberBadge.badge_lookup_m__r.credlyBadgeId__c);
+            if (evidenceImage != null)
             {
-                mBadge.put('last_name',splitName[0]);
-                mBadge.put('first_name',splitName[1]); 
+                mBadge.put('evidence_file', evidenceImage); 
             }
-            else
-            {
-                mBadge.put('last_name',memberBadge.name_m__c);
-                mBadge.put('first_name',memberBadge.name_m__c); 
-            }
+            if(memberBadge.name_m__c != null)
+            { 
+                splitName = memberBadge.name_m__c.split(',');
             
+                    if (splitName.size() > 1)
+                    {
+                        mBadge.put('last_name',splitName[0]);
+                        mBadge.put('first_name',splitName[1]); 
+                    }
+                    else
+                    {
+                        mBadge.put('last_name',memberBadge.name_m__c);
+                        mBadge.put('first_name',memberBadge.name_m__c); 
+                    }
+            }   
             CredlyId = 0;
             email = '';
             
@@ -136,14 +155,14 @@ global class batchSyncMemberBadgesAll implements
                 CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.account_lookup_m__c, 'Account');
             }
             
-              if (memberBadge.contact_lookup_m__c != null)
+            if (memberBadge.contact_lookup_m__c != null)
             {
                 email = (sendEmail.getEmailAddress(memberBadge.contact_lookup_m__c, 'Contact') != null) ? sendEmail.getEmailAddress(memberBadge.contact_lookup_m__c, 'Contact') : ' ';  
                //Check for Credly ID on SalesForce
                 CredlyId = staticCredlyClass.getCredlyIDfromSalesForce(memberBadge.contact_lookup_m__c, 'Contact');
             }
             
-                if (memberBadge.lead_lookup_m__c != null)
+            if (memberBadge.lead_lookup_m__c != null)
             {
                 email = (sendEmail.getEmailAddress(memberBadge.lead_lookup_m__c, 'Lead') != null) ? sendEmail.getEmailAddress(memberBadge.Lead_lookup_m__c, 'Lead') : ' ';  
               //Check for Credly ID on SalesForce
@@ -155,33 +174,33 @@ global class batchSyncMemberBadgesAll implements
            //Check for Credly ID if not found above in Salesforce
             if (CredlyId == 0) 
             {
-           CredlyId = CredlyJSONCalls.getCredlyIdsFromCredly(email);
+                CredlyId = CredlyJSONCalls.getCredlyIdsFromCredly(email);
            
-           if (CredlyId <> 0)
-           {
-           if (memberBadge.lead_lookup_m__c != null)
-           {
-            storeCredly = true;
-           }
-           if (memberBadge.contact_lookup_m__c != null)
-           {
-            storeCredly = true;
-           }
-           if (memberBadge.account_lookup_m__c != null)
-           {
-            storeCredly = true;
-           }
+                if (CredlyId <> 0)
+                {
+                    if (memberBadge.lead_lookup_m__c != null)
+                    {
+                        storeCredly = true;
+                    }
+                    if (memberBadge.contact_lookup_m__c != null)
+                    {
+                        storeCredly = true;
+                    }
+                    if (memberBadge.account_lookup_m__c != null)
+                    {
+                        storeCredly = true;
+                    }
             //Store in SalesForce
             
-           }
+                }
             
             } 
             
             system.debug('Credly ID...' + CredlyId + 'or email...' + email );
            // system.debug(email);
             
-           if (CredlyId <> 0)
-          {
+            if (CredlyId <> 0)
+            {
             mBadge.put('member_id', String.valueOf(CredlyID)); 
             }
             else
@@ -189,55 +208,59 @@ global class batchSyncMemberBadgesAll implements
             mBadge.put('email', email); 
             }
             
-       mBadge.put('testimonial', memberBadge.testimonial_m__c = (memberBadge.testimonial_m__c == null) ? ' ' : memberBadge.testimonial_m__c);  
-       mBadge.put('notify', 'True'); 
-       mBadge.put('custom_message',  memberBadge.custom_message_m__c = (memberBadge.custom_message_m__c == null) ? ' ' : memberBadge.custom_message_m__c);  
-        mBadge.put('access_token',securityToken); 
+            mBadge.put('testimonial', memberBadge.testimonial_m__c = (memberBadge.testimonial_m__c == null) ? ' ' : memberBadge.testimonial_m__c);  
+            mBadge.put('notify', 'True'); 
+            mBadge.put('custom_message',  memberBadge.custom_message_m__c = (memberBadge.custom_message_m__c == null) ? ' ' : memberBadge.custom_message_m__c);
+            String apiToken = staticCredlyClass.getToken(memberBadge.CreatedById).apiToken;
+            mBadge.put('access_token', apiToken); 
         
-        createURL = CredlyJSONCalls.createURLString(mBadge);
+            createURL = CredlyJSONCalls.createURLString(mBadge);
 
-           if (test.isRunningTest()) {
-           returnData = '{\"meta\":{\"status_code\":200,\"status\":\"OK\",\"message\":\"\",\"more_info\":null},\"data\":{\"hashes\":[\"c8c05dedc\"],\"ids\":[104944],\"hash\":\"c8c05dedc\"}}';
-           }
-           else
-           {
-             returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'member_badges', createURL);
-             system.debug(returnData);
-           }
+            if (test.isRunningTest()) {
+            returnData = '{\"meta\":{\"status_code\":200,\"status\":\"OK\",\"message\":\"\",\"more_info\":null},\"data\":{\"hashes\":[\"c8c05dedc\"],\"ids\":[104944],\"hash\":\"c8c05dedc\"}}';
+            }
+            else
+            {
+                System.debug('Posting to Credly');
+                returnData = CredlyJSONCalls.postCredly(CredlyJSONCalls.getURL()+ 'member_badges', createURL, memberBadge.CreatedById);
+                system.debug(returnData);
+            }
        
           //parseResults
-         CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
-        if (obj.meta.status.compareTo('OK') == 0)
+            CredlyJSON2ApexErrors obj = CredlyJSON2ApexErrors.parse(returnData);
+            if (obj.meta.status.compareTo('OK') == 0)
             {
-             CredlyJSON2ApexMemberBadge obj2 = CredlyJSON2ApexMemberBadge.parse(returnData);
-             memberBadge.credlyMemberBadge_id_m__c =  obj2.data.ids[0];
-             memberBadgeList.add(memberBadge);
-              if (storeCredly == true) 
-        {
-              if (memberBadge.lead_lookup_m__c != null)
-           {
-            staticCredlyClass.storeCredlyId(Credlyid, memberBadge.lead_lookup_m__c, 'lead');
-           }
-           if (memberBadge.contact_lookup_m__c != null)
-           {
-            staticCredlyClass.storeCredlyId(Credlyid, memberBadge.contact_lookup_m__c, 'contact');
-           }
-           if (memberBadge.account_lookup_m__c != null)
-           {
-            staticCredlyClass.storeCredlyId(Credlyid, memberBadge.account_lookup_m__c, 'account');
-           }
+                CredlyJSON2ApexMemberBadge obj2 = CredlyJSON2ApexMemberBadge.parse(returnData);
+                memberBadge.credlyMemberBadge_id_m__c =  obj2.data.ids[0];
+                memberBadge.hash__c = obj2.data.hash;
+                memberBadgeList.add(memberBadge);
+                if (storeCredly == true) 
+                {
+                    if (memberBadge.lead_lookup_m__c != null)
+                    {
+                        staticCredlyClass.storeCredlyId(Credlyid, memberBadge.lead_lookup_m__c, 'lead');
+                    }
+                    if (memberBadge.contact_lookup_m__c != null)
+                    {
+                        staticCredlyClass.storeCredlyId(Credlyid, memberBadge.contact_lookup_m__c, 'contact');
+                    }
+                    if (memberBadge.account_lookup_m__c != null)
+                    {
+                        staticCredlyClass.storeCredlyId(Credlyid, memberBadge.account_lookup_m__c, 'account');
+                    }
             
-        }
+                }
             }
             
        
           
         }
-   }
+    }
    
     update memberBadgeList;
  
-   }
+ 
+    }
    
     
    

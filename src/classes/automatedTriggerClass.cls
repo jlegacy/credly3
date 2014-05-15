@@ -45,7 +45,76 @@ symMap.put('ct', 'LIKE');
 return symMap;
 }
 
-public static Boolean lookForHit(String ruleValue, String fieldValue, String operand, String fieldType) {
+public static Boolean numberComp(Double ruleValue, Double fieldValue, String operand)
+{
+
+if (operand.compareTo('eq') == 0)
+{
+return (fieldValue == ruleValue) ? true : false;
+}
+if (operand.compareTo('lt') == 0)
+{
+return (fieldValue < ruleValue) ? true : false;
+}
+if (operand.compareTo('le') == 0)
+{
+return (fieldValue <= ruleValue) ? true : false;
+}
+if (operand.compareTo('gt') == 0)
+{
+return  (fieldValue > ruleValue) ? true : false;
+}
+if (operand.compareTo('ge') == 0)
+{
+return (fieldValue >= ruleValue) ? true : false;
+}
+if (operand.compareTo('ne') == 0)
+{
+return (fieldValue != ruleValue) ? true : false;
+}
+if (operand.compareTo('ct') == 0)
+{
+return false;
+}
+  return false;
+
+}
+public static Boolean stringComp(String ruleValue, String fieldValue, String operand)
+{
+
+if (operand.compareTo('eq') == 0)
+{
+return (fieldValue == ruleValue) ? true : false;
+}
+if (operand.compareTo('lt') == 0)
+{
+return (fieldValue < ruleValue) ? true : false;
+}
+if (operand.compareTo('le') == 0)
+{
+return (fieldValue <= ruleValue) ? true : false;
+}
+if (operand.compareTo('gt') == 0)
+{
+return  (fieldValue > ruleValue) ? true : false;
+}
+if (operand.compareTo('ge') == 0)
+{
+return (fieldValue >= ruleValue) ? true : false;
+}
+if (operand.compareTo('ne') == 0)
+{
+return (fieldValue != ruleValue) ? true : false;
+}
+if (operand.compareTo('ct') == 0)
+{
+return (fieldValue.contains(ruleValue)) ? true : false;
+}
+  return false;
+
+}
+public static Boolean lookForHit(String ruleValue, String fieldValue, String operand, String fieldType) 
+{
 Boolean result;
 
 
@@ -60,36 +129,46 @@ ruleValue = ruleValue.toLowerCase();
 
 operand = operand.toLowerCase();
 
+fieldType = fieldType.toLowerCase();
 
-if (operand.compareTo('eq') == 0)
+if(fieldType == 'string' || fieldType == 'picklist' || fieldType == 'textarea' || fieldType == 'email' || fieldType == 'phone'){
+    return stringComp(ruleValue, fieldValue, operand);
+    }
+else if(fieldType == 'integer' || fieldType == 'double' || fieldType == 'decimal'){
+    return numberComp(Double.valueOf(ruleValue), Double.valueOf(fieldValue), operand);
+    }
+else if(fieldType == 'date')
 {
-return result = (fieldValue == ruleValue) ? true : false;
+    Date fieldVal = Date.valueOf(fieldValue);
+    Date ruleVal = Date.parse(ruleValue);
+    Time t = Time.newInstance(0,0,0,0);
+    DateTime rVal = DateTime.newInstance(ruleVal, t);
+    DateTime fVal = DateTime.newInstance(fieldVal, t);
+    return numberComp(rVal.getTime(), fVal.getTime(), operand);
+
 }
-if (operand.compareTo('lt') == 0)
+else if(fieldType == 'datetime')
 {
-return result = (fieldValue < ruleValue) ? true : false;
-}
-if (operand.compareTo('le') == 0)
+    DateTime fieldVal = Date.valueOf(fieldValue);
+    DateTime rVal;
+    try{
+        Date ruleVal = Date.parse(ruleValue);
+        Time t = Time.newInstance(0,0,0,0);
+        rVal = DateTime.newInstance(ruleVal, t);
+    }catch(exception e)
+    {
+        rVal = DateTime.parse(ruleValue); 
+    }
+    return numberComp(rVal.getTime(), fieldVal.getTime(), operand);
+
+}else
 {
-return result = (fieldValue <= ruleValue) ? true : false;
+    return stringComp(ruleValue, fieldValue, operand);
 }
-if (operand.compareTo('gt') == 0)
-{
-return result = (fieldValue > ruleValue) ? true : false;
-}
-if (operand.compareTo('ge') == 0)
-{
-return result = (fieldValue >= ruleValue) ? true : false;
-}
-if (operand.compareTo('ne') == 0)
-{
-return result = (fieldValue != ruleValue) ? true : false;
-}
-if (operand.compareTo('ct') == 0)
-{
-return result = (fieldValue.contains(ruleValue)) ? true : false;
-}
-  return false;
+    //return dateComp
+return false;
+  
+  
 }
 
   public ApexPages.StandardSetController getBadge {
@@ -235,6 +314,95 @@ public static void addMemberBadge(id accountID, id ruleID, id badgeID, String ac
 }
         } catch (DMLException e) {
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating Member Badge.'));
+        }
+   
+}
+public static member_badge__c newMemberBadge(SObject sobj, badge_rules__c rule, badge__c badge, String accountType) {
+
+    Id accountID = sobj.id;
+//check to see if rule and account number already exists in member badges//
+ try {
+         //List<member_badge__c> memberBadges = [Select Id from member_badge__c where badge_lookup_m__c = : badge.id and account_type_m__c = :accountType and
+         //lookup_id_m__c = :accountID LIMIT 1];
+         
+         //this check should be done a level up, in the trigger.
+         //if (memberBadges.isEmpty()) {
+         if(true){
+
+         
+          member_badge__c memberBadge = new member_badge__c();
+
+        memberBadge.criteria_m__c = badge.criteria__c;
+         memberBadge.description_m__c = badge.description__c;
+          memberBadge.document_id_m__c = badge.document_id__c;
+           memberBadge.expires_in_m__c = badge.expires_in__c;
+           memberBadge.badge_lookup_m__c = badge.id ;
+           
+             memberBadge.is_giveable_m__c = badge.is_giveable__c;
+              memberBadge.short_description_m__c = badge.short_description__c;
+              memberBadge.title_m__c = badge.title__c;
+              memberBadge.lookup_id_m__c = accountID;
+                memberBadge.account_type_m__c = accountType;
+                
+                 memberBadge.evidence_id_m__c = rule.evidence_id_r__c;
+                 memberBadge.evidence_name_m__c = rule.evidence_name_r__c;
+                 memberBadge.evidence_url_m__c = rule.evidence_url_r__c;
+                 memberBadge.testimonial_m__c = rule.testimonial_r__c;
+                 
+                 String name = (String) sobj.get('name');
+                 memberBadge.name_m__c = name;
+                if (accountType.equals('account'))
+                 {
+                 //memberBadge.name_m__c = acct.Name;
+                 memberBadge.account_lookup_m__c = accountID;
+                 }
+                 if (accountType.equals('contact'))
+                 {
+                 //memberBadge.name_m__c = cont.Name;
+                 memberBadge.contact_lookup_m__c = accountID;
+                 }
+                  if (accountType.equals('lead'))
+                 {
+                 //memberBadge.name_m__c = lead.Name;
+                 memberBadge.lead_lookup_m__c = accountID;
+                 }
+            
+             memberBadge.issue_date_m__c = system.today();
+            //insert memberBadge;
+              if (accountType.equals('contact'))
+                 {
+                 if (rule.send_email_r__c)
+                    {
+                      //sendEmail.sendEmail(memberBadge.contact_lookup_m__c, memberBadge.Id, accountType);
+                    }
+                 }
+                   if (accountType.equals('lead'))
+                 {
+                 if (rule.send_email_r__c)
+                    {
+                      //sendEmail.sendEmail(memberBadge.lead_lookup_m__c, memberBadge.Id, accountType);
+                    }
+                 }
+                   if (accountType.equals('account'))
+                 {
+                 if (rule.send_email_r__c)
+                    {
+                      //sendEmail.sendEmail(memberBadge.account_lookup_m__c, memberBadge.Id, accountType);
+                    }
+                 }
+            
+             //Now done in the trigger(s);
+             //rule.number_of_badges_issued_r__c = (rule.number_of_badges_issued_r__c == null) ? 1 : rule.number_of_badges_issued_r__c + 1;
+             //rule.date_last_issued_r__c = system.now();
+             //update rule;
+             
+             return memberBadge;
+     
+}
+    return null;
+        } catch (DMLException e) {
+            ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Error creating Member Badge.'));
+            return null;
         }
    
 }

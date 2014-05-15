@@ -1,20 +1,20 @@
 public with sharing class viewBadgeRulesController {
-	
-	 public badge__c badge{get;set;}
-	  public Boolean customMessageChecked {get; set;}
-	public viewBadgeRulesController () {
-		step = 1;
-		urlLink = ' ';
-		renderFile = true;
-		hasUploadedFile = false;
-		
-		  renderStep1 = true;
-		   renderStep2 = false;
-		    renderStep3 = false;
-		     renderStep4 = false;
-			renderStep5 = false;
-		
-		  counter = 0;
+    
+     public badge__c badge{get;set;}
+      public Boolean customMessageChecked {get; set;}
+    public viewBadgeRulesController () {
+        step = 1;
+        urlLink = ' ';
+        renderFile = true;
+        hasUploadedFile = false;
+        
+          renderStep1 = true;
+           renderStep2 = false;
+            renderStep3 = false;
+             renderStep4 = false;
+            renderStep5 = false;
+        
+          counter = 0;
         pageLimit = staticCredlyClass.PageLimit();
         badgeOffset = 0;
         ruleOffset = 0; 
@@ -51,35 +51,35 @@ public with sharing class viewBadgeRulesController {
             totalNumberofRules = mySalesForceRuleIDs.size();
             
                       numberOfRulePages  = totalNumberofRules / pageLimit;
-         			Integer remainder = Math.mod(totalNumberofRules,pageLimit); 
-         			if (remainder > 0)
-         			{
-         			++numberOfRulePages;
-         			}
+                    Integer remainder = Math.mod(totalNumberofRules,pageLimit); 
+                    if (remainder > 0)
+                    {
+                    ++numberOfRulePages;
+                    }
          
    
-         			if (numberOfRulePages < 1)
-         			{
-         			numberOfRulePages = 1;
-        			 }
-        			 
+                    if (numberOfRulePages < 1)
+                    {
+                    numberOfRulePages = 1;
+                     }
+                     
          //Badges//
           totalNumberofBadges = myCredlyBadgeIDs.size();
        
                       numberOfBadgePages  = totalNumberofBadges / pageLimit;
-         			remainder = Math.mod(totalNumberofBadges,pageLimit); 
-         			if (remainder > 0)
-         			{
-         			++numberOfBadgePages;
-         			}
+                    remainder = Math.mod(totalNumberofBadges,pageLimit); 
+                    if (remainder > 0)
+                    {
+                    ++numberOfBadgePages;
+                    }
          
    
-         			if (numberOfBadgePages < 1)
-         			{
-         			numberOfBadgePages = 1;
-        			 }
-        			 
-              			 
+                    if (numberOfBadgePages < 1)
+                    {
+                    numberOfBadgePages = 1;
+                     }
+                     
+                         
                
     }
        public Integer totalNumberofBadges{get;set;}
@@ -131,13 +131,13 @@ public with sharing class viewBadgeRulesController {
     public Boolean renderFile { get; set; }
     public pageReference setUploadAction()
     {
-    		renderFile = (upload_option.compareTo('UP') == 0) ? true : false;
-    	    renderLink = (upload_option.compareTo('LN') == 0) ? true : false;
-    	   
-    	    document = null;
-    	    urlLink = ' ';
-    	   
-    	    return null;
+            renderFile = (upload_option.compareTo('UP') == 0) ? true : false;
+            renderLink = (upload_option.compareTo('LN') == 0) ? true : false;
+           
+            document = null;
+            urlLink = ' ';
+           
+            return null;
     }
     
      public List < SelectOption > getuploadTypes() {
@@ -175,68 +175,68 @@ public with sharing class viewBadgeRulesController {
 
       public void backStep() { 
 
-      		step = step - 2;
+            step = step - 2;
   
-      	nextStep();
+        nextStep();
       }
       
       public void setVisibleStep(Integer passedStep)
       {
-      		renderStep1 = (passedStep == 1) ? true:false;
-      		renderStep2 = (passedStep == 2) ? true:false;
-      		renderStep3 = (passedStep == 3) ? true:false;
-      		renderStep4 = (passedStep == 4) ? true:false;
-      		renderStep5 = (passedStep == 5) ? true:false;
+            renderStep1 = (passedStep == 1) ? true:false;
+            renderStep2 = (passedStep == 2) ? true:false;
+            renderStep3 = (passedStep == 3) ? true:false;
+            renderStep4 = (passedStep == 4) ? true:false;
+            renderStep5 = (passedStep == 5) ? true:false;
       } 
     
       public PageReference nextStep() { 
-      	step = step + 1;
-      	
-      	if (step == 1)
-      	{
-      	    setVisibleStep(1);
-      	}
-      	if (step == 2)
-      	{
-      		setVisibleStep(2);
-      	}
-      	if (step == 3)
-      	{
+        step = step + 1;
+        
+        if (step == 1)
+        {
+            setVisibleStep(1);
+        }
+        if (step == 2)
+        {
+            setVisibleStep(2);
+        }
+        if (step == 3)
+        {
         if (setBadgeSelect.trim().length() == 0) {
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need to Select a Badge'));
             step = 2;
             setVisibleStep(2);
         }
-      		
-      		setVisibleStep(3);
-      	}
-      		      	
-      		if (step == 4)
-      	{
-      		if (name.trim().length() == 0)
-      		{
-      			step = 3;
-            	setVisibleStep(3);
-            	ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need Rule Name'));
-      		}
-      		
-      			if (setRuleText.trim().length() == 0)
-      		{
-      			step = 3;
-            	setVisibleStep(3);
-            	ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need a Rule'));
-      		}
-      		
-      		setVisibleStep(4);
-      		loadEditRuleDetails = 'N';
-      	//	showReview();
-      	}
-      	
-      		if (step == 6)
-      	{
-      	//	showConfirm();
-      	}
-      	
+            
+            setVisibleStep(3);
+        }
+                    
+            if (step == 4)
+        {
+            if (name.trim().length() == 0)
+            {
+                step = 3;
+                setVisibleStep(3);
+                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need Rule Name'));
+            }
+            
+                if (setRuleText.trim().length() == 0)
+            {
+                step = 3;
+                setVisibleStep(3);
+                ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need a Rule'));
+            }
+            
+            setVisibleStep(4);
+            loadEditRuleDetails = 'N';
+        //  showReview();
+        }
+        
+            if (step == 6)
+        {
+        //  showConfirm();
+        }
+        
         return null;
     }
     
@@ -253,9 +253,9 @@ public with sharing class viewBadgeRulesController {
     
     public pageReference modify() {
     
-    	
-    	setBadgeSelect = xBadgeId;
-    	
+        
+        setBadgeSelect = xBadgeId;
+        
         List < badge_rules__c > rule = [select id, account_type_r__c, evidence_id_r__c, evidence_name_r__c, evidence_r__c, lookup_id_r__c, rule_name_r__c, testimonial_r__c, badge_rule_r__c, badge_visual_rule_r__c,send_email_r__c,evidence_url_r__c,custom_message_r__c   from badge_rules__c where ID = :xRuleId LIMIT 1];
         
          List < badge__c > badge = [select id, title__c, credlyBadgeId__c from badge__c where ID = :xBadgeId LIMIT 1];
@@ -279,10 +279,10 @@ public with sharing class viewBadgeRulesController {
         
         if (urlLink != null)
         {
-        	renderFile = false;
-        	renderLink = true;
-        	
-        	upload_option = 'LN';
+            renderFile = false;
+            renderLink = true;
+            
+            upload_option = 'LN';
         }
         }
         
@@ -396,8 +396,8 @@ public with sharing class viewBadgeRulesController {
        currentRulePage = currentRulePage + 1;
        if (currentRulePage > numberOfRulePages)
        {
-       	currentRulePage = 1;
-       	ruleOffset = 0;
+        currentRulePage = 1;
+        ruleOffset = 0;
        }
        
        
@@ -411,8 +411,8 @@ public with sharing class viewBadgeRulesController {
        
        if (currentRulePage <= 0)
        {
-       	ruleOffset = 0;
-       	currentRulePage = 1;
+        ruleOffset = 0;
+        currentRulePage = 1;
        }
        
        getRules();
@@ -426,8 +426,8 @@ public with sharing class viewBadgeRulesController {
        currentBadgePage = currentBadgePage + 1;
        if (currentBadgePage > numberOfBadgePages)
        {
-       	currentBadgePage = 1;
-       	badgeOffset = 0;
+        currentBadgePage = 1;
+        badgeOffset = 0;
        }
        
        
@@ -441,8 +441,8 @@ public with sharing class viewBadgeRulesController {
        
        if (currentBadgePage <= 0)
        {
-       	BadgeOffset = 0;
-       	currentBadgePage = 1;
+        BadgeOffset = 0;
+        currentBadgePage = 1;
        }
        
        getBadges();
@@ -452,18 +452,26 @@ public with sharing class viewBadgeRulesController {
 
        public List<badge__c> getBadge {
        get {
-       	
-       	List<badge__c> badges;
-     	 // ApexPages.StandardgetBadgetroller must be instantiated
+        
+        List<badge__c> badges;
+         // ApexPages.StandardgetBadgetroller must be instantiated
     // for standard list controllers
 
         
           badges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById from badge__c  where (credlyBadgeId__c IN :myCredlyBadgeIDs) order by title__c LIMIT :pageLimit OFFSET :badgeOffset];   
             
-        	   if ((filterBadge.trim().compareTo(' ') > 0)) {
+               if ((filterBadge.trim().compareTo(' ') > 0)) {
                
                filterBadgeSearch = filterBadge;
-          badges = [select id,criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c  from badge__c where (credlyBadgeId__c IN :myCredlyBadgeIDs) and title__c like :filterBadgeSearch LIMIT :pageLimit OFFSET :badgeOffset];
+          badges = [select id,criteria__c, description__c, expires_in__c, is_giveable__c,
+                    short_description__c, title__c, image__c, document_ID__c,
+                     credlyBadgeId__c  from badge__c where
+                      (credlyBadgeId__c IN :myCredlyBadgeIDs) and
+                       (title__c like :filterBadgeSearch or
+                        short_description__c like :filterBadgeSearch //or
+                        //criteria__c like :filterBadgeSearch or
+                        //description__c like :filterBadgeSearch
+                        ) LIMIT :pageLimit OFFSET :badgeOffset];
             }
             
             if ((filterBadge.trim().compareTo(' ') < 0)) {
@@ -530,11 +538,11 @@ public with sharing class viewBadgeRulesController {
     public String rule { get; set; }
 
     public PageReference addBadge() {
-    		renderStep1 = false;
-    		renderStep2 = true;
-    		renderStep3 = false;
-    		renderStep4 = false;
-    		renderStep5 = false;
+            renderStep1 = false;
+            renderStep2 = true;
+            renderStep3 = false;
+            renderStep4 = false;
+            renderStep5 = false;
             xRuleId = null;
             xBadgeId = null;
           detailsBlock = false;
@@ -559,7 +567,7 @@ public with sharing class viewBadgeRulesController {
     }
     
       public PageReference searchBadge() {
-     	  getBadges();
+          getBadges();
         return null;
      }
 
@@ -582,7 +590,7 @@ public Document document {
     public List<badge_rules__c> getRule {
    
         get {
-        		List<badge_rules__c> rules; 
+                List<badge_rules__c> rules; 
           
                 rules = [select id, badge_lookup__r.title__c ,account_type_r__c, evidence_id_r__c, 
                     evidence_name_r__c, evidence_r__c, lookup_id_r__c, 

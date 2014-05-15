@@ -3,4 +3,9 @@
     <apiVersion>28.0</apiVersion>
     <description>Automated Badge Rules</description>
     <label>viewBadgeRules</label>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
+        <minorNumber>6</minorNumber>
+        <namespace>sf_chttr_apps</namespace>
+    </packageVersions>
 </ApexPage>

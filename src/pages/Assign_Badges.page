@@ -12,11 +12,11 @@
      bindRuleSelects();
      
      
-     	$j("body").delegate("input[id='selectAll']","click",function(){
-     	   $j(".selectedRecipients").each( function() {
-			$j(this).attr("checked",false);
-			 $j(this).click();
-			});
+        $j("body").delegate("input[id='selectAll']","click",function(){
+           $j(".selectedRecipients").each( function() {
+            $j(this).attr("checked",false);
+             $j(this).click();
+            });
         });
 
         if ("{!customMessageChecked}" == 'false') {
@@ -99,11 +99,11 @@
         var recipient;
          $j(".selectedRecipients").each(function ()
          {
-         	recipient = $j(this);
-        	$j(this).closest('tr').find('a').each(function () {
+            recipient = $j(this);
+            $j(this).closest('tr').find('a').each(function () {
             if (recipient.is(':checked')) {
-            	hrefString = $j(this).attr('href');
-            	splitString = hrefString.split('/');
+                hrefString = $j(this).attr('href');
+                splitString = hrefString.split('/');
                 ids = ids + splitString[3] + ',';
             }
         });
@@ -283,9 +283,9 @@
 
         $j("div[id*='sortDiv']").each(function () {
             //  if ($j(this).text() == 'Description')
-            //   	{
-            //  		$j(this).children().remove();
-            //  	}
+            //      {
+            //          $j(this).children().remove();
+            //      }
 
             if ($j(this).text() == 'Sel') {
                 $j(this).children().remove();
@@ -408,47 +408,47 @@
         width:50px;
         }
    .content-container {
- 	position: fixed;
-	top: 50%;
-	left: 50%;
-	margin-top: 61px;
-	margin-left: -43px;
-	font-size: 25px;
-	display:none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: 61px;
+    margin-left: -43px;
+    font-size: 25px;
+    display:none;
   }
     .loading-container {
     z-index:100;
-	position:absolute;
-	top:0;
- 	right:0;
-	bottom:0;
-	left:0;
-	display:none;
-	background-image:url({!$Resource.ajaxloader});
-	background-repeat:no-repeat;
-	background-attachment:fixed;
-	background-position:center; 
+    position:absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    display:none;
+    background-image:url({!$Resource.ajaxloader});
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    background-position:center; 
 }
 .loading-container:before {
-	z-index:100;
-	position:absolute;
-	width:100%;
-	height:100%;
-	line-height:480px;
-	text-align: center;
-	vertical-align: middle;
-	font-size:25px;
-	font-weight:bold;
-	color:black;
-	text-align:center;
-	background:rgba(70, 70, 70, 0.9);
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	content: ' ';
-	opacity:0.4;
-	filter:alpha(opacity=40);
-	padding-top: 89px;
+    z-index:100;
+    position:absolute;
+    width:100%;
+    height:100%;
+    line-height:480px;
+    text-align: center;
+    vertical-align: middle;
+    font-size:25px;
+    font-weight:bold;
+    color:black;
+    text-align:center;
+    background:rgba(70, 70, 70, 0.9);
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    content: ' ';
+    opacity:0.4;
+    filter:alpha(opacity=40);
+    padding-top: 89px;
 }
   
         
@@ -462,7 +462,7 @@
         
              
            <div id="loading-container" class="loading-container"></div>
-	<div id="content-container" class="content-container">Loading</div>
+    <div id="content-container" class="content-container">Loading</div>
         
     
          <apex:form id="imageForm" >
@@ -474,7 +474,7 @@
           <input class="hidden" id="hiddenBadge" value="{!setBadgeSelect }"></input>
          
         <apex:pageBlock mode="edit" rendered="{!renderStep1}" >
-         <apex:pageBlockSection columns="4" collapsible="false" title="Issuing a badge to one or more Salesforce contacts, leads or contacts is easy. You’ll choose a badge to issue, select your recipients, add optional evidence and testimonial, and choose your notification options. Don’t yet have a badge to issue? Create one now." /> 
+         <apex:pageBlockSection columns="4" collapsible="false" title="Issuing a badge to one or more Salesforce contacts, leads or accounts is easy. You’ll choose a badge to issue, select your recipients, add optional evidence and testimonial, and choose your notification options. Don’t yet have a badge to issue? Create one now." /> 
          
          </apex:pageBlock>
          
@@ -510,11 +510,11 @@
         <apex:outputPanel id="dummy" rendered="false"></apex:outputPanel>
         
          <apex:pageBlock id="uploadEvidence" rendered="{!renderStep4}">   
-  		<h1>Step 4: Select Delivery Options:</h1>
-  		  <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
-  		  <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
+        <h1>Step 4: Select Delivery Options:</h1>
+          <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
+          <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
           
-  		<apex:pageBlockSection >
+        <apex:pageBlockSection >
     <br><h2>Would you like to notify recipients by email?</h2></br>
     </apex:pageBlockSection>
     
@@ -544,14 +544,14 @@
      
      <apex:pageBlock >
      
-  		 
-  		 <apex:pageBlockSection columns="2">
-  		 
-  		 
-  		 <apex:outputpanel >
-  		  <br><h2>Include Evidence (Optional)</h2></br>
-  		 <br><h3>The link or file you attach will be included with every badge
-  		 issued as evidence of the recipient's achievement.
+         
+         <apex:pageBlockSection columns="2">
+         
+         
+         <apex:outputpanel >
+          <br><h2>Include Evidence (Optional)</h2></br>
+         <br><h3>The link or file you attach will be included with every badge
+         issued as evidence of the recipient's achievement.
         </h3></br>
         
         <br><h3>Enter a URL: http://
@@ -563,10 +563,10 @@
         <apex:inputFile value="{!document.body}" filename="{!document.name}" id="fileEvidence"/>
       
       
-  		 </apex:outputpanel>
-  		 
-  		  <apex:outputpanel >
-  		   
+         </apex:outputpanel>
+         
+          <apex:outputpanel >
+           
        <br><h2>Include Testimonial (Optional)</h2></br>
        <br></br>
         <br><h3>The testimonial you include here will be included
@@ -575,15 +575,15 @@
         advance specifically who will earn this badge.)
         </h3></br>
         <br></br>
-  		
-  		 <apex:inputTextarea id="testimonial" value="{!setTestimonialSelect}" styleClass="longInputText"/> 
-  		
-  	
-  		 
-  		 </apex:outputpanel>
-  		 </apex:pageBlockSection>
-  		 
-  		
+        
+         <apex:inputTextarea id="testimonial" value="{!setTestimonialSelect}" styleClass="longInputText"/> 
+        
+    
+         
+         </apex:outputpanel>
+         </apex:pageBlockSection>
+         
+        
            
     </apex:pageBlock> 
     
@@ -599,8 +599,8 @@
   <apex:pageBlockSection columns="2">
   <apex:outputpanel >
   <apex:outputlabel >
-  	You are about to send the badge:
-  	<br><h1 class="badgeText">{!setBadgeSelectTitle}</h1></br>
+    You are about to send the badge:
+    <br><h1 class="badgeText">{!setBadgeSelectTitle}</h1></br>
   </apex:outputlabel>
   </apex:outputpanel>
   
@@ -613,7 +613,7 @@
   <apex:pageBlockSection columns="2">
   <apex:outputpanel >
   <apex:outputlabel >
-  	Number of Recipients:
+    Number of Recipients:
   </apex:outputlabel>
   </apex:outputpanel>
   
@@ -628,12 +628,12 @@
   <apex:pageBlockSection columns="2">
   <apex:outputpanel >
   <apex:outputlabel >
-  	Evidence:
+    Evidence:
   </apex:outputlabel>
   </apex:outputpanel>
   
    <apex:outputpanel >
-  	 <apex:outputtext value="{!document.Name}" >
+     <apex:outputtext value="{!displayEvidence}" >
   </apex:outputtext>
   </apex:outputpanel>
 
@@ -642,7 +642,7 @@
   <apex:pageBlockSection columns="2">
   <apex:outputpanel >
   <apex:outputlabel >
-  	Testimonial:
+    Testimonial:
   </apex:outputlabel>
   </apex:outputpanel>
   
@@ -656,13 +656,13 @@
   <apex:pageBlockSection columns="2">
   <apex:outputpanel >
   <apex:outputlabel >
-  	Include notification email:
+    Include notification email:
   </apex:outputlabel>
   </apex:outputpanel>
   
    <apex:outputpanel >
   
-  	<apex:outputtext value="{!emailChecked}" >
+    <apex:outputtext value="{!emailChecked}" >
   </apex:outputtext>
   </apex:outputpanel>
 
@@ -671,13 +671,13 @@
   <apex:pageBlockSection columns="2">
   <apex:outputpanel >
   <apex:outputlabel >
-  	Email Template:
+    Email Template:
   </apex:outputlabel>
   </apex:outputpanel>
   
    <apex:outputpanel >
   <apex:outputlabel >
-  	default
+    default
   </apex:outputlabel>
   </apex:outputpanel>
   
@@ -697,7 +697,7 @@
    
      <h1>Recipients</h1>
     <apex:outputPanel id="details"> 
-    				
+                    
                   <apex:pageBlockTable value="{!recipients}" var="o">
                    
                    <apex:column headerValue="Sel">

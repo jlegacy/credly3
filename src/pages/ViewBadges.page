@@ -455,14 +455,15 @@ function getAutoValues() {
                           <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.image__c}" /></apex:outputLink>
                     </apex:column>  
                    <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Title">
-                         <apex:commandLink action="{!gotoEditController}" value="{!o.title__c}"> 
-                          <apex:param name="xEditId"
+                         <apex:outputLink value="/{!o.id}"> <apex:outputField value="{!o.title__c}"/></apex:outputLink> 
+                         <!-- <apex:commandLink action="{!gotoEditController}" value="{!o.title__c}"> 
+                         <apex:param name="xEditId"
                                                 value="{!o.id}"
                                                 assignTo="{!xEditId}"/> 
                                                 <apex:param name="xCredlyBadgeId"
                                                 value="{!o.credlyBadgeId__c}"
                                                 assignTo="{!xCredlyBadgeId}"/> 
-                                                </apex:commandLink>
+                                                </apex:commandLink> -->
                     </apex:column>
                      <apex:column style="{!IF(o.credlyBadgeId__c == null,'background:lightYellow',' ')}" headerValue="Description">
                         <apex:outputField value="{!o.short_description__c}" />

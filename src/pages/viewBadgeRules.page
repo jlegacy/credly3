@@ -1,7 +1,7 @@
 <apex:page controller="viewBadgeRulesController">
   
   <head>
-    	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <apex:includeScript value="{!$Resource.messijs}"/>
@@ -35,16 +35,16 @@
       }
       
       $j("#contentWrapper").delegate("input[type='radio']","click",function()
-		{
-		//alert($j(this).val());
-		var urlString = $j(this).closest('td').next().find('img').attr('src');
-		//setBadgeID($j(this).val(),urlString);
-		var x = $j(this).val();
-		showContainer();
-		setBadgeID(x);
-		}); 
-		
-		 //set radio button selected for badge
+        {
+        //alert($j(this).val());
+        var urlString = $j(this).closest('td').next().find('img').attr('src');
+        //setBadgeID($j(this).val(),urlString);
+        var x = $j(this).val();
+        showContainer();
+        setBadgeID(x);
+        }); 
+        
+         //set radio button selected for badge
         $j("input[type='radio']").each(function()
         {
           if ($j(this).val() == '{!setBadgeSelect}')
@@ -67,30 +67,30 @@
       }
       
     $j("#contentWrapper").delegate("input[id*='emailCheckbox']","click",function(){
-		if (this.checked)
-		{
-		$j('.customMessageCheckBox').show();
-		$j('.customMessageInput').show();
-		}
-		else
-		{
-		$j('.customMessageCheckBox').hide();
-		$j('.customMessageInput').hide();
-		}
-		});
-		
-			$j("#contentWrapper").delegate("input[id*='customMessageCheckBox']","click",function(){
-		if (this.checked)
-		{
-		$j('.customMessageInput').show();
-		}
-		else
-		{
-		$j('.customMessageInput').hide();
-		}
-	
-		});
-	
+        if (this.checked)
+        {
+        $j('.customMessageCheckBox').show();
+        $j('.customMessageInput').show();
+        }
+        else
+        {
+        $j('.customMessageCheckBox').hide();
+        $j('.customMessageInput').hide();
+        }
+        });
+        
+            $j("#contentWrapper").delegate("input[id*='customMessageCheckBox']","click",function(){
+        if (this.checked)
+        {
+        $j('.customMessageInput').show();
+        }
+        else
+        {
+        $j('.customMessageInput').hide();
+        }
+    
+        });
+    
         
       
       function refreshScreen() {
@@ -116,7 +116,7 @@
       
        function setUploadOption(){
         
-			setUploadController();
+            setUploadController();
 
             }
       
@@ -137,9 +137,9 @@
          if ($j(this).find("select[id*='ruleFields']").val() === "") {
          count = count + 1;
          if (count > 1)
-         	{
-         	$j(this).remove();
-         	}
+            {
+            $j(this).remove();
+            }
         }
         });
 
@@ -426,7 +426,7 @@
   
         
     <div id="loading-container" class="loading-container"></div>
-	<div id="content-container" class="content-container">Loading</div>
+    <div id="content-container" class="content-container">Loading</div>
   
   <apex:sectionHeader title="Automatic Badge Issuing Rules"/>
      <apex:pageBlock mode="edit" >
@@ -439,16 +439,18 @@
 
   <apex:form id="addForm">
   
-    <apex:pageBlock rendered="{!renderStep1}">
-   <h1>Step 1: To add a new Rule - Click Here</h1>
-      <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/>
-       <br></br><h2>To modify a Rule, click on a Rule Title below</h2> 
-   </apex:pageBlock>
+
   
    <apex:pageBlock rendered="{!renderStep2}">
    <h1>Step 2: Select the badge you would like to issue</h1>
     <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
       <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
+   </apex:pageBlock>
+   
+   <apex:pageBlock rendered="{!renderStep1}">
+   <h1>Step 1: To add a new Rule - Click Here</h1>
+      <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/>
+       <br></br><h2>To modify a Rule, click on a Rule Title below</h2> 
    </apex:pageBlock>
   
   
@@ -463,48 +465,48 @@
   <style>
   
   .content-container {
- 	position: fixed;
-	top: 50%;
-	left: 50%;
-	margin-top: 61px;
-	margin-left: -43px;
-	font-size: 25px;
-	display:none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: 61px;
+    margin-left: -43px;
+    font-size: 25px;
+    display:none;
   }
   
   .loading-container {
     z-index:100;
-	position:absolute;
-	top:0;
- 	right:0;
-	bottom:0;
-	left:0;
-	display:none;
-	background-image:url({!$Resource.ajaxloader});
-	background-repeat:no-repeat;
-	background-attachment:fixed;
-	background-position:center; 
+    position:absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    display:none;
+    background-image:url({!$Resource.ajaxloader});
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    background-position:center; 
 }
 .loading-container:before {
-	z-index:100;
-	position:absolute;
-	width:100%;
-	height:100%;
-	line-height:480px;
-	text-align: center;
-	vertical-align: middle;
-	font-size:25px;
-	font-weight:bold;
-	color:black;
-	text-align:center;
-	background:rgba(70, 70, 70, 0.9);
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	content: ' ';
-	opacity:0.4;
-	filter:alpha(opacity=40);
-	padding-top: 89px;
+    z-index:100;
+    position:absolute;
+    width:100%;
+    height:100%;
+    line-height:480px;
+    text-align: center;
+    vertical-align: middle;
+    font-size:25px;
+    font-weight:bold;
+    color:black;
+    text-align:center;
+    background:rgba(70, 70, 70, 0.9);
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    content: ' ';
+    opacity:0.4;
+    filter:alpha(opacity=40);
+    padding-top: 89px;
 }
   
   </style>
@@ -673,9 +675,9 @@
     <apex:pageBlock id="theAddBadge" rendered="{!renderStep3}" mode="edit"  title="Step 3: Enter Rule Information">
      
       <apex:pageBlockButtons >
-       <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/> 
-         <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
-        <apex:commandButton styleClass="deleteStep" value="Delete Rule" onClick="deleteRule();" rerender="addForm"/>
+          <apex:commandButton styleClass="deleteStep" value="Delete Rule" onClick="deleteRule();" rerender="addForm"/>
+          <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/>
+          <apex:commandButton styleClass="nextStep" value="Next Step" action="{!nextStep}"/>        
       </apex:pageBlockButtons>
       
       
@@ -723,11 +725,11 @@
     
     
       <apex:pageBlock id="uploadEvidence" rendered="{!renderStep4}">   
-  		<h1>Step 4: Select Delivery Options:</h1>
-  		  <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
-  		  <apex:commandButton styleClass="nextStep" value="Next Step" action="{!upload}"/> 
+        <h1>Step 4: Select Delivery Options:</h1>
+          <apex:commandButton styleClass="backStep" value="Back Step" action="{!backStep}"/> 
+          <apex:commandButton styleClass="nextStep" value="Next Step" action="{!upload}"/> 
           
-  		<apex:pageBlockSection >
+        <apex:pageBlockSection >
     <br><h2>Would you like to notify recipients by email?</h2></br>
     </apex:pageBlockSection>
     
@@ -757,14 +759,14 @@
      
      <apex:pageBlock >
      
-  		 
-  		 <apex:pageBlockSection columns="2">
-  		 
-  		 
-  		 <apex:outputpanel >
-  		  <br><h2>Include Evidence (Optional)</h2></br>
-  		 <br><h3>The link or file you attach will be included with every badge
-  		 issued as evidence of the recipient's achievement.
+         
+         <apex:pageBlockSection columns="2">
+         
+         
+         <apex:outputpanel >
+          <br><h2>Include Evidence (Optional)</h2></br>
+         <br><h3>The link or file you attach will be included with every badge
+         issued as evidence of the recipient's achievement.
         </h3></br>
         
         <br><h3>Enter a URL: http://
@@ -776,10 +778,10 @@
         <apex:inputFile value="{!document.body}" filename="{!document.name}" id="fileEvidence"/>
       
       
-  		 </apex:outputpanel>
-  		 
-  		  <apex:outputpanel >
-  		   
+         </apex:outputpanel>
+         
+          <apex:outputpanel >
+           
        <br><h2>Include Testimonial (Optional)</h2></br>
        <br></br>
         <br><h3>The testimonial you include here will be included
@@ -788,15 +790,15 @@
         advance specifically who will earn this badge.)
         </h3></br>
         <br></br>
-  		
-  		 <apex:inputTextarea id="testimonial" value="{!setTestimonialSelect}" styleClass="longInputText"/> 
-  		
-  	
-  		 
-  		 </apex:outputpanel>
-  		 </apex:pageBlockSection>
-  		 
-  		
+        
+         <apex:inputTextarea id="testimonial" value="{!setTestimonialSelect}" styleClass="longInputText"/> 
+        
+    
+         
+         </apex:outputpanel>
+         </apex:pageBlockSection>
+         
+        
            
     </apex:pageBlock> 
     

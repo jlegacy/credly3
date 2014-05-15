@@ -8,8 +8,8 @@ public with sharing class BadgeContactController {
        
         
           setRuleText = '';
-         
-		xSelectedRecipients = '';
+        
+        xSelectedRecipients = '';
         getOnce = true;
         renderStep1 = true;
         renderStep2 = false;
@@ -81,6 +81,14 @@ public with sharing class BadgeContactController {
         get;
         set;
     }
+    public String displayEvidence{
+        get{
+            if(document.name != null) return document.name;
+            else if(urlLink != null) return urlLink;
+            else return null;
+        }
+        set;
+    }
     
     public List<SelectOption> getFields(String xtype) 
 {   
@@ -97,8 +105,11 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
  for (String fieldName: fieldMap.keySet())
   {  
   Schema.DescribeFieldResult fieldObject = fieldMap.get(fieldName).getDescribe();
+  
+      String fType = String.valueOf(fieldObject.getType());
+      if(fType == 'URL') fType = 'STRING';
      
-      options.add(new SelectOption(String.valueOf(fieldObject.getName()) + ':' + String.valueOf(fieldObject.getType()), String.valueOf(fieldObject.getLabel()))); 
+      options.add(new SelectOption(String.valueOf(fieldObject.getName()) + ':' + fType, String.valueOf(fieldObject.getLabel()))); 
   }  
    return options;
    }
@@ -119,8 +130,8 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
     }
     
     public List<badge__c> myBadges{
-    	get;
-    	set;
+        get;
+        set;
     }
     
     public boolean first_pass{get;set;}
@@ -265,7 +276,7 @@ Schema.SObjectType leadSchema = schemaMap.get(xtype);
 
 public PageReference createRecipientsController()
 {
-	return null;
+    return null;
 }
 
 
@@ -382,19 +393,19 @@ public PageReference createRecipientsController()
         }
        
         if (step == 3) {
-        	
-        	 if (setRuleText.trim().compareTo('') == 0) {
+            
+             if (setRuleText.trim().compareTo('') == 0) {
                 ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need To Select Rule(s)'));
                step = step-1;
                 return null;
            }
-        	editRecipients();
+            editRecipients();
             showRecipients();
         }
         
          if (step == 4) {
-         	
-         	  
+            
+              
             if (xSelectedRecipients.trim().length() == 0) {
                 ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, 'Need to Select Recipients'));
                 step = 2;
@@ -403,7 +414,7 @@ public PageReference createRecipientsController()
             }
             else
             {
-         	
+            
             showUploadOnly();
             }
         }
@@ -572,8 +583,8 @@ public PageReference createRecipientsController()
     }
 
     public pageReference showReview() {
-    	recipientNumber = 0;
-   		String[] rows = xSelectedRecipients.split('\\,');
+        recipientNumber = 0;
+        String[] rows = xSelectedRecipients.split('\\,');
 
          for (String x: rows)
         {
@@ -832,53 +843,43 @@ public PageReference createRecipientsController()
     }
     
     public String editRecipients() {
-    	
-    	  String setSelected;
-    	
-    	  selectedRecipients = new List <recipients__c> ();
-    	 
-    	  Map<String, Integer> foundHitIds;
-    	  List<List<String>> parsedRows = new List<List<String>>();
-    	  
-    	   xRecordType = setTypeSelect.toLowerCase();
-    	  
-    	   parsedRows = automatedTriggerClass.unparseRules(setRuleText);
-    	  //Get the IDs of the members getting badges//
-             if (xRecordType == 'account') {
-            	foundHitIds = staticCredlyClass.getRecipientAccountIDs(setRuleText);
-             }
-             
-              if (xRecordType == 'lead') {
-            	foundHitIds = staticCredlyClass.getRecipientLeadIDs(setRuleText);
-             }
-             
-              if (xRecordType == 'contact') {
-            	foundHitIds = staticCredlyClass.getRecipientContactIDs(setRuleText);
-             }
+        
+          String setSelected;
+        
+          selectedRecipients = new List <recipients__c> ();
+         
+          List<List<String>> parsedRows = new List<List<String>>();
+          
+           xRecordType = setTypeSelect.toLowerCase();
+          
+           //parsedRows = automatedTriggerClass.unparseRules(setRuleText);
+          //Get the IDs of the members getting badges//
+          
+          Id[] foundHitIds = staticCredlyQueries.getRecipientIDs(setRuleText, setTypeSelect);
+          
 
-              for(Id id : foundHitIds.keySet()) {
-                    if (foundHitIds.get(id) == parsedRows.size())
-                    {
-                    	 recipients__c newRecipient = new recipients__c();
-                    	 
-                    	  if (xRecordType == 'account') {
-            			newRecipient.Account_Lookup_rc__c = id;
-             			}
+              for(Id id : foundHitIds) {
+
+                         recipients__c newRecipient = new recipients__c();
+                         
+                          if (xRecordType == 'account') {
+                        newRecipient.Account_Lookup_rc__c = id;
+                        }
              
               if (xRecordType == 'lead') {
-            	newRecipient.Lead_Lookup_rc__c = id;
+                newRecipient.Lead_Lookup_rc__c = id;
              }
              
               if (xRecordType == 'contact') {
-            	newRecipient.Contact_Lookup_rc__c = id;
+                newRecipient.Contact_Lookup_rc__c = id;
              }
              
              selectedRecipients.add(newRecipient);
-                    	
-                    }
-               }
-    	
-    	return null;
+                        
+              }
+               
+        
+        return null;
     }
 
 
@@ -926,8 +927,8 @@ public PageReference createRecipientsController()
     }
 
     public PageReference upload() {
-		Map<String, String> mySelectedRecipients = new Map<String,String>();
-		
+        Map<String, String> mySelectedRecipients = new Map<String,String>();
+        
         Map<String, Integer> foundHitIds;
         List<List<String>> parsedRows = new List<List<String>>();
         String encodedImage;
@@ -966,31 +967,16 @@ public PageReference createRecipientsController()
             
             parsedRows = automatedTriggerClass.unparseRules(setRuleText);
             
-            //
-            //Get the IDs of the members getting badges//
-             if (xRecordType == 'account') {
-            	foundHitIds = staticCredlyClass.getRecipientAccountIDs(setRuleText);
-             }
-             
-              if (xRecordType == 'lead') {
-            	foundHitIds = staticCredlyClass.getRecipientLeadIDs(setRuleText);
-             }
-             
-              if (xRecordType == 'contact') {
-            	foundHitIds = staticCredlyClass.getRecipientContactIDs(setRuleText);
-             }
-             
+            Id[] ids = staticCredlyQueries.getRecipientIDs(setRuleText, setTypeSelect);
+       
+              for(Id id : ids) {
 
-             
-              for(Id id : foundHitIds.keySet()) {
-                    if (foundHitIds.get(id) == parsedRows.size())
-                    {
-                    	
+                        
                     shortenedID = string.valueOf(id).substring(0,15);
                     result = mySelectedRecipients.get(shortenedID); 
                   
                     if (result != null)
-           			{
+                    {
                     member_badge__c memberBadge = new member_badge__c();
 
                     memberBadge.criteria_m__c = badge.criteria__c;
@@ -1033,8 +1019,6 @@ public PageReference createRecipientsController()
                     memberBadge.issue_date_m__c = system.today();
                     memberBadgeList.add(memberBadge); 
                     }
-
-                }
             }
             
             if (!memberBadgeList.isEmpty())
@@ -1144,7 +1128,7 @@ public PageReference createRecipientsController()
             currentBadgePage = 1;
             badgeOffset = 0;
         }
-		 myBadges = getBadges();
+         myBadges = getBadges();
 
         return null;
     }
@@ -1169,7 +1153,7 @@ public PageReference createRecipientsController()
 
     public List < badge__c > getBadge {
         get {
-        	
+            
             myId = UserInfo.getUserId();
          
          
@@ -1179,7 +1163,8 @@ public PageReference createRecipientsController()
             
             //Description is a field that cannot be filtered/ordered on, have to pull all records
             if (xSortField == 'Description') {
-                arrayOfBadges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or(credlyBadgeId__c = null and createdById = : myId)) and(title__c like: filterBadgeSearch)];
+                arrayOfBadges = [select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c, title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs) or(credlyBadgeId__c = null and createdById = : myId)) and(title__c like :filterBadgeSearch or
+                        short_description__c like :filterBadgeSearch)];
                 arrayOfBadges = staticCredlyClass.sortSpecialBadges(arrayOfBadges, xSortField, pSortDirection);
                 badges = arrayOfBadges;
                 numberOfPages = 1;
@@ -1190,11 +1175,12 @@ public PageReference createRecipientsController()
                 filterBadgeSearch = filterBadge;
                 
                 
-                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs)) and createdById = :myId and title__c like: filterBadgeSearch];
+                AggregateResult[] groupedResults = [select count(id) recCnt from badge__c where((credlyBadgeId__c IN: myCredlyBadgeIDs)) and createdById = :myId and (title__c like :filterBadgeSearch or
+                        short_description__c like :filterBadgeSearch)];
                 Object recordCount = groupedResults[0].get('recCnt');
                 setPagingInfo(Integer.valueOf(recordCount));
-			
-                badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  title__c  like :filterBadgeSearch order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
+            
+                badges = Database.query('select criteria__c, description__c, expires_in__c, is_giveable__c, short_description__c,title__c, image__c, document_ID__c, credlyBadgeId__c, createdById, createdDate,credlyCreatedDateTime__c from badge__c  where ((credlyBadgeId__c IN :myCredlyBadgeIDs)) and  (title__c like :filterBadgeSearch or short_description__c like :filterBadgeSearch) order by ' + pSortField + ' ' + pSortDirection + ' LIMIT :pageLimit OFFSET :badgeOffset');
             }
 
               if ((filterBadge.trim().compareTo('') == 0)) {

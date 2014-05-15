@@ -131,11 +131,11 @@
         </apex:pageBlockSectionItem>
         
           <apex:pageBlockSection showHeader="false"  columns="1" > 
-       <h2>You can either Enter Your Name and Password or API Key.  Your API key is good for 3 months</h2>
+       <h2>You can either Enter Your Username and Password or Credly Access Token.</h2>
        </apex:pageBlockSection>
         
          <apex:pageBlockSectionItem >
-          <apex:outputLabel value="Name"/>
+          <apex:outputLabel value="Username"/>
           <apex:inputText styleClass="credlyToken" value="{!name}" id="name"/>
         </apex:pageBlockSectionItem> 
         
@@ -150,7 +150,7 @@
         </apex:pageBlockSectionItem> 
      
          <apex:pageBlockSectionItem >
-          <apex:outputLabel value="Credly Token"/>
+          <apex:outputLabel value="Credly Access Token"/>
           <apex:inputText styleClass="credlyToken" value="{!APItoken}" id="apiToken"/> 
         </apex:pageBlockSectionItem>
        

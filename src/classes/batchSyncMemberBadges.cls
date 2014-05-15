@@ -10,7 +10,16 @@ global class batchSyncMemberBadges implements
    global final String query;
    
    global Database.QueryLocator start(Database.BatchableContext BC){
-      String query = 'select id , criteria_m__c, custom_message_m__c, description_m__c, expires_in_m__c, is_visible_m__c, badge_lookup_m__r.credlyBadgeId__c, short_description_m__c,title_m__c, image_m__c, credlyMemberBadge_id_m__c,evidence_m__c, evidence_id_m__c,name_m__c,account_type_m__c,document_ID_m__c,  account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c, badge_lookup_m__r.title__c,issue_date_m__c, testimonial_m__c, evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email, expire_date_m__c from member_badge__c where credlyMemberBadge_id_m__c = null and id = :recordId';
+      String query = 'select id , criteria_m__c, custom_message_m__c, '+ 
+      				'description_m__c, expires_in_m__c, is_visible_m__c,'+
+      				' badge_lookup_m__r.credlyBadgeId__c, short_description_m__c,'+
+      				' title_m__c, image_m__c, credlyMemberBadge_id_m__c,evidence_m__c, '+
+      				'evidence_id_m__c,name_m__c,account_type_m__c,document_ID_m__c,  '+
+      				'account_lookup_m__c,contact_lookup_m__c,lead_lookup_m__c,'+
+      				' badge_lookup_m__r.title__c,issue_date_m__c, testimonial_m__c,'+
+      				' evidence_url_m__c,lead_lookup_m__r.email,contact_lookup_m__r.email,'+
+      				' expire_date_m__c'+
+      				' from member_badge__c where credlyMemberBadge_id_m__c = null and id = :recordId';
       return Database.getQueryLocator(query);
    }
    
@@ -41,7 +50,7 @@ global class batchSyncMemberBadges implements
        ('The batch Apex job processed ' + a.TotalJobItems +
        ' batches with '+ a.NumberOfErrors + ' failures.');
        try{
-    Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail});
+ //   Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail});
     }
     catch(System.EmailException ex){
       // This message should be added to the page, 
@@ -217,7 +226,7 @@ global class batchSyncMemberBadges implements
              memberBadgeList.add(memberBadge);
               if (storeCredly == true) 
         {
-              if (memberBadge.lead_lookup_m__c != null)
+           if (memberBadge.lead_lookup_m__c != null)
            {
             staticCredlyClass.storeCredlyId(Credlyid, memberBadge.lead_lookup_m__c, 'lead');
            }
